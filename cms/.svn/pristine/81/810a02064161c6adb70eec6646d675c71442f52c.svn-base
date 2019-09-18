@@ -1,0 +1,38 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+{% endif %}
+
+    <div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+    <div class="well well-sm text_logo font_weight_600"><i class="fa fa-flask fa-fw"></i> {{admin_action}} Plan Details <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info btn-sm pull-right"
+                       style="margin-top: -5px;">Go Back</a></div>
+        <div class="row">
+{#            <hr>#}
+            <!--LEFT PANEL START-->
+            <form method="post" {% if admin_action == 'Add' %}action="{% url 'add_plan_details' %}" {% else %} action="{% url 'edit_plan_details' plan_details.id %}" {% endif %}>
+                {% csrf_token %}
+                <div class="col-md-6">
+
+                  <div class="form-group">
+                        <label>Plan Detail Name</label>
+                        <input type="text" class="form-control" {% if admin_action == 'Add' %} placeholder="Plan Detail Name" {% else %} value="{{ plan_details.name }}"{% endif %} name="detail_name" required>
+                      <div class="form-group">
+
+                   </div>
+
+                <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                </div>
+                <!--RIGHT PANEL END-->
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+   id="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+<!--Right Start-->
+<div class="p_10" style="background: rgba(0,0,0,0.3);">
+   <div style="margin-top:20px!important; "><label>Duplicates from Live Doctor Model</label></div>
+   <div class="table-responsive table_modify_for_all ">
+      <table class="table table-bordered m_b_0">
+         <thead class="bg_ededed">
+            <tr>
+
+               <th>Sr. No.</th>
+                <th>Doctor Name</th>
+                <th>Stage</th>
+                <th>HFU ID</th>
+                <th>Doctor MCI No</th>
+               <th>Action</th>
+            </tr>
+         </thead>
+         <tbody>
+         {% if live_doc_mci_match_list %}
+            {% for d in live_doc_mci_match_list %}
+            <tr>
+
+               <td>{{ forloop.counter }}</td>
+               <td>{{ d.firstName | capfirst }}{{ i.lastName | capfirst }}</td>
+                <td>{{ d.stage.stage_name | capfirst }}</td>
+                <td>{{ d.hfuId | capfirst }}</td>
+                <td>{{ d.mciRegistrationNo | capfirst }}</td>
+
+               <td><a class="text_white" href="{% url 'live_doctor_listing_edit' d.id %}?tab=6"><i
+                                        class="fa fa-edit"></i></a></td>
+
+            </tr>
+            {% endfor %}
+         {% else %}
+             <tr><td colspan="6">No Live Doctor Duplicate Found</td></tr>
+         {% endif %}
+         </tbody>
+      </table>
+
+   </div>
+
+   <div style="margin-top:50px!important; "><label>Duplicates from Doctor Model</label></div>
+   <div class="table-responsive table_modify_for_all">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Sr No</th>
+            <th>Doctor Name</th>
+            <th>Stage</th>
+            <th>Category</th>
+            <th>Zone</th>
+            <th>Zone Location</th>
+            <th>Registration Details</th>
+
+            {#                        <th>City</th>#}
+            {#                        <th>Locality</th>#}
+            {% if request.user|can_view_caller %}
+                <th>Status</th>{% endif %}
+            {% if request.user|can_view_review %}
+                <th>Previous user</th>{% endif %}
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th style="min-width: 110px!important;">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if doc_mci_match_list %}
+        {% for i in doc_mci_match_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ i.name | capfirst }}</td>
+
+                <td>{{ i.stage.stage_name | capfirst }}</td>
+                <td>{{ i.category.name | capfirst }}</td>
+                <td>{{ i.zone.name | capfirst }}</td>
+                <td>{{ i.zone_location.name | capfirst }}</td>
+                <td>{{ i.registration_data | capfirst }}</td>
+                {#                            {% for j in i.attachwithdoctor_set.all|slice:":1" %}#}
+                {#                                <td>{{ j.organisation.city.name|capfirst }}</td>#}
+                {#                                <td>{{ j.organisation.locality.name|capfirst }}</td>#}
+                {##}
+                {#                            {% endfor %}#}
+                {% if request.user|can_view_caller %}
+                    {% if i.free_text %}
+                        <td style="color:rgba(236, 151, 31, 0.7);"> Reverted</td>{% else %}
+                        <td>New</td>
+                    {% endif %}
+                {% endif %}
+                {% if request.user|can_view_review %}
+                    {% if not i.previous_user %}
+                        <td style="color:white;"></td>
+                    {% else %}
+                        {% for j in user_data %}
+                            {% if j.id ==  i.previous_user %}
+                                <td style="color:white;">{{ j.username|default_if_none:"" }}</td>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+                <td>{{ i.created_at }}</td>
+                <td>{{ i.updatedAt }}</td>
+                <td><a class="text_white" href="{% url 'doctor-listing-edit' i.id %}"><i
+                        class="fa fa-edit"></i></a>  |  <a href="{% if i.is_disable %}{% url 'doctor-data-enable-nopublish' i.id %}{% else %}{% url 'doctor-data-deactivate-unpublish' i.id %}{% endif %}"
+                                                                                  class="btn btn-default btn-sm">
+                            {% if i.is_disable %}Enable {% else %}Disable {% endif %}</a> | <a href="{% url 'merge-duplicates' i.id live_doc_id %}"
+                                                                                  class="btn btn-danger btn-sm">Merge</a></td>
+
+            </tr>
+        {% endfor %}
+        {% else %}
+             <tr><td colspan="8">No Doctor Duplicate Found</td></tr>
+         {% endif %}
+        </tbody>
+
+    </table>
+</div>
+
+</div>
+
+<script>
+        //$('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchDoctorForPublisher({{ request.user.id }})
+            }
+        }
+</script>
+
+<!--Right End-->
+<script>
+   $("#checkAll").change(function () {
+       $("input:checkbox").prop('checked', $(this).prop("checked"));
+   });
+   var $rows = $('#table tr');
+   $('#search').keyup(function () {
+       var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+   
+       $rows.show().filter(function () {
+           var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+           return !~text.indexOf(val);
+       }).hide();
+   });
+   $('#alert').fadeIn().delay(2000).fadeOut('slow');
+   /**
+    * publisher
+     * @constructor
+    */
+   function PublishForPublisher(type,data_type){
+       var checkedValues = $('input:checkbox:checked').map(function () {
+           return this.value;
+       }).get();
+       var formDATA = {};
+       checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+       if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+           alert("Please select value....");
+           return false;
+       }
+       formDATA.checkedValues = checkedValues;
+       formDATA.type = type;
+       formDATA.data_type = data_type;
+       if (formDATA.checkedValues != '') {
+           $.ajax({
+               type: 'POST', url: Domain + '{% url 'data-publish' %}', data: formDATA, beforeSend: function () {
+                   var text = 'Please wait....';
+                   ajaxindicatorstart(text);
+               },
+               success: function (resData) {
+                   ajaxindicatorstop();
+                   resData = JSON.parse(resData);
+                   if (resData.Redirect == true) {
+                       alert(resData.Message);
+                       window.location = resData.RedirectUrl;
+                   }
+                   else {
+   
+                       alert(resData.Message);
+                       window.location.reload(true);
+                   }
+               },
+               error: function(data){
+                   alert('Something Bad Happened');
+                   location.reload();
+               }
+           });
+       }
+       else
+       {
+           alert("Please select Doctors.")
+       }
+
+   }
+
+       
+</script>
+{% endblock %}

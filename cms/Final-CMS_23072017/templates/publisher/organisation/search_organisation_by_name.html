@@ -1,0 +1,60 @@
+   <div class="table-responsive table_modify_for_all p_tb_10">
+      <table class="table table-bordered m_b_0">
+         <thead class="bg_ededed">
+            <tr>
+               <th><input id="checkAll" type="checkbox"/></th>
+               <th>Sr. No.</th>
+               <th>Name</th>
+               <th>Locality</th>
+               <th>City</th>
+                <th>Current User</th>
+               <th>Stage</th><th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+               <th>Action</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% if organisation %}
+            {% for d in organisation %}
+            <tr>
+               <td><input type="checkbox" value="{{ d.id }}"></td>
+               <td>{{ forloop.counter }}</td>
+               <td>{{ d.name }}</td>
+               <td>{{ d.locality.name|capfirst }}</td>
+               <td>{{ d.city.name |capfirst}}</td>
+               <td>{{ d.current_user.username|capfirst }}</td>
+               <td>{{ d.stage.stage_name }}</td><td>{{ d.createdAt }}</td>
+                            <td>{{ d.updatedAt }}</td>
+               <td>
+                   {% if d.stage_id != 5 %}<a class="btn btn-default btn-sm p_0"
+                                       href="{% url 'time-schedule-hospital' d.id %}"><i
+                                            class="fa fa-clock-o fa-fw text_333"></i></a>
+                   <a href = "{% url 'organisation-listing-edit' d.id %}"><i class="fa fa-edit"></i></a>
+
+                       </td>
+               {% endif %}
+            {% endfor %}
+            {% else %}
+            <div class="table-responsive table_modify_for_all p_tb_10">No Organisations found</div>
+            {% endif %}
+
+            </tr>
+
+         </tbody>
+      </table>
+      {% if organisation %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if organisation.has_previous %}
+            <li class="prev"><a href="?page={{ organisation.previous_page_number }}{% if stage_id%}&stage_id={{ stage_id }}{% endif %}{% if search_name %}&search_name={{ search_name }}{% endif %}">Prev</a> </li>
+            {% endif %}
+            <li><a href="">Page {{ organisation.number }} of {{ organisation.paginator.num_pages }}</a> </li>
+            {% if organisation.has_next %}
+            <li class="next"><a href="?page={{ organisation.next_page_number }}{% if stage_id%}&stage_id={{ stage_id }}{% endif %}{% if search_name %}&search_name={{ search_name }}{% endif %}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+   </div>
+</div>
+<!--Right End-->

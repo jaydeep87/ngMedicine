@@ -1,0 +1,113 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+        {% block table %}
+        <div id ='divide'>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <select id="count" name="count" class="form-control chosen-select" >
+
+                                <option value="10">50</option>
+                                <option value="50">100</option>
+                                <option value="100">500</option>
+                                <option value="100">1000</option>
+                            </select>
+
+                        </div>
+                   </div>
+
+                   <div class="col-md-3" >
+                   </div>
+
+                   <div class="col-md-3" >
+                   </div>
+
+                   <div class="col-md-3" >
+                   </div>
+
+                </div>
+
+           </p>
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Date</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Login via</th>
+                        <th>IP</th>
+                        <th>Location</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Country</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in country_obj %}
+
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.name | capfirst }}</td>
+                            <td>{{ i.country_code }}</td>
+
+                            <td><a class="text_white" href="{% url 'country_edit' i.id %}"><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.delete == False %}<a href="{% url 'any-master-object-deactivate' object_id=i.id object_type=1 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'any-master-object-activate' object_id=i.id object_type=1 %}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}</td>
+                            <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                <div class="row m_0">
+        <div class="col-md-6">
+        <p class="m_tb_20 text_333">Showing {{ rec_from }} - {{ rec_to }} out of {{ rec_total }} Entries</p>
+        </div>
+
+        <div class="col-md-6 paginationModify text-right">
+        <ul class="pagination">
+        <li class="prev"><a href="#">Previous</a></li>
+        <li><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li class="next"><a href="#">Next</a></li>
+        </ul>
+        </div>
+
+        </div>
+            </div>
+        {% endblock %}
+    </div>
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchLab({{ request.user.id }})
+            }
+        }
+    </script>
+{% endblock %}

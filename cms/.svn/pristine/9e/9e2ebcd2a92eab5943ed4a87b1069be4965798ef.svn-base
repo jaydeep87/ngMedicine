@@ -1,0 +1,44 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+{% endif %}
+<div class="col-md-3 four_member">
+    <a class="thumbnail" href="{% url 'global-feed-management' %}">
+        <span class="label label-warning"></span>
+        <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+        <h3>Global Feeds Management</h3>
+        <h3 class="m_t_0"></h3>
+    </a>
+</div>
+<div class="col-md-3 four_member">
+    <a class="thumbnail" href="{% url 'wellness-feed-management' %}">
+        <span class="label label-warning"></span>
+        <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+        <h3>Wellness Feeds Management</h3>
+        <h3 class="m_t_0"></h3>
+    </a>
+</div>
+<div class="col-md-3 four_member">
+    <a class="thumbnail" href="{% url 'health-feed-management' %}">
+        <span class="label label-warning"></span>
+        <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+        <h3>Health Feeds Management</h3>
+        <h3 class="m_t_0"></h3>
+    </a>
+</div>
+<div class="col-md-3 four_member">
+    <a class="thumbnail" href="{% url 'doctor-feed-management' %}">
+        <span class="label label-warning"></span>
+        <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+        <h3>Doctor's Feed</h3>
+        <h3 class="m_t_0"></h3>
+    </a>
+</div>
+
+{% endblock %}

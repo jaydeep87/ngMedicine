@@ -1,0 +1,418 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'country_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Country</h3>
+<h3 class="m_t_0">415</h3>
+</a>
+
+</div>
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'state_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>State</h3>
+<h3 class="m_t_0">415</h3>
+</a>
+
+</div>
+    <div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'city_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>City</h3>
+<h3 class="m_t_0">415</h3>
+</a>
+
+</div>
+    <div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'locality_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Locality</h3>
+<h3 class="m_t_0"></h3>
+</a>
+
+</div>
+
+<div class="col-md-4 four_member">
+<a href="{% url 'zone_data_page' %}" class="thumbnail" >
+<figure><img src="{% static 'images/caller_user.png' %}"></figure>
+<h3>Zone</h3>
+
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'zone_location_data_page' %}">
+<figure><img src="{% static 'images/rethink.png' %}"></figure>
+<h3>Zone Location</h3>
+<h3 class="m_t_0">{{ reviewer_no }}</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'category_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Category</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'speciality_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Speciality</h3>
+<h3 class="m_t_0"></h3>
+</a>
+
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'service_offered_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Service Offered</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'facility_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Facility</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'department_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Department</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'organisation_types_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Organisation Types</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'organisation_categories_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Organisation Categories</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'organisation_facilities_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Organisation Facilities</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'disease_category_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Disease Category Search Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'pharmacy_type_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Pharmacy Type Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'pharmacy_services_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Pharmacy Services Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'newstype_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>News Type Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'lab_accreditation_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Lab Accredition Body Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'lab_type_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Lab Type Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'lab_test_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Lab Test Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'lab_services_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Lab Services Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'lab_department_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Lab Department Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'bloodbank_services_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Bloodbank Services Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'rehab_services_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Rehab Services Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'rehab_type_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Rehab Type Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'rehab_speciality_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Rehab Speciality Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'ambulance_services_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Ambulance Services Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'ambulance_type_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Ambulance Type  Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'nurse_bureau_services_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Nurse Bureau Services Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'nurse_bureau_speciality_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Nurse Bureau Speciality Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'dietitian_services_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Dietitian Services Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'dietitian_type_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Dietitian Type Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'therapist_services_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Therapist Services Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'therapist_type_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Therapist Type Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'therapist_speciality_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Therapist Speciality Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'disease_type_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Disease Type Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'kurables_type_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Kurables Type Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'healthoholic_type_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Healthoholic Type Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'caresidense_type_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Caresidense Type Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'doc_care_services_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Doctor Homer Care Service Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'disease_search_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Disease Search Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'symptoms_search_master_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Symptoms Search Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" style="background-color: Green ;" href="{% url 'manage_country_state_city_location' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Master of Country State City Locality</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" style="background-color: blueviolet ;" href="{% url 'new_service_offered_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>New Service Offered Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+<div class="col-md-4 four_member" >
+<a class="thumbnail" style="background-color: blueviolet ;" href="{% url 'new_speciality_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>New Speciality Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member" >
+<a class="thumbnail" style="background-color: blueviolet ;" href="{% url 'new_association_data_page' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Association Master</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member" >
+<a class="thumbnail" style="background-color: red ;" href="{% url 'service_plans_masters' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Service Plans</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+</div>
+{% endblock %}

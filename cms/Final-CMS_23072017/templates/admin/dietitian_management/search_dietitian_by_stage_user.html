@@ -1,0 +1,58 @@
+ <div class="table-responsive table_modify_for_all">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Dietitian Name</th>
+                    <th>City</th>
+                    <th>Location</th>
+                    <th>Stage</th>
+                    <th>Current User</th>
+                    <th>Action</th>
+
+                    <th>Action</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% if dietitian_all_data %}
+                {% for i in dietitian_all_data %}
+                    <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.name | capfirst }}</td>
+                    <td>{{ i.city.name | capfirst }}</td>
+                    <td>{{ i.locality.name | capfirst }}</td>
+                    <td>{{ i.stage.stage_name | capfirst}}</td>
+                    <td>{{ i.current_user.username |capfirst }}</td>
+                    <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                    <td>
+                        <a class="btn btn-default btn-sm p_0" href="{% url 'dietitian-listing-edit' i.id %}?tab=1"><i
+                            class="fa fa-pencil-square-o fa-fw"></i></a> | <a href="{% if i.is_disable %}{% url 'any-master-object-activate' i.id 48 %}?tab=1{% else %}{% url 'any-master-object-deactivate' i.id 48 %}{% endif %}"
+                                                                                      class="btn btn-default btn-sm">{% if i.is_disable %}Enable {% else %}Disable {% endif %}
+
+                    </td>
+                    </td>
+                {% endfor %}
+                {% else %}
+                    <tr>
+                    <td colspan="5"><b>Dietitian's Name could not be found in system...<span class='fa fa-frown-o fa-lg'></span></b></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+
+            </table>
+ {% if dietitian_all_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if dietitian_all_data.has_previous %}
+                            <li class="prev"><a href="?page={{ dietitian_all_data.previous_page_number }}{% if stage_no %}&stage_id={{stage_no}}{% endif %}{% if search_data_two %}&search_data_two={{search_data_two}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ dietitian_all_data.number }} of {{ dietitian_all_data.paginator.num_pages }}</a></li>
+                        {% if dietitian_all_data.has_next %}
+                            <li class="next"><a href="?page={{ dietitian_all_data.next_page_number }}{% if stage_no %}&stage_id={{stage_no}}{% endif %}{% if search_data_two %}&search_data_two={{search_data_two}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>

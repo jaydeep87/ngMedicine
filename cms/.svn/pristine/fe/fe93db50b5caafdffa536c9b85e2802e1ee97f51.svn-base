@@ -1,0 +1,75 @@
+<div class="table-responsive table_modify_for_all p_tb_10">
+                <table class="table table-bordered m_b_0">
+                    <thead class="bg_ededed">
+                    <tr>
+                        <th><input id="checkAll" type="checkbox"/></th>
+                        <th>Sr No</th>
+                        <th>Topic title</th>
+                        <th>Posted Date</th>
+                        <th>Tag String</th>
+                        <th>free_text</th>
+                        <th>Current User</th>
+                        <th>Stage</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th class="col-md-2">Action</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for d in admin_news_data %}
+                        <tr>
+                            <td><input type="checkbox" value="{{ d.id }}"></td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ d.topic_title | capfirst }}</td>
+                            <td>{{ d.posted_date }}</td>
+                            <td>{{ d.tag_string | capfirst }}</td>
+                            <td>{{ d.free_text | capfirst }}</td>
+                            <td>{{ d.current_user.username | capfirst }}</td>
+                            <td>{{ d.stage.stage_name | capfirst }}</td>
+                            <td>{{ d.createdAt }}</td>
+                            <td>{{ d.updatedAt }}</td>
+                            <td><a class="btn btn-default btn-sm p_0" href="{% url 'edit-health-news' d.id %}"><i
+                                    class="fa fa-pencil-square-o fa-fw"></i></a> | <a
+                                    href="{% url 'block-unblock-feed' d.id %}" class="btn btn-default btn-sm">
+                                {% if d.blocked_news %}unblock {% else %}block {% endif %}</a>  |
+                            <span class="p_lr_10"></span>
+                                <a class="btn btn-danger btn-sm p_0"
+                               href="{% url 'delete_newsfeed' d.id d.news_type_id %}"><i
+                                    class="fa fa-trash-o text-danger fa-fw text_white"></i></a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% if admin_news_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if admin_news_data.has_previous %}
+                            <li class="prev"><a href="?page={{ admin_news_data.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ admin_news_data.number }} of {{ admin_news_data.paginator.num_pages }}</a></li>
+                        {% if admin_news_data.has_next %}
+                            <li class="next"><a href="?page={{admin_news_data.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+          <script>
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+        var $rows = $('#table tr');
+        $('#search').keyup(function () {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function () {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+
+
+    </script>
+            </div>

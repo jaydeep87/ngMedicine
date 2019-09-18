@@ -1,0 +1,31 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+
+<div class="col-md-3 four_member">
+                                        <a class="thumbnail" {% if request.user.is_superuser %}href="{% url 'disease-management' %}"{% elif request.user|can_view_publisher %}href="{% url 'publisher-disease-listing' %} " {% else %}href="{% url 'disease-listing' %}"{% endif %}>
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Disease Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+                                     <div class="col-md-3 four_member">
+                                        <a class="thumbnail" {% if request.user.is_superuser %}href="{% url 'symptoms-management' %}"{% elif request.user|can_view_publisher %}href="{% url 'publisher-symptoms-listing' %} " {% else %}href="{% url 'symptoms-listing' %} "{% endif %}>
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Symptoms Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" {% if request.user.is_superuser %}href="{% url 'drug-management' %}"{% elif request.user|can_view_publisher %}href="{% url 'publisher-drug-listing' %} " {% else %}href="{% url 'drug-listing' %}"{% endif %}>
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Drug Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+
+{% endblock %}

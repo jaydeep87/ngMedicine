@@ -1,0 +1,982 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block header %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+   id="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+    <!--HEADER START-->
+    <header class="container">
+        <div class="row lr">
+            <h2 class="font_size_60 text-center text-uppercase font_weight_200 letter_spacing_14"
+                style="background:rgba(1, 155, 184, 0.5)">Welcome to <span class="font_weight_400"
+                                                                           style="letter-spacing:normal;">HFU</span>
+                <span style="color:#F26932;"><span class="font_weight_400">Data</span> Portal</span></h2>
+            <p class="m_b_5" style="border-top:1px dashed #333;">&nbsp;</p>
+            <div class="col-sm-6 p_l_0"><a href="#"><img src="{% static 'images/hfu-logo.png' %}"></a></div>
+            <div class="col-sm-6 p_r_0 text-right dropdown">
+                <div class="row">
+                    <div class="clock col-md-8"></div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-warning p_lr_30 p_tb_10 font_size_17"
+                                data-toggle="dropdown"><i class="fa fa-user-md"></i> {{ request.user.username }} <span
+                                class="caret"></span></button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a href="#">Profile</a></li>
+                            <li><a href="{% url 'users-logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!--HEADER END-->
+{% endblock %}
+{% block login %}
+    <div class="container m_t_15 breadcrumb_for_all">
+        <ul class="breadcrumb row">
+            <li><a href="{% url 'users-dashboard' %}">Home</a></li>
+            {#<li>Dashboard</li>#}
+        </ul>
+    </div>
+    <!--BREADCRUMP END-->
+
+    <!--CONTAINER START-->
+    <div class="container all_container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <ul class="nav nav-tabs m_b_20">
+                    {% if not request.user|can_view_publisher %}
+                        <li {% if tab == 'dashboard' %}class="active"{% endif %}><a
+                                href="{% url 'users-dashboard' %}"
+                                class="first_child"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a></li>
+                    {% endif %}
+                    {% if request.user|can_view_admin %}
+                        <li {% if tab == 'users_tab' %}class="active"{% endif %}><a
+                                href="{% url 'user-management' %}?users=cms"><i class="fa fa-user fa-fw"></i>
+                            User
+                            Management</a></li>
+                        <li{% if tab == 'data' %} class="active"{% endif %}><a href="{% url 'users-data-management' %}"><i
+                                class="fa fa-database fa-fw"></i> Data Management</a></li>
+                        <li{% if tab == 'master_data' %} class="active"{% endif %}><a
+                                href="{% url 'master_data_page' %}"><i
+                                class="fa fa-file-text-o fa-fw"></i> Master Data Management</a></li>
+                        <li{% if tab == 'news_data' %} class="active"{% endif %}><a
+                                href="{% url 'news-feed' %}"><i
+                                class="fa fa-file-text-o fa-fw"></i> News Feed Dashboard</a></li>
+                        <li{% if tab == 'service-plan' %} class="active"{% endif %}><a
+                                href="{% url 'plan-name-listing-admin' %}"><i
+                                class="fa fa-file-text-o fa-fw"></i> Service Plan Dashboard</a></li>
+                        <li{% if tab == 'provide_data' %} class="active"{% endif %}><a
+                                href="{% url 'service_provider_home' %}"><i
+                                class="fa fa-file-text-o fa-fw"></i> Manage Providers</a></li>
+                        <li{% if tab == 'disease_symptom_drug_data' %} class="active"{% endif %}><a
+                                href="{% url 'disease_symptom_drug_home' %}"><i
+                                class="fa fa-file-text-o fa-fw"></i> Manage Diseases/Drugs/Symptoms</a></li>
+                        <li{% if tab == 'doctor_rank_module' %} class="active"{% endif %}><a
+                                href="{% url 'doctor_rank_module' %}"><i
+                                class="fa fa-file-text-o fa-fw"></i>Doctor Rank Module</a></li>
+
+                        <!--<li{% if tab == 'user_activity' %} class="active"{% endif %}><a
+                                href="{% url 'user_activity_data_date_selection' %}"><i
+                                class="fa fa-file-text-o fa-fw"></i> User Activity</a></li>-->
+
+                    {% endif %}
+
+
+                    {#                This block is used for Tellecaller and reviewer#}
+
+                    {% if request.user|can_view_caller_doctor or request.user|can_view_review_doc_org  %}
+                        <li {% if tab_listing == 'doctor_listing' %} class="active" {% endif %}><a
+                                href="{% url 'doctor-listing' %}"><i class="fa fa-file-text-o fa-fw"></i>
+                            Doctor Listing</a></li>
+                        <li {% if tab_listing == 'live_doctor_listing' %} class="active" {% endif %}><a
+                                href="{% url 'live_doctor_new_registrations_listing' %}"><i class="fa fa-file-text-o fa-fw"></i>
+                            Live Doc Listing</a></li>
+                    {% endif %}
+                    {% if request.user|can_view_caller_doctor or request.user|can_view_review_doc_org %}
+                        <li {% if tab_listing == 'organisation_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'organisation-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Organisation Listing</a></li>
+                    {% endif %}
+                    {% if request.user|can_view_caller_doctor or request.user|can_view_review_doc_org %}
+                        <li {% if tab_listing == 'organisation_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'live-organisation-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Live Organisation Listing</a></li>
+                    {% endif %}
+                    {% if request.user|can_view_caller_physio_rehab or request.user|can_view_review_physio_rehab  %}
+                        <li {% if tab_listing == 'rehab_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'rehab-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Rehab Listing</a></li>
+
+                    {% endif %}
+                    {% if request.user|can_view_caller_path or request.user|can_view_review_pathlab  %}
+                        <li {% if tab_listing == 'lab_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'lab-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Pathology Lab Listing</a></li>
+                    {% endif %}
+                    {% if request.user|can_view_caller_bloodbank or request.user|can_view_review_bloodbank  %}
+                        <li {% if tab_listing == 'bloodbank_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'bloodbank-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Blood Bank Listing</a></li>
+                    {% endif %}
+                    {% if request.user|can_view_caller_ambulance or request.user|can_view_review_ambulance %}
+                         <li {% if tab_listing == 'ambulance_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'ambulance-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Ambulance Listing</a></li>
+                    {% endif %}
+                     {% if request.user|can_view_caller_pharma or request.user|can_view_review_pharma  %}
+                         <li {% if tab_listing == 'pharmacy_listing' %} class="active" {% endif %}><a
+                                href="{% url 'pharmacy-listing' %}"><i class="fa fa-file-text-o fa-fw"></i>
+                            Pharmacy Listing</a></li>
+                    {% endif %}
+                     {% if request.user|can_view_caller_disease or request.user|can_view_review_disease %}
+                        <li{% if tab == 'disease_symptom_drug_data' %} class="active"{% endif %}><a
+                                href="{% url 'disease_symptom_drug_home' %}"><i
+                                class="fa fa-file-text-o fa-fw"></i> Manage Diseases/Drugs/Symptoms</a></li>
+                    {% endif %}
+                    {% if request.user|can_view_caller_nurse_bureau or request.user|can_view_reviewer_nurse_bureau  %}
+                        <li {% if tab_listing == 'nurse_bureau-listing' %} class="active" {% endif %}><a
+                                href="{% url 'nurse_bureau-listing' %}"><i class="fa fa-file-text-o fa-fw"></i>
+                            Nurse Bureau Listing</a></li>
+                    {% endif %}
+
+
+                        {#                    <li><a href="#tb_seven" data-toggle="tab" class="last_child"><i class="fa fa-file-text-o fa-fw"></i>#}
+                        {#                        Revert Data Listing</a></li>#}
+
+
+                    {% if request.user|can_view_news or request.user|can_view_review_news %}
+                        <li {% if tab_listing == 'global_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'global-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Global Feeds Listing</a></li>
+                        <li {% if tab_listing == 'wellness_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'wellness-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Wellness Feeds Listing</a></li>
+                        <li {% if tab_listing == 'health_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'health-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Health Feeds Listing</a></li>
+                        <li {% if tab_listing == 'doctorsfeed_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'users_doctorsfeed_listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                           Doctor's Feed</a></li>
+
+
+                    {% endif %}
+                {% if request.user|is_service_caller or request.user|is_service_reviewer %}
+                 <li {% if tab_listing == 'service_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'plan-name-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Service Plan Listing</a></li>
+				 <li {% if tab_listing == 'home_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'home-service-plan-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Home Service Plan Listing</a></li>
+                        <li {% if tab_listing == 'enterprise_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'enterprise-service-plan-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Enterprise Service Plan Listing</a></li>
+                    <li {% if tab_listing == 'life_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'life-service-plan-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Life Service Plan Listing</a></li>
+                {% endif %}
+                {% if request.user|can_view_caller_dietitian or request.user|can_view_reviewer_dietitian  %}
+                        <li {% if tab_listing == 'dietitian_listing' %} class="active" {% endif %}><a
+                                href="{% url 'dietitian-listing' %}"><i class="fa fa-file-text-o fa-fw"></i>
+                            Dietitian Listing</a></li>
+                {% endif %}
+
+                {% if request.user|can_view_caller_therapist or request.user|can_view_reviewer_therapist  %}
+                        <li {% if tab_listing == 'therapist_listing' %} class="active" {% endif %}><a
+                                href="{% url 'therapist-listing' %}"><i class="fa fa-file-text-o fa-fw"></i>
+                            Therapist Listing</a></li>
+                {% endif %}
+
+                    {% if request.user|can_view_publisher %}
+                        <li {% if tab == 'dashboard' %}class="active"{% endif %}><a
+                                href="{% url 'users-dashboard' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i> Data Management </a></li>
+                        <li {% if tab == 'publish_doctor_data' %}class="active"{% endif %}><a
+                                href="{% url 'publisher-doctor-listing' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i> Doctor Data </a></li>
+                        <li {% if tab == 'publish_doctor_data' %}class="active"{% endif %}><a
+                                href="{% url 'publisher-live-doctor-listing' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i>Live Doc Data</a></li>
+                        <li {% if tab == 'publish_organisation_data' %}class="active"{% endif %}><a
+                                href="{% url 'publisher-organisation-listing' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i> Organisation Data </a></li>
+                        <li {% if tab == 'publish_live_organisation_data' %}class="active"{% endif %}><a
+                                href="{% url 'publisher-live-organisation-listing' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i>Live Organisation Data </a></li>
+                        <li {% if tab == 'publish_global_feed' %}class="active"{% endif %}><a
+                                href="{% url 'get-publish-global-feed' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i> Global Feeds Data </a></li>
+                        <li {% if tab == 'publish_wellness_feed' %}class="active"{% endif %}><a
+                                href="{% url 'get-publish-wellness-feed' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i> Wellness Feeds Data </a></li>
+                        <li {% if tab == 'publish_health_feed' %}class="active"{% endif %}><a
+                                href="{% url 'get-publish-health-feed' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i> Health Feeds Data </a></li>
+                        <li {% if tab == 'publish_doctorsfeed' %}class="active"{% endif %}><a
+                                href="{% url 'publisher_doctorsfeed_listing' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i> Doctor's Feed </a></li>
+
+                        <li {% if tab_listing == 'lab_listing' %} class="active" {% endif %} ><a href="{% url 'publisher-lab-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Pathology Lab Listing</a></li>
+                         <li {% if tab_listing == 'bloodbank_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'publisher-bloodbank-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Blood Bank Listing</a></li>
+                         <li {% if tab_listing == 'ambulance_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'publisher-ambulance-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Ambulance Listing</a></li>
+                         <li {% if tab_listing == 'pharmacy_listing' %} class="active" {% endif %}><a
+                                href="{% url 'publisher-pharmacy-listing' %}"><i class="fa fa-file-text-o fa-fw"></i>
+                            Pharmacy Listing</a></li>
+                          <li{% if tab == 'disease_symptom_drug_data' %} class="active"{% endif %}><a
+                                href="{% url 'disease_symptom_drug_home' %}"><i
+                                class="fa fa-file-text-o fa-fw"></i> Manage Diseases/Drugs/Symptoms</a></li>
+                         <li {% if tab_listing == 'home_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'publisher-homeplan-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Home Service Plan Listing</a></li>
+                        <li {% if tab_listing == 'enterprise_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'publisher-enterpriseplan-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Enterprise Service Plan Listing</a></li>
+                         <li {% if tab_listing == 'life_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'publisher-lifeplan-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Life Service Plan Listing</a></li>
+                        <li {% if tab_listing == 'service_listing' %} class="active" {% endif %} ><a
+                                href="{% url 'publisher-serviceplan-listing' %}" class="last_child"><i
+                                class="fa fa-file-text-o fa-fw"></i>
+                            Service Plan Listing</a></li>
+                        <li {% if tab == 'publisher-rehab-listing' %}class="active"{% endif %}><a
+                                href="{% url 'publisher-rehab-listing' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i> Rehab Listing </a></li>
+                        <li {% if tab == 'nurse_bureau-listing' %}class="active"{% endif %}><a
+                                href="{% url 'publisher-nurse_bureau-listing' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i> Nurse Bureau Listing </a></li>
+                        <li {% if tab == 'dietitian-listing' %}class="active"{% endif %}><a
+                                href="{% url 'publisher-dietitian-listing' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i>Dietitian Listing </a></li>
+                        <li {% if tab == 'therapist-listing' %}class="active"{% endif %}><a
+                                href="{% url 'publisher-therapist-listing' %}"
+                                class="first_child"><i class="fa fa-database fa-fw"></i>Therapist Listing </a></li>
+                    {% endif %}
+                        <li  {% if tab == 'care_residence' %}class="active"{% endif %}>
+                        <a style="background-color:#295629;" href="{% url 'care_residence_home' %}"  class="first_child"><i class="fa fa-dashboard fa-fw"></i>Caresidence</a></li>
+
+                        <li  {% if tab == 'global_search_for_all' %}class="active"{% endif %}>
+                        <a style="background-color: red;" href="{% url 'global_search_for_all_users' %}"  class="first_child"><i class="fa fa-dashboard fa-fw"></i>Global Search</a></li>
+
+
+                </ul>
+
+            </div>
+            <div class="col-md-12">
+                <div class="tab-content">
+
+                    {% block user_management %}
+
+                        <div>
+                            <div class="row">
+                                {% if request.user|can_view_admin %}
+                                     <div class="row">
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'doctor-management' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Total Doctors</h3>
+                                            <h3 class="m_t_0">{{ all_doctor }}</h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'live_doctor_management' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Total Live Docs</h3>
+                                            <h3 class="m_t_0">{{ all_live_doctors }}</h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'organisation-management' %}">
+                                           {% comment %} <span class="label label-warning">12</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                            <h3>Total Organisations</h3>
+                                            <h3 class="m_t_0">{{ organisation_data }}</h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'live-organisation-management' %}">
+                                           {% comment %} <span class="label label-warning">12</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                            <h3>Total Live Organisations</h3>
+                                            <h3 class="m_t_0">{{ live_organisation_data }}</h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'lab-management' %}">
+                                            {% comment %}<span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total Labs</h3>
+                                            <h3 class="m_t_0">{{ all_lab }}</h3>
+                                        </a>
+                                    </div>
+
+
+
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'bloodbank-management' %}">
+                                            {% comment %}<span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total BloodBanks</h3>
+                                            <h3 class="m_t_0">{{ all_bloodbank }}</h3>
+                                        </a>
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'ambulance-management' %}">
+                                            {% comment %}<span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total Ambulances</h3>
+                                            <h3 class="m_t_0">{{ all_ambulance }}</h3>
+                                        </a>
+                                    </div>
+
+
+
+                                    {#                                    <div class="col-md-3 four_member">#}
+                                    {#                                        <a class="thumbnail">#}
+                                    {#                                            <span class="label label-warning">04</span>#}
+                                    {#                                            <figure><img src="{% static 'images/images/clinic.png' %}"></figure>#}
+                                    {#                                            <h3>Total Clinic</h3>#}
+                                    {#                                            <h3 class="m_t_0">185</h3>#}
+                                    {#                                        </a>#}
+                                    {#                                    </div>#}
+
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href = "{% url 'user-management' %}?users=cms">
+                                            {% comment %}<span class="label label-success">{{ all_user_active }}</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/images/user.png' %}"></figure>
+                                            <h3>Total Users</h3>
+                                            <h3 class="m_t_0">{{ all_user_no }}</h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'pharmacy-management' %}">
+                                            {% comment %}<span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total Pharmacies</h3>
+                                            <h3 class="m_t_0">{{ all_pharmacy }}</h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+
+                                        <a class="thumbnail"  href=" {% url 'global-feed-management' %}" >
+
+
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                           <h3>Global Feeds Management</h3>
+
+                                            <h3 class="m_t_0">{{ all_global_feed }}</h3>
+                                        </a>
+                                    </div>
+                                    </div>
+                                     <div class="row">
+
+                                     <div class="col-md-3 four_member">
+
+                                        <a class="thumbnail"  href=" {% url 'wellness-feed-management' %}" >
+
+
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                          <h3>Wellness Feeds Management</h3>
+
+                                            <h3 class="m_t_0">{{ all_wellness_feed }}</h3>
+                                        </a>
+                                    </div>
+
+                                     {# ----------- #}
+                                         <div class="col-md-3 four_member">
+
+                                        <a class="thumbnail"  href=" {% url 'health-feed-management' %}" >
+
+
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                          <h3>Health Feeds Management</h3>
+
+                                            <h3 class="m_t_0">{{ all_health_feed }}</h3>
+                                        </a>
+                                    </div>
+                                     {# ---------- #}
+
+                                    <div class="col-md-3 four_member">
+
+                                        <a class="thumbnail"  href=" {% url 'home-plan-management' %}" >
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                           <h3> Home Service Management</h3>
+
+                                            <h3 class="m_t_0">{{ all_home_plan }}</h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+
+                                        <a class="thumbnail"  href=" {% url 'life-plan-management' %}" >
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                           <h3> Life Service Management</h3>
+
+                                            <h3 class="m_t_0">{{ all_life_plan }}</h3>
+                                        </a>
+                                    </div>
+                                     <div class="col-md-3 four_member">
+
+                                        <a class="thumbnail"  href=" {% url 'enterprise-plan-management' %}" >
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                           <h3> Enterprise Service Management</h3>
+
+                                            <h3 class="m_t_0">{{ all_enterprise_plan }}</h3>
+                                        </a>
+                                    </div>
+
+                                     <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'rehab-management' %}">
+                                            {% comment %}<span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total Rehabs</h3>
+                                            <h3 class="m_t_0">{{ all_rehab_center }}</h3>
+                                        </a>
+                                    </div>
+
+                                     <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'nurse_bureau-management' %}">
+                                            {% comment %}<span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total Nurse Bureaus</h3>
+                                            <h3 class="m_t_0">{{ all_nurse_bureau }}</h3>
+                                        </a>
+                                    </div>
+
+                                     <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'dietitian-management' %}">
+                                            {% comment %}<span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total Dietitians</h3>
+                                            <h3 class="m_t_0">{{ all_dietitians }}</h3>
+                                        </a>
+                                    </div>
+
+                                     <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'therapist-management' %}">
+                                            {% comment %}<span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total Therapists</h3>
+                                            <h3 class="m_t_0">{{ all_therapists }}</h3>
+                                        </a>
+                                    </div>
+
+                                     <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'questions_listing' %}">
+                                            {% comment %}<span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total Free Questions </h3>
+                                            <h3 class="m_t_0">{{ question_obj_count }}</h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'feedback_listing' %}">
+                                            {% comment %}<span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total Feedbacks </h3>
+                                            <h3 class="m_t_0">{{ feedbank_obj_count }}</h3>
+                                        </a>
+                                    </div>
+
+
+
+                                    </div>
+
+
+                                {% endif %}
+
+
+
+
+                            {% if request.user|can_view_news or request.user|can_view_review_news %}
+                                <div class="col-md-3 four_member">
+                                     <a class="thumbnail"  href=" {% url 'global-listing' %}"   >
+                                        <span class="label label-warning"></span>
+                                        <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                       <h3>Global Feeds Listing</h3>
+                                        <h3 class="m_t_0"></h3>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 four_member">
+                                    <a class="thumbnail" href="{% url 'wellness-listing' %}">
+                                        <span class="label label-warning"></span>
+                                        <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                      <h3>Wellness Feeds Listing</h3>
+                                        <h3 class="m_t_0"></h3>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 four_member">
+
+                                    <a class="thumbnail" href="{% url 'health-listing' %}">
+
+                                        <span class="label label-warning"></span>
+                                        <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+
+                                      <h3>Health Feeds Listing</h3>
+                                        <h3 class="m_t_0"></h3>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 four_member">
+                                    <a class="thumbnail" href="{% url 'users_doctorsfeed_listing' %}">
+                                        <span class="label label-warning"></span>
+                                        <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                        <h3>Doctor's Feed</h3>
+                                        {#  <h3 class="m_t_0">{{  }}</h3> #}
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                                {% if request.user|can_view_caller_disease or request.user|can_view_review_disease %}
+                                <div class="col-md-3 four_member">
+                                        <a class="thumbnail" {% if request.user.is_superuser %}href="{% url 'disease-management' %}" {% else %}href="{% url 'disease-listing' %}"{% endif %}>
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Disease Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+                                     <div class="col-md-3 four_member">
+                                        <a class="thumbnail" {% if request.user.is_superuser %}href="{% url 'symptoms-management' %}" {% else %}href="{% url 'symptoms-listing' %} "{% endif %}>
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Symptoms Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" {% if request.user.is_superuser %}href="{% url 'drug-management' %}" {% else %}href="{% url 'drug-listing' %} "{% endif %}>
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Drug Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+                                    {% endif %}
+
+
+
+                                {#   This for Block can view caller and review   #}
+
+                                    {# checks below added by Nishank #}
+
+                                {% if request.user|can_view_caller_doctor or request.user|can_view_review_doc_org  %}
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'doctor-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Doctors Listing</h3>
+                                            <h3 class="m_t_0">{{ all_doctor }}</h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'live_doctor_new_registrations_listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Live Doc Listing</h3>
+                                            <h3 class="m_t_0">{{ all_doctor }}</h3>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_caller_doctor or request.user|can_view_review_doc_org  %}
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'organisation-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                            <h3>Organisation Listing</h3>
+                                            <h3 class="m_t_0">{{ all_organisation }}</h3>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_caller_doctor or request.user|can_view_review_doc_org  %}
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'live-organisation-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                            <h3>Live Organisation Listing</h3>
+                                            <h3 class="m_t_0">{{ all_organisation }}</h3>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_caller_physio_rehab or request.user|can_view_review_physio_rehab  %}
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'rehab-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                            <h3>Rehab Listing</h3>
+                                            <h3 class="m_t_0">{{ all_rehab_center }}</h3>
+                                        </a>
+                                    </div>
+
+                                {% endif %}
+                                {% if request.user|can_view_caller_path or request.user|can_view_review_pathlab  %}
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'lab-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Lab Listing</h3>
+                                            <h3 class="m_t_0">{{ all_lab }}</h3>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_caller_bloodbank or request.user|can_view_review_bloodbank  %}
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'bloodbank-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Blood Bank Listing</h3>
+                                            <h3 class="m_t_0">{{ all_bloodbank }}</h3>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_caller_ambulance or request.user|can_view_review_ambulance  %}
+                                     <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'ambulance-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Ambulance Listing</h3>
+                                            <h3 class="m_t_0">{{ all_bloodbank }}</h3>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_caller_pharma or request.user|can_view_review_pharma  %}
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'pharmacy-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Pharmacy Listing</h3>
+                                            <h3 class="m_t_0">{{ all_pharmacy }}</h3>
+                                        </a>
+                                    </div>
+                                {% endif %}
+
+                                    {#                                    <div class="col-md-3 four_member">#}
+                                    {#                                        <a class="thumbnail">#}
+                                    {#                                            <span class="label label-warning"></span>#}
+                                    {#                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>#}
+                                    {#                                            <h3>Total Doctors</h3>#}
+                                    {#                                            <h3 class="m_t_0">{{ all_doctor }}</h3>#}
+                                    {#                                        </a>#}
+                                    {#                                    </div>#}
+
+                                {# Edited by Nishank 1SEP. #}
+                                {% if request.user|is_service_caller or request.user|is_service_reviewer %}
+                                    <div class="col-md-3 four_member">
+
+                                         <a class="thumbnail"  href=" {% url 'plan-name-listing' %}"   >
+
+
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+
+                                            <h3>Service Plan Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+									<div class="col-md-3 four_member">
+
+                                         <a class="thumbnail"  href=" {% url 'home-service-plan-listing' %}"   >
+
+
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+
+                                            <h3>Home Service  Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+
+                                        <a class="thumbnail" href="{% url 'life-service-plan-listing' %}">
+
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+
+                                            <h3>Life Service Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+
+                                        <a class="thumbnail" href="{% url 'enterprise-service-plan-listing' %}">
+
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+
+                                           <h3>Enterprise ServiceListing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+                                {% endif %}
+
+
+                                {% if request.user|can_view_caller_nurse_bureau or request.user|can_view_reviewer_nurse_bureau %}
+                                <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'nurse_bureau-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Nurse Bureau Listing</h3>
+                                            <h3 class="m_t_0">{{ all_doctor }}</h3>
+                                        </a>
+                                    </div>
+                                {% endif %}
+
+                                {% if request.user|can_view_caller_dietitian or request.user|can_view_reviewer_dietitian  %}
+
+                                     <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'dietitian-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Dietitian Management</h3>
+                                            <h3 class="m_t_0">{{ all_dietitian }}</h3>
+                                        </a>
+                                    </div>
+
+                                {% endif %}
+
+                                {% if request.user|can_view_caller_therapist or request.user|can_view_reviewer_therapist  %}
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'therapist-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Therapist Management</h3>
+                                            <h3 class="m_t_0">{{ all_therapist }}</h3>
+                                        </a>
+                                    </div>
+                                {% endif %}
+
+                                {% if request.user|can_view_publisher %}
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-doctor-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Doctor Management</h3>
+                                            <h3 class="m_t_0">{{ all_doctor }}</h3>
+                                        </a>
+                                    </div>
+
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-live-doctor-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Live Docs Management</h3>
+                                            <h3 class="m_t_0">{{ all_doctor }}</h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-organisation-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                            <h3>Organisation Management</h3>
+
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-live-organisation-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                            <h3>Live Organisation Management</h3>
+
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'get-publish-global-feed' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                            <h3>Global Feeds Management</h3>
+                                        </a>
+                                    </div>
+
+                                       <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'get-publish-wellness-feed' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                            <h3>Wellness Feeds Management</h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'get-publish-health-feed' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                            <h3>Health Feeds Management</h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-lab-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Lab Listing</h3>
+
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-bloodbank-listing' %}">
+                                           {% comment %} <span class="label label-warning">4</span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Total BloodBanks</h3>
+                                            <h3 class="m_t_0">{{ all_bloodbank }}</h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-ambulance-listing' %}">
+                                            <{% comment %}span class="label label-warning"></span>{% endcomment %}
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Ambulance Listing</h3>
+                                            <h3 class="m_t_0">{{ all_bloodbank }}</h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-pharmacy-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Pharmacy Listing</h3>
+                                            <h3 class="m_t_0">{{ all_pharmacy }}</h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                         <a class="thumbnail"  href=" {% url 'publisher-homeplan-listing' %}"   >
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Home Service  Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-lifeplan-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                            <h3>Life Service Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-enterpriseplan-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                                           <h3>Enterprise ServiceListing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-rehab-listing' %} ">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                           <h3>Rehab Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-nurse_bureau-listing' %} ">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/hospital.png' %}"></figure>
+                                           <h3>Nurse Bureau Listing</h3>
+                                            <h3 class="m_t_0"></h3>
+                                        </a>
+                                    </div>
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-dietitian-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Dietitian Management</h3>
+                                            <h3 class="m_t_0">{{ all_dietitian }}</h3>
+                                        </a>
+                                    </div>
+
+
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher-therapist-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Therapist Management</h3>
+                                            <h3 class="m_t_0">{{ all_therapist }}</h3>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 four_member">
+                                        <a class="thumbnail" href="{% url 'publisher_doctorsfeed_listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Doctor's Feed</h3>
+                                            {#  <h3 class="m_t_0">{{  }}</h3> #}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+
+                    {% endblock %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!--CONTAINER END-->
+<style>.four_member a.thumbnail{min-height:290px;}</style>
+    <!--FOOTER START-->
+    <footer>
+        <div class="container m_t_30">
+            <p class="text-center">All Rights Reserved</p>
+        </div>
+    </footer>
+
+    <!--FOOTER END-->
+{% endblock %}

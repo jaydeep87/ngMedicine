@@ -1,0 +1,56 @@
+{% extends 'data_management/doctor_data/edit_doctor_data.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block doctor_data %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+<label style="margin-top: 20px;color: whitesmoke;">Gallery Images</label>
+<div class="overflow_hidden">
+{% if doctor_image_list %}
+    <form action="{% url 'doc_gallery_images_changes' i.id %}" method="post" >
+    {% for ii in doctor_image_list %}
+        <div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">
+        <em><input type="checkbox"  class="custom_position" value="{{ ii.id }}" name="Images">
+        <label for="custom_checkbox" class="custom_img"></label>
+        </em>
+            <img style="width:100%; height: 200px;" class="img-thumbnail img_100" src="{{ hostport }}{{ ii.name }}" alt="Image" title="Image">
+
+        <span>{% if ii.publish %}Published{% else %}Not Published{% endif %}</span>
+
+        </div>
+    {% endfor %}
+        <div class="col-md-12 clearfix text-center" style="padding-top: 40px;"><button type="submit" class="btn btn-default bg_ccc p_lr_60 bg_d0d0d0" name="delete">Delete Selected Photos</button></div>
+        <div class="col-md-12 clearfix text-center" style="padding-top: 40px;"><button type="submit" class="btn btn-default bg_ccc p_lr_60 bg_d0d0d0" name="publish">Publish Selected Photos</button></div>
+        <div class="col-md-12 clearfix text-center" style="padding-top: 40px;"><button type="submit" class="btn btn-default bg_ccc p_lr_60 bg_d0d0d0" name="unpublish">Un-Publish Selected Photos</button></div>
+
+</form>
+{% else %}
+<div>No Image Found</div>
+{% endif %}
+
+<p>&nbsp;</p>
+<form action="{% url 'gallery_images_doctor' i.id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<div class="col-md-4 col-sm-4">
+<h5 class="font_weight_600">Upload Gallery Image</h5>
+<div class="m_tb_10"></div>
+<input id="galleryrImage" type="file" class="" name="galleryrImage">
+<button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload</button>
+<p>&nbsp;</p>
+</p>
+</div>
+
+</form>
+</div>
+</div>
+{% endblock %}
+
+<script type="text/javascript">
+    $("#check_All").change(function () {
+    $(".checkk").prop('checked', $(this).prop("checked"));
+    });
+</script>

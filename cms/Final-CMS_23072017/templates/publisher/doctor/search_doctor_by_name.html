@@ -1,0 +1,55 @@
+<div class="table-responsive table_modify_for_all p_tb_10">
+    <table class="table table-bordered m_b_0">
+        <thead class="bg_ededed">
+        <tr>
+            <th><input id="checkAll" type="checkbox"/></th>
+            <th>Sr. No.</th>
+            <th>Name</th>
+            <th>Zone</th>
+            <th>Zone Location</th>
+            <th>Category</th>
+            <th>Current User</th>
+            <th>Stage</th><th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for d in doctor %}
+            <tr>
+                <td><input type="checkbox" value="{{ d.id }}"></td>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ d.name }}</td>
+                <td>{{ d.zone.name | capfirst}}</td>
+                <td>{{ d.zone_location.name | capfirst}}</td>
+                <td>{{ d.category.name }}</td>
+                <td>{{ d.current_user.username }}</td>
+                <td>{{ d.stage.stage_name }}</td><td>{{ d.createdAt }}</td>
+                            <td>{{ d.updatedAt }}</td>
+            {% if d.stage_id != 5 %}<td><a class="text_white" href="{% url 'doctor-listing-edit' d.id %}"><i
+                                        class="fa fa-edit"></i></a></td>
+               {% else %}
+               <td></td>
+               {% endif %}
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% if doctor %}
+    <div class="text-right">
+        <ul class="pagination">
+            {% if doctor.has_previous %}
+                <li class="prev"><a href="?page={{ doctor.previous_page_number }}{% if search_name %}&search_name={{ search_name }}{% endif %}">Prev</a></li>
+            {% endif %}
+            <li><a href="">Page {{ doctor.number }} of {{ doctor.paginator.num_pages }}</a></li>
+
+            {% if doctor.has_next %}
+                <li class="next"><a href="?page={{ doctor.next_page_number }}{% if search_name %}&search_name={{ search_name }}{% endif %}">Next</a></li>
+            {% endif %}
+        </ul>
+    </div>
+{% endif %}
+
+
+</div>

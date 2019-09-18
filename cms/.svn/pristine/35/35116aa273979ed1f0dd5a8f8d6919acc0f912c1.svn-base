@@ -1,0 +1,74 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+   id="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+<!--Right Start-->
+<div class="table-responsive table_modify_for_all p_tb_10">
+      <table class="table table-bordered m_b_0">
+         <thead class="bg_ededed">
+            <tr>
+               <th>Sr. No.</th>
+               <th style="min-width: 95px;">Action</th>
+               <th style="min-width: 120px;">Model</th>
+               <th>Model ID</th>
+               <th style="min-width: 120px;">Event Date</th>
+               <th>Error Recorded</th><th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+               <th>Delete</th>
+            </tr>
+         </thead>
+         <tbody>
+         {% if log_list %}
+
+            {% for d in log_list %}
+            <tr>
+               <td>{{ forloop.counter }}</td>
+               <td>{{ d.action }}</td>
+               <td>{{ d.model_type | capfirst}}</td>
+               <td>{{ d.model_instance_id | capfirst}}</td>
+               <td>{{ d.date_n_time | capfirst}}</td>
+               <td>{{ d.error_message }}</td><td>{{ d.createdAt }}</td>
+                            <td>{{ d.updatedAt }}</td>
+               <td>
+                   <a class="btn btn-danger btn-sm p_0" href="{% url 'delete-error-log' d.id %}">
+                       <i class="fa fa-trash-o text-danger fa-fw text_white">
+                       </i>
+                   </a>
+               </td>
+             </tr>
+            {% endfor %}
+
+         {% else %}
+             <tr>
+                 <td></td>
+                 <td></td>
+                 <td>No Error Log for Bloodbank could be found </td>
+                 <td></td>
+                 <td></td>
+                 <td></td>
+                 <td></td>
+             </tr>
+         {% endif %}
+         </tbody>
+      </table>
+      {% if log_list %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if log_list.has_previous %}
+            <li class="prev"><a href="?page={{ log_list.previous_page_number }}">Prev</a> </li>
+            {% endif %}
+            <li><a href="">Page {{ log_list.number }} of {{ log_list.paginator.num_pages }}</a> </li>
+            {% if log_list.has_next %}
+            <li class="next"><a href="?page={{ log_list.next_page_number }}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+   </div>
+
+{% endblock %}

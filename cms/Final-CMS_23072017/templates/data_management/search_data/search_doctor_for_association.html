@@ -1,0 +1,51 @@
+{% load template_tag %}
+<div id="jd" class="table-responsive table_modify_for_all">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th><input id="checkAll" type="checkbox"/></th>
+            <th>Sr.No.</th>
+            <th>Doctor Name</th>
+            <th>Zone</th>
+            <th>Category</th>
+            <th>Specialty</th>
+            <th>Registration No.</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Current User</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if doctor_data_obj %}
+        {% for i in doctor_data_obj %}
+            <tr>
+                <td><input type="checkbox" name="doctor_ids" value="{{ i.id }}">
+                </td>
+
+                <td>{{ forloop.counter }}</td>
+                <td>{{ i.name | capfirst }}</td>
+                <td>{{ i.zone.name | capfirst }}</td>
+                <td>{{ i.category.name | capfirst }}</td>
+                <td>{{ i.speciality|speciality }}</td>
+                <td>{{ i.registration_data | capfirst }}</td>
+                <td>{{ i.createdAt }}</td>
+                <td>{{ i.updatedAt }}</td>
+                <td>{{ i.current_user.username | capfirst }}</td>
+
+            </tr>
+        {% endfor %}
+        {% else %}
+            <tr>
+            <td colspan="7"><b>Doctor's Name could not be found in system...<span
+                        class='fa fa-frown-o fa-lg'></span></b></td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+    <script>
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+    </script>
+
+</div>

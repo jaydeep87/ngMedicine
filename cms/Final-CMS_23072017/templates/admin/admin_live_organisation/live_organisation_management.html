@@ -1,0 +1,39 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'live-organisation-by-users' %}">
+
+<figure><img src="{% static 'images/hospital.png' %}"></figure>
+<h3>Live Organisation by Users</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'live-organisation-by-stages' %}">
+<figure><img src="{% static 'images/hospital.png' %}"></figure>
+<h3>Live Organisation by Stages</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'live-organisation-assignment' %}">
+<figure><img src="{% static 'images/hospital.png' %}"></figure>
+<h3>Live Organisation To Assignment </h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'live-organisation-notification' %}">
+<figure><img src="{% static 'images/hospital.png' %}"></figure>
+<h3>Live Organisation Notification</h3>
+</a>
+</div>
+
+</div>
+
+</div>
+{% endblock %}

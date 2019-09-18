@@ -1,0 +1,16 @@
+{% extends 'index/index.html' %}
+{% load staticfiles%}
+{%  block login_form %}
+
+<!--FORGOT PASSWORD START-->
+<div>
+<form role="form" class="form-group-lg">
+<div class="form-group">
+<label class="font_weight_400">User Name or Email</label>
+<input type="text" class="form-control" placeholder="user Name or Email" autofocus="autofocus">
+</div>
+<p class="m_t_20"><button type="submit" class="btn btn-info btn-lg">Go</button></p>
+</form>
+</div>
+<!--FORGOT PASSWORD END-->
+{% endblock %}

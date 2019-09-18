@@ -1,0 +1,295 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+{% endif %}
+
+    <div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+    <div class="well well-sm text_logo font_weight_600"><i class="fa fa-flask fa-fw"></i> {{admin_action}} Symptom <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info btn-sm pull-right"
+                       style="margin-top: -5px;">Go Back</a></div>
+        <div class="row">
+{#            <hr>#}
+            <!--LEFT PANEL START-->
+            <form method="post" {% if admin_action == 'Add' %}action="{% url 'symptoms_search_master_add' %}"{% else %}action="{% url 'symptoms_search_master_edit' type_obj.id %}"{% endif %}>
+                {% csrf_token %}
+                <div class="col-md-6">
+
+                  <div class="form-group">
+                            <label>Symptom Name</label>
+                        <input type="text" class="form-control" {% if admin_action == 'Add' %}placeholder="Symptom Name"{% else %}value="{{ type_obj.name }}"{% endif %} name="name"<div class="form-group">
+
+                  </div>
+
+
+
+
+
+                   <input type="checkbox" name="active" {% if admin_action == 'Add' or type_obj.delete == False %} value = "11"  checked {% else %} value = '22' {% endif %} onclick="$(this).val(this.checked ? 11 : 22)"  > Active <br>
+
+
+                    {% if admin_action == 'Add' %}
+                        <div class="form-group">
+                        <label>Attach Doctor Categories</label>
+                        <select id="categories_doc" class="chosen-select" name="categories_doc" multiple>
+                            <option value="" disabled>--Select Type--</option>
+                            {% for cat in doctor_categories_master %}
+                                     <option value="{{ cat.id }}">{{ cat.name | capfirst}}</option>
+                            {% endfor %}
+                        </select>
+                        </div>
+                   {% else %}
+                       <div class="form-group">
+                        <label>Attach Doctor Categories</label>
+                        <select id="categories_doc" class="chosen-select" name="categories_doc" multiple>
+                            <option value="" disabled>--Select Type--</option>
+                            {% for cat in doctor_categories_master %}
+                                {% if cat.id|slugify in current_categories %}
+                                   <option value="{{ cat.id }}" selected>{{ cat.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ cat.id }}">{{ cat.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+
+                   {% endif %}
+
+                   <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                </div>
+                <!--RIGHT PANEL END-->
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //added by Jaydeep Verma
+
+            if ($('#home_sample_yes').val() == 'True') {
+                $('#home_sample_yes').prop('checked', true);
+            }
+            if ($('#home_sample_no').val() == 'True') {
+                $('#home_sample_no').prop('checked', true);
+            }
+
+            $('#home_sample_yes').click(function () {
+                $('#home_sample_yes').prop('checked', true);
+                $('#home_sample_no').prop('checked', false);
+                document.getElementById('home_sample_no').value = false
+            });
+            $('#home_sample_no').click(function () {
+                $('#home_sample_no').prop('checked', true);
+                $('#home_sample_yes').prop('checked', false);
+                document.getElementById('home_sample_yes').value = false
+            });
+
+
+            if ($('#ereport_yes').val() == 'True') {
+                $('#ereport_yes').prop('checked', true);
+            }
+            if ($('#ereport_no').val() == 'True') {
+                $('#ereport_no').prop('checked', true);
+            }
+
+            $('#ereport_yes').click(function () {
+                $('#ereport_yes').prop('checked', true);
+                $('#ereport_no').prop('checked', false);
+                document.getElementById('ereport_no').value = false
+            });
+            $('#ereport_no').click(function () {
+                $('#ereport_no').prop('checked', true);
+                $('#ereport_yes').prop('checked', false);
+                document.getElementById('ereport_yes').value = false
+            });
+
+        });
+    </script>
+    <!--Right End-->
+    <script type="application/javascript">
+        function ValidateMobileCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{10},)*\d{10}$/.test(value));
+            if (!check) {
+                alert("Please put correct 10 digit Mobile No");
+
+            }
+            return check
+
+        }
+        function ValidatePhoneCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8},)*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct 8 digitPhone No");
+
+            }
+            return check
+
+        }
+        function ValidateFax(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8})*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct Fax No");
+
+            }
+            return check
+
+        }
+
+        function ValidatePincode(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{6})*\d{6}$/.test(value));
+            if (!check) {
+                alert("Please put correct Pin Code No");
+
+            }
+            return check
+
+        }
+
+        function validateMyForm() {
+            var mobile = ValidateMobileCSV(document.getElementById('mobile').value);
+            var phone = ValidatePhoneCSV(document.getElementById('phone').value);
+            var fax = ValidateFax(document.getElementById('fax').value);
+            var pincode = ValidatePincode(document.getElementById('pincode').value);
+            var website = isValidURL(document.getElementById('website').value)
+            if (mobile && phone && pincode && fax && website) {
+                return true
+            }
+            return false
+        }
+
+        function isValidURL(url) {
+            if (!url) {
+                return true;
+            }
+            var RegExp = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+            if (RegExp.test(url)) {
+                return true;
+            } else {
+                alert("Please put valid website url");
+                return false;
+            }
+        }
+        $(document).ready(function () {
+            $("#city").chosen().change(function () {
+                var city = $('#city').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (city > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_city/',
+                        data: {action: "get_filter", city_id: city},
+                        beforeSend: function () {
+                            var text = 'Getting City  of ' + city + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.city_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.city_list.length != 0) {
+                                $("#city option").remove();
+                                $("#city").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select City--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#city").append(select);
+                                $("#city").val(key_sel);
+                                $("#city").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.city_list.length; i++) {
+                                    var option = '<option value=' + obj.city_list[i].id + '>' + obj.city_list[i].name + '</option>';
+                                    $("#city").append(option);
+                                    $("#city").trigger("chosen:updated")
+
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select city...")
+                }
+
+
+            });
+
+            $("#city").chosen().change(function () {
+                var city = $('#city').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (city > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_location/',
+                        data: {action: "get_filter", city_id: city},
+                        beforeSend: function () {
+                            var text = 'Getting Location of ' + city + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.location_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.location_list.length != 0) {
+                                $("#location option").remove();
+                                $("#location").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select Location--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#location").append(select);
+                                $("#location").val(key_sel);
+                                $("#location").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.location_list.length; i++) {
+                                    var option = '<option value=' + obj.location_list[i].id + '>' + obj.location_list[i].name + '</option>';
+                                    $("#location").append(option);
+                                    $("#location").trigger("chosen:updated")
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select City...")
+                }
+            });
+
+        });
+    </script>
+{% endblock %}

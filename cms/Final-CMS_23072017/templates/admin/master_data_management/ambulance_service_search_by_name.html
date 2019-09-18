@@ -1,0 +1,42 @@
+ <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Sr No</th>
+                        <th>Ambulance Service Name</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in ambulance_service_obj %}
+
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.name | capfirst }}</td>
+                            <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                            <td><a class="text_white" href="{% url 'ambulance_services_master_edit' i.id %}"><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.delete == False %}<a href="{% url 'any-master-object-deactivate' object_id=i.id object_type=41 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'any-master-object-activate' object_id=i.id object_type=41 %}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}</td>
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                {% if ambulance_service_obj %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if ambulance_service_obj.has_previous %}
+                                <li class="prev"><a href="?page={{ ambulance_service_obj.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ ambulance_service_obj.number }} of {{ ambulance_service_obj.paginator.num_pages }}</a></li>
+                            {% if ambulance_service_obj.has_next %}
+                                <li class="next"><a href="?page={{ ambulance_service_obj.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>

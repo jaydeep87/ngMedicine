@@ -1,0 +1,339 @@
+{% extends 'data_management/doctor_data/edit_doctor_data.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block doctor_data %}
+    <!--ONE START-->
+
+    <div class="border_5_light_white p_10" style="background:rgba(0,0,0,0.3);">
+        <fieldset {% if request.user|can_view_review %}{% endif %}>
+            <h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Organisation</h4>
+            <button data-target="#edu" data-toggle="collapse" class="btn btn-info" type="button"><i
+                    class="fa fa-plus fa-fw"></i> Add New <span class="caret"></span></button>
+        </fieldset>
+        <!--COLLAPSE START-->
+
+        <div id="edu" class="collapse">
+            <div class="row m_tb_10">
+                <h4 class="col-md-12 font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Filter
+                </h4>
+                <form action="{% url 'doctor-attach' i.id %}" method="get">
+                    <p class="col-md-12">
+                        <button type="submit" class="btn btn-info btn-sm">Apply</button>
+                        <a href="{% url 'doctor-attach' i.id %}" class="btn btn-warning btn-sm">Reset</a>
+
+                    </p>
+                    <div class="form-group col-md-6">
+                        <input type="hidden" value="on" name="filter_org">
+                        <label>City</label>
+                        <select class="chosen-select" name="city_id">
+                        <option value="">--- Select City ---</option>
+                            {% for i in city_obj %}
+                                <option value="{{ i.id }}"
+                                        {% if city_filter == i.id %}selected{% endif %}>{{ i.name|capfirst }}</option>
+                            {% endfor %}
+                        </select>
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Locality</label>
+                        <select class="chosen-select" name="locality_id" id="locality_id">
+                            <option value="">--- Select Location ---</option>
+                            {% if locality_filter %}
+                                {% for i in locality_obj %}
+                                <option value="{{ i.id }}" {% if locality_filter == i.id %}selected{% endif %}>{{ i.name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+
+                    </div>
+                </form>
+
+            </div>
+            <form method="post" action="{% url 'doctor-attach' i.id %}">
+                <div class="form-group m_t_10">
+                    <label>Organisation</label>
+                    <select id="h" class="chosen-select" name="organisation_name">
+                        <option value="" selected>--Select Organisation--</option>
+                        {% if all_organisation %}
+                            {% for i in all_organisation %}
+                                <option value="{{ i.id }}">{{ i.name }} | Address : {{ i.street }} | Current User
+                                    : {{ i.current_user.username|capfirst }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Type</label>
+
+                    <input type="text" value="" id="type"
+                           class="form-control" placeholder="Hospital or Clinic" readonly>
+
+
+                </div>
+
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" value="" id="street"
+                           class="form-control" placeholder="address" readonly>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" value="" id="city"
+                                   class="form-control" placeholder="City" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>State</label>
+                            <input type="text" value="" id="state"
+                                   class="form-control" placeholder="State" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Pin</label>
+                            <input type="text" value="" id="pin"
+                                   class="form-control" placeholder="Pin" readonly>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" value="" id="locality"
+                           class="form-control" placeholder="location" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Consultancy Fees</label>
+                    <input type="text" class="form-control" placeholder="Consultancy Fees" name="consultancy_fees">
+                </div>
+
+                <div class="row">
+                <div class="form-group col-md-12">
+                        <label>Departments</label>
+                        <select id="h" class="chosen-select" name="Departments_add_org" multiple>
+                            <option value="">--Select Organisation--</option>
+                            {% if all_departments %}
+                                {% for i in all_departments %}
+                                     <option value="{{ i.id }}">{{ i.name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                </div>
+                </div>
+
+
+                <div class="row">
+                      <div class="form-group col-md-6">
+                          <label>DID</label>
+                          <input type="text" maxlength="11" class="form-control" value="{{ i.did }}" placeholder="DID no" name="did">
+                      </div>
+
+                      <div class="form-group col-md-6">
+                          <label>Extension</label>
+                          <input type="text" maxlength="4" class="form-control" value="{{ i.extension }}" placeholder="Extension" name="extension">
+                      </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Email ID</label>
+                    <input type="email" id="email_organisation" class="form-control"
+                           placeholder="Email Organisation" readonly/>
+                </div>
+
+                <div class="form-group">
+                    <label>Emergency Contact No</label>
+                    <input type="tel" id="telephone_clinic" class="form-control" value=""
+                           placeholder="Emergency contact no" readonly/>
+                </div>
+
+
+                <p class="m_t_10">
+                    <button class="btn btn-primary" type="submit"><i></i> Save</button>
+                </p>
+            </form>
+        </div>
+
+        <!--COLLAPSE END-->
+
+        <div class="table_modify_for_all p_tb_10">
+            <table class="table table-bordered">
+                <thead class="bg_ededed">
+
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Organisation</th>
+                    <th>Address</th>
+                    <th>Type</th>
+                    <th>Locality</th>
+                    <th>Selected Departments</th>
+                    <th>Fee</th>
+                    <th>DID</th>
+                    <th>Extension</th>
+                    <th>Current User</th>
+                    {#                    <th>Email ID</th>#}
+                    {#                    <th>Emergency No</th>#}
+                    <th>Stage</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th class="col-md-2">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for j in organisation_doctor %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ j.organisation.name }}</td>
+                        <td>{{ j.organisation.street }}</td>
+                        <td>{% if j.organisation.is_hospital %}Hospital{% elif j.organisation.is_clinic %}
+                            Clinic{% endif %}</td>
+                        <td>{{ j.organisation.locality.name|capfirst }}</td>
+
+                        <td>
+
+                            <div class="form-group m_t_10">
+                                    <select id="h" class="chosen-select" name="Departments" multiple disabled >
+                                        <option value="">--Select Organisation--</option>
+                                        {% if all_departments %}
+                                            {% for i in all_departments %}
+                                                {% if i in j.department|get_current_departments %}
+                                                    <option value="{{ i.id }}"selected >{{ i.name }}</option>
+                                                {% else %}
+                                                    <option value="{{ i.id }}">{{ i.name }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                            </div>
+                        </td>
+
+
+                        <td>{{ j.consultancy_fee }}</td>
+                        <td>{{ j.did }}</td>
+                        <td>{{ j.extension }}</td>
+                        <td>{{ j.organisation.current_user.username|capfirst }}</td>
+                        <td>{{ j.organisation.stage.stage_name|capfirst }}</td>
+                        <td>{{ j.created_at }}</td>
+                        <td>{{ j.updatedAt }}</td>
+                        {#                        <td style=" word-break: break-all;">{{ j.organisation.email }}</td>#}
+                        {#                        <td>{{ j.organisation.emergency_no }}</td>#}
+
+                        <td>
+                            <a class="btn btn-default btn-sm p_0"
+                               href="{% url 'time-schedule-doctor' i.id  j.organisation.id %}"><i
+                                    class="fa fa-clock-o fa-fw text_333"></i></a>
+
+                            <span class="p_lr_5">|</span>
+
+                            <button class="btn btn-info btn-sm p_0" type="button" data-toggle="modal"
+                                    data-target="#{{ j.id }}"><i
+                                    class="fa fa-edit text-danger fa-fw text_white"></i></button>
+
+
+                            <span class="p_lr_5">|</span>
+                            <a class="btn btn-danger btn-sm p_0"
+                               href="{% url 'delete-organisation' j.organisation.id j.id %}"><i
+                                    class="fa fa-trash-o text-danger fa-fw text_white"></i></a>
+
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="{{ j.id }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+
+                                    <form role="form" action="{% url 'edit-attach-data' %}" method="post">
+                                        <div class="form-group m_t_10">
+                                            <input type="hidden" value="{{ j.id }}" class="form-control"
+                                                   name="attach_id">
+                                            <input type="text" placeholder="Consultancy Fess" class="form-control"
+                                                   value="{{ j.consultancy_fee }}" name="consultancy_fees" required>
+                                            <input type="text" placeholder="DID" class="form-control"
+                                                   value="{{ j.did }}" name="did" maxlength="11" >
+                                            <input type="text" placeholder="Extension" class="form-control"
+                                                   value="{{ j.extension }}" name="extension" maxlength="4" >
+
+
+                                            <div class="form-group m_t_10">
+                                                <label>Departments</label>
+                                                <select id="h" class="chosen-select" name="Departments" multiple>
+                                                    <option value="">--Select Organisation--</option>
+                                                    {% if all_departments %}
+                                                        {% for i in all_departments %}
+                                                            {% if i in j.department|get_current_departments %}
+                                                                <option value="{{ i.id }}"selected >{{ i.name }}</option>
+                                                            {% else %}
+                                                                <option value="{{ i.id }}">{{ i.name }}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </select>
+                                            </div>
+
+
+                                        </div>
+                                        <p class="m_t_10">
+                                            <button type="submit" class="btn btn-primary"><i></i> Update</button>
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i></i>
+                                                Cancel
+                                            </button>
+                                        </p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal_doctor" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                </div>
+                <div class="modal-body" id="add_data_un_publish_doctor">
+                    <h4 style="color: red"></h4>
+
+                    {#                  <div class="table-responsive table_modify_for_all p_tb_10">#}
+                    {#                                        <table class="table table-bordered m_b_0">#}
+                    {#                                            <thead class="bg_ededed">#}
+                    {#                                            <tr>#}
+                    {#                                                <th>Sr.No.</th>#}
+                    {#                                                <th>Doctor Name</th>#}
+                    {#                                                <th>Zone</th>#}
+                    {#                                                <th>Category</th>#}
+                    {#                                                <th>Specialty</th>#}
+                    {#                                                <th>Registration No.</th>#}
+                    {#                                            </tr>#}
+                    {#                                            </thead>#}
+                    {#                                            <tbody>#}
+                    {#                                            </tbody>#}
+                    {#                                            </table>#}
+                    {#                      </div>#}
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+    <!--ONE END-->
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+
+<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'home-plan-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/clinic.png' %}"></figure>
+<h3>Home Service Plans</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'enterprise-plan-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/clinic.png' %}"></figure>
+<h3>Enterprise Service Plans</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'life-plan-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/clinic.png' %}"></figure>
+<h3>Life Service Plans</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+{% endblock %}

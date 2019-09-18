@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block login %}
+
+
+<div class="login_slowgan text-center">
+<p>&nbsp;</p>
+<p class="text-center"><a href="#"><img src="{% static 'images/hfu-logo.png' %}"></a></p>
+<h1>Welcome to  <span style="color:#F26932;">Data Portal</span></h1>
+</div>
+<p>&nbsp;</p>
+<div class="container login_panel">
+<div class="row">
+<div class="col-md-8">
+<div class="p_30">
+
+<ul class="nav nav-tabs nav-justified">
+<li {% if tab == 'admin_tab' %}class="active"{% endif %}><a href="{% url 'index-page' %}"><i class="fa fa-user-md"></i> Admin Login</a></li>
+<li {% if tab == 'user_tab' %} class="active"{% endif %}><a href="{% url 'user-page' %}"><i class="fa fa-user"></i> User Login</a></li>
+<li{% if tab == 'forgot_tab' %} class="active"{% endif %}><a href="{% url 'forgot-page' %}"><i class="fa fa-key"></i> Forgot Password</a></li>
+<li {% if tab == 'locate_tab' %} class="active"{% endif %}><a href="{% url 'locate_us-page' %}"><i class="fa fa-fax"></i> Locate Us</a></li>
+</ul>
+{% if messages %}
+    {% for message in messages  %}
+<div class="alert alert-danger m_tb_10" id="alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+<div class="tab-content p_t_20">
+<!--ADMIN LOGIN START-->
+    {% block login_form %}
+<div>      
+
+<form role="form" class="form-group-lg" action="{% url 'users-login' %}" method="post">
+    {% csrf_token %}
+<div class="form-group">
+    <input type="text" value="is_admin" name="user_type" hidden>
+<label class="font_weight_400">Admin Name:</label>
+<input type="text" class="form-control" placeholder="Admin User Name" name="username" autofocus="autofocus">
+</div>
+
+<div class="form-group">
+<label class="font_weight_400">Password:</label>
+<input type="password" class="form-control" placeholder="***********" name="password">
+</div>
+<p class="m_t_20"><button type="submit" class="btn btn-info btn-lg">Login</button></p>
+</form>
+
+
+
+</div>
+        {% endblock %}
+<!--ADMIN LOGIN END-->
+
+
+</div>
+
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="panel panel-default m_t_30" style="opacity:0.6;">
+<h3 class="m_t_0 p_l_15 panel-heading text-center">Connect With Us</h3>
+<div class="m_tb_10">
+<a href="#" class="social_media">
+<span class="fa-stack fa-lg fa-4x">
+  <i class="fa fa-square-o fa-stack-2x"></i>
+  <i class="fa fa-facebook fa-stack-1x"></i>
+</span>
+</a>
+
+<a href="#" class="social_media">
+<span class="fa-stack fa-lg fa-4x">
+  <i class="fa fa-square-o fa-stack-2x"></i>
+  <i class="fa fa-twitter fa-stack-1x"></i>
+</span>
+</a>
+
+<a href="#" class="social_media">
+<span class="fa-stack fa-lg fa-4x">
+  <i class="fa fa-square-o fa-stack-2x"></i>
+  <i class="fa fa-linkedin fa-stack-1x"></i>
+</span>
+</a>
+
+<a href="#" class="social_media">
+<span class="fa-stack fa-lg fa-4x">
+  <i class="fa fa-square-o fa-stack-2x"></i>
+  <i class="fa fa-google-plus fa-stack-1x"></i>
+</span>
+</a>
+
+</div>
+</div>
+
+</div>
+</div>
+</div>
+    <script>
+$('#alert').fadeIn().delay(2000).fadeOut('slow');
+    </script>
+
+{% endblock %}

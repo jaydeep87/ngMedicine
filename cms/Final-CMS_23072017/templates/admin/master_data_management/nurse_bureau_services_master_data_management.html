@@ -1,0 +1,80 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+        {% block table %}
+
+           <p class="text-right"><a href="{% url 'nurse_bureau_services_master_add' %}" class="btn btn-info"><i class="fa fa-user fa-fw"></i> Add New Nurse Bureau Service</a>
+
+           </p>
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Sr No</th>
+                        <th>Nurse Bureau Service Name</th>
+                        <th>Disabled</th>
+                        <th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+                        <th>Action</th>
+
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in nurse_bureau_services_master %}
+
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.name | capfirst }}</td>
+                            <td>{{ i.delete | capfirst}}</td>
+                            <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+
+
+                            <td><a class="text_white" href="{% url 'nurse_bureau_services_master_edit' i.id %}"><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.delete == False %}<a href="{% url 'any-master-object-deactivate' object_id=i.id object_type=43 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'any-master-object-activate' object_id=i.id object_type=43 %}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}</td>
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                {% if nurse_bureau_services_master %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if nurse_bureau_services_master.has_previous %}
+                                <li class="prev"><a href="?page={{ nurse_bureau_services_master.previous_page_number }}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ nurse_bureau_services_master.number }} of {{ nurse_bureau_services_master.paginator.num_pages }}</a></li>
+                            {% if nurse_bureau_services_master.has_next %}
+                                <li class="next"><a href="?page={{ nurse_bureau_services_master.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        {% endblock %}
+    </div>
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                Searchnurse_bureau_services_master({{ request.user.id }})
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+        {% block table %}
+            <div class="row m_0 m_b_10">
+                <div class="col-md-6">
+                     <div class="input-group">
+                        <input type="text" placeholder="Search | State Name" class="form-control" id="search"
+                               autofocus="autofocus">
+                        <span class="input-group-btn"> <button  class="btn btn-default"
+                                                               onclick="SearchstatemasterByName()"  id = "sbutton" value=""> Search</button></span>
+                     </div>
+                </div>
+                 <div class="col-md-6 text-right" style="width: 350px;" >
+                    <button class="btn btn-success" type="button" onclick="PublishForMaster('publish','statemaster')">Publish</button>
+                    <button class="btn btn-danger" type="button" onclick="PublishForMaster('un-publish','statemaster')">Un publish</button>
+                    <button class="btn btn-warning" type="button" onclick="PublishForMaster('publish','statemaster')">Re publish</button>
+                 </div>
+                 <p class="text-right"><a href="/master/add/master_state/" class="btn btn-info"><i class="fa fa-user fa-fw"></i> Add New State</a>
+            </div>
+           </p>
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th><input id="checkAll" type="checkbox"/></th>
+                        <th>Sr No</th>
+                        <th>State Name</th>
+                        <th>Country</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in state_obj %}
+
+                        <tr>
+                            <td><input type="checkbox" value="{{ i.id }}"></td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.name | capfirst }}</td>
+                            <td>{{ i.countrymaster | capfirst}}</td>
+                            <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                            <td><a class="text_white" href="{% url 'edit_master_state' i.id %}"><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.deletee == False %}<a href="{% url 'manage-master-deactivate' object_id=i.id object_type=63 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'manage-master-activate' object_id=i.id object_type=63 %}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}</td>
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                {% if state_obj %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if state_obj.has_previous %}
+                                <li class="prev"><a href="?page={{ state_obj.previous_page_number }}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ state_obj.number }} of {{ state_obj.paginator.num_pages }}</a></li>
+                            {% if state_obj.has_next %}
+                                <li class="next"><a href="?page={{ state_obj.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        {% endblock %}
+    </div>
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchstatemasterByName({{ request.user.id }})
+            }
+        }
+    </script>
+    <script>
+
+        $("#checkAll").change(function () {
+        $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+
+        function PublishForMaster(action,type){
+               var checkedValues = $('input:checkbox:checked').map(function () {
+                   return this.value;
+               }).get();
+
+               var formDATA = {};
+               checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+
+
+               if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+                   alert("Please select value....");
+                   return false;
+               }
+               formDATA.checkedValues = checkedValues;
+               formDATA.action = action;
+               formDATA.type = type;
+
+               if (formDATA.checkedValues != '') {
+                   $.ajax({
+                       type: 'POST', url: Domain + '{% url 'publish_unpublish_any_master_two' %}', data: formDATA, beforeSend: function () {
+                           var text = 'Please wait....';
+                           ajaxindicatorstart(text);
+                       },
+                       success: function (resData) {
+                           ajaxindicatorstop();
+                           resData = JSON.parse(resData);
+                           if (resData.Redirect == true) {
+                               alert(resData.Message);
+                               window.location = resData.RedirectUrl;
+                           }
+                           else {
+
+                               alert(resData.Message);
+                               window.location.reload(true);
+                           }
+                       },
+                       error: function(data){
+                           alert('Something Bad Happened');
+                           location.reload();
+                       }
+                   });
+               }
+               else
+               {
+                   alert("Please select Doctors.")
+               }
+
+        }
+    </script>
+{% endblock %}

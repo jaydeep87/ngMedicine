@@ -1,0 +1,66 @@
+{% load template_tag %}
+<div class="table-responsive table_modify_for_all">
+<table class="table table-bordered">
+<thead>
+<tr>
+    <th><input id="checkAll" type="checkbox"/></th>
+<th>Sr No</th>
+<th>Organisation Name</th>
+    <th>Type</th>
+<th>Stage</th>
+<th>City</th>
+<th>Locality</th>
+<th>Current User</th>
+    <th>Created At</th>
+                    <th>Updated At</th>
+<th style="min-width:150px;">Action</th>
+</tr>
+</thead>
+<tbody>
+{% if organisation_data_obj %}
+{% for l in organisation_data_obj %}
+
+<tr>
+<td><input type="checkbox" value="{{ l.id }}"></td>
+<td>{{ forloop.counter }}</td>
+<td>{{ l.name }}</td>
+<td> {% if l.is_hospital %}Hospital{% elif l.is_clinic %}Clinic{% endif %}</td>
+<td>{{ l.stage.stage_name | capfirst}}</td>
+<td>{{ l.city.name | capfirst}}</td>
+<td>{{ l.locality.name | capfirst}}</td>
+<td>{{ l.current_user.username | capfirst}}</td>
+<td>{{ l.created_at }}</td>
+<td>{{ l.updatedAt }}</td>
+<td>
+    <a class="btn btn-default btn-sm p_0"
+                                    href="{% url 'time-schedule-hospital' l.id %}"><i
+                                    class="fa fa-clock-o fa-fw text_333"></i></a>
+                            <span class="p_lr_5">|</span>
+    <a class="text_white" href="{% url 'organisation-listing-edit' l.id %}?tab=1"><i class="fa fa-edit"></i></a>
+    {% if request.user|is_doctor_reviewer %}| <a href="{% if l.is_disable %}{% url 'organisation-data-enable' l.id %}{% else %}{% url 'organisation-data-deactivate' l.id %}{% endif %}"
+class="btn btn-default btn-sm">{% if l.is_disable %}Enable {% else %}Disable {% endif %}</a> {% endif %}
+
+</td>
+</tr>
+
+{% endfor %}
+{% else %}
+<tr><td colspan="8"><b>Organisation's Name could not be found in system...<span class='fa fa-frown-o fa-lg'></span></b></td></tr>
+{% endif %}
+</tbody>
+
+</table>
+{% if organisation_data_obj %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if organisation_data_obj.has_previous %}
+            <li class="prev"><a href="?page={{ organisation_data_obj.previous_page_number }}">Prev</a> </li>
+            {% endif %}
+            <li><a>Page {{ organisation_data_obj.number }} of {{ organisation_data_obj.paginator.num_pages }}</a> </li>
+            {% if organisation_data_obj.has_next %}
+            <li class="next"><a href="?page={{ organisation_data_obj.next_page_number }}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+</div>

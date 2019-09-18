@@ -1,0 +1,338 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    <div class="p_10 text_white" style="background: rgba(0,0,0,0.3);">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="well well-sm text_logo font_weight_600"><i class="fa fa-hospital-o fa-fw"></i> New Organisation</div>
+    <form action="{% url 'organisation-adding' %}" method="post">
+{#        <div class="p_tb_10">#}
+{#            <label class="checkbox-inline font_weight_600"><input type="checkbox" data-unchecked="0" value="1"#}
+{#                                                                  id="is_hospital" name=hospital_is> Is#}
+{#                Hospitals</label>#}
+{#            <label class="checkbox-inline font_weight_600"><input type="checkbox" id="is_clinical" data-unchecked="0"#}
+{#                                                                  value="1" name=clinical>Is Clinic</label>#}
+{#        </div>#}
+
+        <div class="row">
+            <!--LEFT PANEL START-->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <input type="hidden" class="form-control" value="" name="organisation_hidden">
+                    <label>Name*</label>
+                    <input type="text" class="form-control" value="" name="name" required="true">
+                </div>
+
+
+                <div class="form-group">
+                    <label>Address*</label>
+                                    <textarea class="form-control" placeholder="Street" required="true"
+                                              name="street"
+                                              {% if request.user.is_staff %}readonly{% endif %}></textarea>
+                </div>
+                <!--<div class="form-group">
+                    <label>Country</label>
+                    <select class="chosen-select" name="country_id"
+                     required="true">
+                       <!--<option value="{{ country.id }}" selected>{{ country }}</option>
+                        {#                                        {% for countryone in country %}#}
+                        {#                                            {% if country_id == countryone.id %}#}
+                        {#                                                <option value="{{ countryone.id }}"#}
+                        {#                                                        selected>{{ countryone.name }}</option>#}
+                        {#                                            {% else %}#}
+                        {#                                                <option value="{{ countryone.id }}">{{ countryone.name }}</option>#}
+                        {#                                            {% endif %}#}
+                        {#                                        {% endfor %}#}
+                    </select>
+                </div>!-->
+                <div class="form-group">
+                    <label>Country*</label>
+                    <select class="chosen-select" name="country_id" required="true"
+                            {% if request.user.is_staff %}DISABLED{% endif %}>
+                        <option value="">--Select Country--</option>
+                        {% for countryone in country %}
+                            {% if a.country_id == countryone.id %}
+                                <option value="{{ countryone.id }}" selected>{{ countryone.name }}</option>
+                            {% else %}
+                                <option value="{{ countryone.id }}">{{ countryone.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+
+
+
+                <div class="form-group">
+                    <label>State*</label>
+                    <select class="chosen-select" name="state_id" required="true"
+                            {% if request.user.is_staff %}DISABLED{% endif %}>
+                        <option value="">--Select State--</option>
+                        {% for stateone in state %}
+                            {% if a.state_id == stateone.id %}
+                                <option value="{{ stateone.id }}" selected>{{ stateone.name }}</option>
+                            {% else %}
+                                <option value="{{ stateone.id }}">{{ stateone.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>City*</label>
+                    <select class="chosen-select" name="city_id"
+                            {% if request.user.is_staff %}DISABLED{% endif %} required="true">
+                        <option value="">--Select City--</option>
+                        {% for cityone in city %}
+                            {% if a.city_id == cityone.id %}
+                                <option value="{{ cityone.id }}" selected>{{ cityone.name }}</option>
+                            {% else %}
+                                <option value="{{ cityone.id }}">{{ cityone.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Location*</label>
+                    <select class="chosen-select" name="locality_id" id="locality_id" required="true"
+                            {% if request.user.is_staff %}DISABLED{% endif %}>
+                        <option value="">--Select Location--</option>
+                        {% for localityone in locality %}
+                            {% if a.locality_id == localityone.id %}
+                                <option value="{{ localityone.id }}"
+                                        selected>{{ localityone.name }}</option>
+                            {% else %}
+                                <option value="{{ localityone.id }}">{{ localityone.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="clearfix"></div>
+                    <div class="form-group">
+                    <label class="checkbox-inline">
+
+                                            <input style="width: 20px; height:20px;" type="checkbox" name="is_emergency"
+                                                       {% if organisation.is_emergency %}value="1" checked {% else %}value="0"
+                                                {% endif %}
+                                                onclick="$(this).attr('value', this.checked ? 1 : 0)">
+                        <span class="p_l_15" style="color:red;"> Emergency Services Available</span>
+                        </label>
+
+
+                    </div>
+{#                <div class="form-group">#}
+{#                    <label>Pin Code</label>#}
+{#                    <input type="text" class="form-control" name="pincode" placeholder="Pin Code" id="pincode"#}
+{#                           onchange="ValidatePincode(this.value)" name="pincode_id"#}
+{#                           value=""#}
+{#                           {% if request.user.is_staff %}readonly{% endif %}>#}
+{#                </div>#}
+
+
+            </div>
+
+            <!--LEFT PANEL END-->
+
+            <!--RIGHT PANEL START-->
+{#            <div class="col-md-6">#}
+{#                <div class="form-group">#}
+{#                    <label>Phone</label>#}
+{#                    <input type="text" class="form-control" id="phone" name="phone"#}
+{#                           onchange="ValidatePhoneCSV(this.value)"#}
+{#                           value="" placeholder="Phone"#}
+{#                           {% if request.user.is_staff %}readonly{% endif %}>#}
+{#                </div>#}
+{##}
+{##}
+{#                <div class="form-group">#}
+{#                    <label>Email </label>#}
+{#                    <input type="email" class="form-control"#}
+{#                           value="" name="email"#}
+{#                           placeholder="Email" {% if request.user.is_staff %}readonly{% endif %}>#}
+{#                </div>#}
+{##}
+{#                <div class="form-group">#}
+{#                    <label>Fax </label>#}
+{#                    <input type="text" class="form-control" id="fax" onchange="ValidateFax(this.value)"#}
+{#                           name="fax" value="" placeholder="Fax"#}
+{#                           {% if request.user.is_staff %}readonly{% endif %}>#}
+{#                </div>#}
+{##}
+{#                <div class="form-group">#}
+{#                    <label>Mobile </label>#}
+{#                    <input type="text" class="form-control" id="mobile"#}
+{#                           onchange="ValidateMobileCSV(this.value)" name="mobile_no"#}
+{#                           value="" placeholder="Moble"#}
+{#                           {% if request.user.is_staff %}readonly{% endif %}>#}
+{#                </div>#}
+{##}
+{#                <div class="form-group">#}
+{#                    <label>Website </label>#}
+{#                    <input type="text" class="form-control" name="website" id="website"#}
+{#                           onchange="isValidURL(this.value)"#}
+{#                           value="" placeholder="Website"#}
+{#                           {% if request.user.is_staff %}readonly{% endif %}>#}
+{#                </div>#}
+{##}
+{#                <div class="form-group">#}
+{#                    <label>Emergency Contact No </label>#}
+{#                    <input type="text" class="form-control" id="phone" name="emergency_no"#}
+{#                           onchange="ValidatePhoneCSV(this.value)"#}
+{#                           value=""#}
+{#                           placeholder="Emergency no"#}
+{#                           {% if request.user.is_staff %}readonly{% endif %}>#}
+{#                </div>#}
+{#                <div class="form-group">#}
+{#                    <div>#}
+{#                        <label>Latitude</label>#}
+{#                        <input type="text" class="form-control" name="lattitude"#}
+{#                               value="" placeholder="Latitude"#}
+{#                               {% if request.user.is_staff %}readonly{% endif %}>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <!--Start-->#}
+{##}
+{#                <!--End-->#}
+{##}
+{#                <!--Start-->#}
+{#                <div class="form-group">#}
+{#                    <div>#}
+{#                        <label>Longitude</label>#}
+{#                        <input type="text" class="form-control"#}
+{#                               value="" name="longitude"#}
+{#                               placeholder="Longitude" {% if request.user.is_staff %}readonly{% endif %}>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{##}
+{#            </div>#}
+            <!--RIGHT PANEL END-->
+
+            <div class="clearfix col-md-12 text-right">
+                <button class="btn btn-info" type="submit">Save</button>
+            </div>
+        </div>
+    </form>
+    </div>
+
+    <script type="application/javascript">
+        function ValidateMobileCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{10},)*\d{10}$/.test(value));
+            if (!check) {
+                alert("Please put correct Mobile No");
+
+            }
+            return check
+
+        }
+        function ValidatePhoneCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8},)*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct Phone No");
+
+            }
+            return check
+
+        }
+        function ValidateFax(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8})*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct Fax No");
+
+            }
+            return check
+
+        }
+
+        function ValidatePincode(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{6})*\d{6}$/.test(value));
+            if (!check) {
+                alert("Please put correct Pin Code No");
+
+            }
+            return check
+
+        }
+
+        function validateMyForm() {
+            var mobile = ValidateMobileCSV(document.getElementById('mobile').value);
+            var phone = ValidatePhoneCSV(document.getElementById('phone').value);
+            var fax = ValidateFax(document.getElementById('fax').value);
+            var pincode = ValidatePincode(document.getElementById('pincode').value);
+            var website = isValidURL(document.getElementById('website').value)
+            if (mobile && phone && pincode && fax && website) {
+                return true
+            }
+            return false
+        }
+
+        function isValidURL(url) {
+            if (!url) {
+                return true;
+            }
+            var RegExp = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+            if (RegExp.test(url)) {
+                return true;
+            } else {
+                alert("Please put valid website url");
+                return false;
+            }
+        }
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            var hospital = $('#is_hospital');
+            var clinical = $('#is_clinical');
+
+            hospital.click(function () {
+
+                if (!hospital.prop('checked')) {
+                    hospital.attr('checked', false);
+                    clinical.attr('checked', true);
+                }
+                else {
+                    hospital.attr('checked', true);
+                    clinical.attr('checked', false);
+                }
+
+            });
+            clinical.click(function () {
+
+                if (!clinical.prop('checked')) {
+                    hospital.attr('checked', true);
+                    clinical.attr('checked', false);
+                }
+                else {
+                    hospital.attr('checked', false);
+                    clinical.attr('checked', true);
+                }
+
+            });
+        });
+    </script>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    </script>
+
+{% endblock %}

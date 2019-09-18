@@ -1,0 +1,147 @@
+<div class="table-responsive table_modify_for_all p_tb_10">
+      <table class="table table-bordered m_b_0">
+
+         <tbody>
+         {% if feedback_obj %}
+
+                                     {% for i in feedback_obj %}
+                            <tr>
+                                <td style="background: #fff;">
+<style>.table_modify_for_all .table > tbody > tr > td{color:inherit;}</style>
+                                    <div class="row m_0">
+                                        <div class="row m_tb_30">
+                                              <div class="col-xs-12 border_bottom_1_ccc"> <a class="pull-left media_circle" style="padding-left:0;">Q</a>
+                                                    <!--<div class="media-body p_b_5">-->
+                                                    <div class="media-body p_b_5 text-left">
+
+                                                      <p class="text-muted"><label>Feedback Date & Time :</label><i class="fa fa-clock-o fa-fw"></i> {{ i.createdAt }}</p>
+
+                                                      <p class="text-muted" style="color:goldenrod"><b><label  >Rating : {{  i.rating }}</label></b></p>
+                                                      <p class="text-muted"><label>Title :</label>{{ i.title }}</p>
+                                                      <p class="text-muted"><label>Comment :</label>{{ i.comment }}</p>
+                                                      <p class="text-muted"><label>Verificatin Status :</label> {% if i.verified %}<span style="color: #2b542c"><b>Verified</b></span>{% else %}<span style="color: firebrick"><b>Not Verified</b></span>{% endif %}</p>
+
+                                                      <p><b>FEEDBACK FOR</b> : <b><a href ="{% url 'live_doctor_listing_edit' i.doctor_id %}?tab=1" target="_blank">View Doctor</a></b>
+                                                      <p><b>Patient Name</b> : {{ i.name }}</p>
+                                                      <p><b>Patient Contact No</b> : {{ i.mobileNo }}</p>
+                                                      <p><b>Patient Email</b> : {{ i.email }}</p>
+
+
+                                                      {% if not i.verified %}
+                                                        <form method="post" action="{% url 'approve_feedback' i.id %}">
+                                                        {% csrf_token %}
+
+                                                            <div class="form-group row m_0">
+                                                                <div class="col-xs-12 text-right"><button type="submit" class="btn btn-info">Approve</button></div>
+                                                            </div>
+                                                        </form>
+                                                      {% else %}
+                                                         <form method="post" action="{% url 'disapprove_feedback' i.id %}">
+                                                        {% csrf_token %}
+
+                                                            <div class="form-group row m_0">
+                                                                <div class="col-xs-12 text-right"><button type="submit" class="btn btn-info">Dis-Approve</button></div>
+                                                            </div>
+                                                        </form>
+                                                      {% endif %}
+                                                        </div>
+
+                                              </div>
+
+                                        </div>
+
+
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+
+         {% else %}
+             <tr><td>No Question Found</td></tr>
+         {% endif %}
+         </tbody>
+      </table>
+      {% if lab %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if lab.has_previous %}
+            <li class="prev"><a href="?page={{ lab.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Prev</a> </li>
+            {% endif %}
+            <li><a href="">Page {{ lab.number }} of {{ lab.paginator.num_pages }}</a> </li>
+            {% if lab.has_next %}
+            <li class="next"><a href="?page={{ lab.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+
+<script>
+   $("#checkAll").change(function () {
+       $("input:checkbox").prop('checked', $(this).prop("checked"));
+   });
+   var $rows = $('#table tr');
+   $('#search').keyup(function () {
+       var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+       $rows.show().filter(function () {
+           var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+           return !~text.indexOf(val);
+       }).hide();
+   });
+   $('#alert').fadeIn().delay(2000).fadeOut('slow');
+   /**
+    * publisher
+     * @constructor
+    */
+   function PublishForPublisher(type,data_type){
+       var checkedValues = $('input:checkbox:checked').map(function () {
+           return this.value;
+       }).get();
+       var formDATA = {};
+       checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+       if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+           alert("Please select value....");
+           return false;
+       }
+       formDATA.checkedValues = checkedValues;
+       formDATA.type = type;
+       formDATA.data_type = data_type;
+       if (formDATA.checkedValues != '') {
+           $.ajax({
+               type: 'POST', url: Domain + '{% url 'data-publish' %}', data: formDATA, beforeSend: function () {
+                   var text = 'Please wait....';
+                   ajaxindicatorstart(text);
+               },
+               success: function (resData) {
+                   ajaxindicatorstop();
+                   resData = JSON.parse(resData);
+                   if (resData.Redirect == true) {
+                       alert(resData.Message);
+                       window.location = resData.RedirectUrl;
+                   }
+                   else {
+
+                       alert(resData.Message);
+                       window.location.reload(true);
+                   }
+               },
+               error: function(data){
+                   alert('Something Bad Happened');
+                   location.reload();
+               }
+           });
+       }
+       else
+       {
+           alert("Please select labs.")
+       }
+
+   }
+
+
+</script>
+
+   </div>

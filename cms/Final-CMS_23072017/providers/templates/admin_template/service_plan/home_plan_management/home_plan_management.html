@@ -1,0 +1,40 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+
+{% if messages %}
+{% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<div>
+<div class="row">
+<div class="col-md-4 four_member">
+<a class="thumbnail" href=" {% url 'home-plan-by-users' %} ">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Home Plan by Users</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'home-plan-by-stages' %}">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Home Plan by Stages</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'home-plan-assignment' %}">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Home Plan Assignment </h3>
+</a>
+</div>
+
+
+</div>
+
+</div>
+{% endblock %}

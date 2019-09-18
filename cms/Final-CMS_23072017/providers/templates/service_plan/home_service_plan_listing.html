@@ -1,0 +1,103 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+{% if messages %}
+{% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+        <div class="row m_0">
+            <h4 class="font_weight_600 text_white m_t_0 cursor_pointers" data-toggle="collapse"
+                data-target="#select_filterss"><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion <span
+                    class="caret"></span></h4>
+            <div class="collapse" id="select_filterss">
+
+            </div>
+            <div class="col-sm-4 p_l_0">
+                <div class="input-group m_b_10">
+                    <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                    <span class="input-group-btn"> <button class="btn btn-default"
+                                                           onclick="SearchHomePlan({{ request.user.id }})"> Search</button></span>
+                </div>
+            </div>
+            {% if request.user|can_view_caller %}
+            <div class="col-sm-8"><p class="pull-right"><a class="btn btn-info" href="{% url 'home-service-plan-add' %}"><i
+                    class="fa fa-flask fa-fw"></i> Add New {{plan_type}} Service Plan</a></p></div>
+            {% endif %}
+        <input type="hidden" value="homeplan" id="xx" name ="yy">
+        {% include 'publisher/markascomplete.html' %}
+        </div>
+        <br>
+        {% block table %}
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                    <th><input id="checkAll" type="checkbox"/></th>
+                    <th>Sr No</th>
+                    <th>Service Plan Name</th>
+                    <th>Stage</th>
+                    <th>Provider Name</th>
+                    <th>Free Text</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+
+
+                </tr>
+                </thead>
+                <tbody>
+                {% if plan_list %}
+                    {% for plan in plan_list %}
+                        <tr>
+                        <td><input type="checkbox" value="{{ plan.id }}"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ plan.plan_name | capfirst }}</td>
+                        <td>{{ plan.stage.stage_name| capfirst }}</td>
+                        <td>{{ plan.provider.owner_name| capfirst }}</td>
+                        <td>{{ plan.free_text | capfirst }}</td>
+                        <td>{{ plan.createdAt }}</td>
+                        <td>{{ plan.updatedAt }}</td>
+
+                        {% if plan.stage_id != 5 %}<td><a class="text_white" href="{% url 'home-service-plan-edit' plan.id %}"><i
+                                    class="fa fa-edit"></i></a></td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                    {% endfor %}
+                    </tbody>
+                 {% endif %}
+                </table>
+                {% if plan_list %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if plan_list.has_previous %}
+                                <li class="prev"><a href="?page={{ plan_list.previous_page_number }}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ plan_list.number }} of {{ plan_list.paginator.num_pages }}</a></li>
+                            {% if plan_list.has_next %}
+                                <li class="next"><a href="?page={{ plan_list.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        {% endblock %}
+    </div>
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchPlans({{ request.user.id }})
+            }
+        }
+    </script>
+{% endblock %}

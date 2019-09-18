@@ -1,0 +1,31 @@
+{% extends 'global_search/doctor/doctor_global_search.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block doctor_data %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+<label style="margin-top: 20px;color: whitesmoke;">Please Select Telephonically Verified Fields</label>
+<div class="table table_modify_for_all p_tb_10">
+                <form method="post" action="{% url 'doctor_verified_fields' i.id %}">
+                    <select name="vfields" class="form-control chosen-select" multiple disabled>
+                        {% for iii in full_list %}
+                            {% if iii in verified_list %}
+                                <option value={{ iii }} selected>{{ iii }}</option>
+                            {% else %}
+                                <option value={{ iii }}>{{ iii }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+
+                </form>
+ </div>
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    </script>
+{% endblock %}

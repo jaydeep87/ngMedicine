@@ -1,0 +1,39 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+<ul class="nav nav-tabs">
+                    <li class="{% if tab_bb == '1' %}active{% endif %}"><a href="{% url 'bloodbank-listing-edit' bloodbank.id %}" >Bloodbank Info</a></li>
+                    <li class="{% if tab_bb == '2' %}active{% endif %}"><a href="{% url 'bloodbank_verified_fields' bloodbank.id %}" >Verified Fields</a></li>
+</ul>
+
+<label style="margin-top: 20px;color: black;">Please Select Telephonically Verified Fields</label>
+<div class="table table_modify_for_all p_tb_10">
+                <form method="post" action="{% url 'bloodbank_verified_fields' bloodbank.id %}">
+                    <select name="vfields" class="form-control chosen-select" multiple>
+
+                        {% for iii in full_list %}
+                            {% if iii in verified_list %}
+                                <option value={{ iii }} selected>{{ iii }}</option>
+                            {% else %}
+                                <option value={{ iii }}>{{ iii }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+
+
+                <button type="submit" class="btn btn-info m_tb_10">Save</button>
+                </form>
+ </div>
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    </script>
+{% endblock %}

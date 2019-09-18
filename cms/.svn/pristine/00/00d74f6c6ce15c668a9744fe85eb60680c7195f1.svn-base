@@ -1,0 +1,1538 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+{#        <div class="m_b_10 m_s_t_10">#}
+            {#      {% if doctor_add != 'add' %}#}
+{#            <button class="btn btn-info" type="button"><i class="fa fa-file-pdf-o fa-fw"></i> Print PDF</button>#}
+{#            <span class="btn btn-info" type="button"><i class="fa-fw"></i> {{ live_doctor.name | capfirst }}</span>#}
+{#            {% if live_doctor.free_text %}#}
+{#                <span style="padding: 4px; color:white; background-color: #9c9c9c; border-radius: 3px">Reviewer Remark : {{ live_doctor.free_text | capfirst }}</span>#}
+{#            {% endif %}#}
+{#        <span style="padding: 4px; color:white; background-color: #9c9c9c; border-radius: 3px"> Validation Mode: {{ live_doctor.resource_validate.name }}</span>#}
+
+            {#          {% endif %}#}
+
+
+
+        <div class="tab-content tb_five p_10" style="background:rgba(0,0,0,0.3);">
+
+            {% block doctor_data %}
+
+
+
+
+            {% endblock %}
+        </div>
+
+
+
+
+
+
+<div class="p_20 u_my_profile_tab">
+                <h1 class="m_0 text_blue">My Profile</h1>
+                <p>&nbsp;</p>
+                <ul class="nav nav-tabs nav-justified">
+                    <li {% if tab == '1' %}class="active"{% endif %}><a href="#basic_profiless" data-toggle="tab">Basic Profile</a></li>
+
+                </ul>
+<div class="tab-content">
+
+
+{# -----------------basic_profiless Tab start---1----------------------- #}
+
+<div class="tab-pane photo {% if tab  == '1' %} in active {% else %} fade {% endif %}" id="basic_profiless">
+
+
+
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Basic Details</span></h1>
+<p>&nbsp;</p>
+<!--ONE START-->
+
+<form action="{% url 'live_doctor_listing_add' %}?tab=1" method="post">
+
+<div class="row">
+<div class="col-md-5">
+<label>First Name<span style="color: red;size: 25px;">*</span> </label>
+<div class="form-group form-group-lg"><input type="text" class="form-control" placeholder="First Name" name="firstName" pattern="[a-zA-Z]+.{1,30}" title="At least one charecter needed"></div>
+<label>Last Name<span style="color: red;size: 25px;">*</span> </label>
+<div class="form-group form-group-lg"><input type="text" class="form-control" placeholder="Last Name" name="lastName" pattern="[a-zA-Z]+.{1,30}" title="At least one charecter needed"></div>
+
+{#    category_obj#}
+<label>Category<span style="color: red;size: 25px;">*</span> </label>
+<div class="form-group form-group-lg">
+<select id="category" class="chosen-select" name="category"
+                                        {% if request.user.is_staff %} disabled{% endif %}>
+                                    <option value="">--Select Category--</option>
+                                    {% if category_obj %}
+                                        {% for u in category_obj %}
+                                            <option value="{{ u.id }}">{{ u.name }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                            </select>
+
+</div>
+
+
+
+
+<div class="form-group multi_selections">
+    <label>New Service Offered Final</label>
+    <select id="serviceoffer3" name="serviceoffer3" class="form-control chosen-select"
+            multiple>
+        {% if service %}
+            {% for serviceOne in service %}
+                {% if serviceOne.id in selectedoffers %}
+                    <option value="{{ serviceOne.id }}"
+                            selected>{{ serviceOne.name }}</option>
+                {% else %}
+                    <option value="{{ serviceOne.id }}">{{ serviceOne.name }}</option>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </select>
+</div>
+
+</div>
+
+<div class="col-md-7">
+<div class="row">
+<div class="col-md-8">
+{#<div class="form-group form-group-lg m_0"><input type="text" placeholder="DOB" class="form-control" id="datetimepicker2"><br></div>#}
+<div class="form-group">
+    <label>DOB<span style="color: red;size: 25px;">*</span></label>
+    <input type="text"  class="form-control" name="DOB" required id="datePicker">
+</div>
+
+
+
+<div class="form-group">
+    <label>Gender:<span style="color: red;size: 25px;">*</span> </label>
+    <label class="radio-inline" style="padding-top: 0;">
+        <input type="radio" id="male" value="male" name="gender" > Male
+    </label>
+    <label class="radio-inline" style="padding-top: 0;">
+        <input type="radio" id="female" value="female" name="gender">
+        Female
+    </label>
+</div>
+
+
+</div>
+<div class="col-md-4"><div class="fileUpload">
+    <div class="thumbnail m_tb_10"><img src="imaespath" width="200" height="180"> </div>
+    <input type="file" class="upload" /></div>
+
+</div>
+</div>
+
+<div class="form-group">
+    <label>New Speciality Final</label>
+    <select id="specialty3" name="specialty3" class="form-control chosen-select" multiple>
+        {% if specialty %}
+            {% for sprecialtyOne in specialty %}
+                {% if sprecialtyOne.id in selectedspeciality %}
+                    <option value="{{ sprecialtyOne.id }}"
+                            selected>{{ sprecialtyOne.name }}</option>
+                {% else %}
+                    <option value="{{ sprecialtyOne.id }}">{{ sprecialtyOne.name }}</option>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </select>
+ </div>
+
+
+<div class="form-group">
+<label>Zone</label>
+   <select id="zone" class="chosen-select" name="zone">
+                    <!--{% if request.user.is_staff %} disabled{% endif %}>-->
+                <option value="">--Select Zone--</option>
+                {% if zone_obj %}
+                    {% for r in zone_obj %}
+                        <option value="{{ r.id }}">{{ r.name }}</option>
+                    {% endfor %}
+                {% endif %}
+   </select>
+</div>
+
+
+<div class="form-group">
+<label>Zone Location</label>
+    <select id="zone_location" class="chosen-select" name="zone_location">
+                <!--{% if request.user.is_staff %} disabled{% endif %}>-->
+            <option value="">--Select Zone Location--</option>
+            <option value=""></option>
+
+    </select>
+</div>
+
+<div class="form-group">
+    <label>DID</label>
+    <input type="text" maxlength="11" class="form-control" name="live_did" placeholder="DID" >
+</div>
+
+<div class="form-group">
+    <label>Extension</label>
+    <input type="text" maxlength="4" class="form-control" name="live_extension" placeholder="Extension">
+</div>
+
+
+
+</div>
+
+</div>
+<!--ONE END-->
+
+<p>&nbsp;</p>
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Contact Info</span></h1>
+<p>&nbsp;</p>
+<!--ONE START-->
+<div class="row">
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<input type="text" class="form-control" pattern = "^[1-9][0-9]*$" maxlength="10" minlength="10"  placeholder="Phone no" name = "phone">
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<input type="text" class="form-control" placeholder="Fax" name = "fax" maxlength="15" minlength="10" pattern="[^a-zA-Z]*" title="Only Numbers and Special Characters allowed ">
+</div>
+</div>
+
+</div>
+<!--ONE END-->
+
+<!--ONE START-->
+<div class="row">
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<label>Mobile no<span style="color: red;size: 25px;">*</span> </label>
+<input type="text" class="form-control" pattern = "^[1-9][0-9]*$" maxlength="10" minlength="10"  placeholder="Mobile no" name = "mobile">
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<input type="text" class="form-control" placeholder="Skype ID" name = "skype" pattern=".{8,50}"  title="8 to 50 characters">
+</div>
+</div>
+</div>
+<!--ONE END-->
+
+<!--ONE START-->
+<div class="row">
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<label>Email ID<span style="color: red;size: 25px;">*</span> </label>
+<input type="email" class="form-control" placeholder="Email ID" name = "email">
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<input type="email" class="form-control" placeholder="Secondary Email ID" name = "secondary_email">
+</div>
+</div>
+</div>
+<!--ONE END-->
+
+<!--ONE START-->
+<div class="row">
+<p>&nbsp;</p>
+<div class="col-md-8">
+<div class="row">
+<div class="col-sm-4 border_right_666_dash" style="height:100%;">
+<div class="thumbnail"><img src="images/upload_imaes.jpg" alt="Upload Image" title="Upload Image" class="cetner-block" style="height:100px; width:100%;"></div>
+<h3 class="p_tb_20 m_t_0"><i class="fa fa-upload fa-fw"></i> Upload Stamp :</h3>
+<input type="file"></h4>
+</div>
+<div class="col-sm-4">
+<div class="thumbnail"><img src="images/upload_imaes.jpg" alt="Upload Image" title="Upload Image" class="cetner-block" style="height:100px; width:100%;"></div>
+
+<h3 class="p_tb_20 m_t_0"><i class="fa fa-upload fa-fw"></i> Upload Signature :</h3>
+<input type="file"></h4>
+</div>
+
+</div>
+</div>
+<div class="col-md-4 form-group-lg text-right m_t_20">
+<label>Fields marked with<span style="color: red;size: 25px;">*</span>are mandatory</label>
+<button type="submit" class="btn btn-info btn-lg  p_lr_60" href="my_profile.html">Submit</button>
+</div>
+</div>
+<!--ONE END-->
+</form>
+
+</div>
+
+{# -----------------basic_profiless Tab end---1----------------------- #}
+
+
+            <!--TAB START-->
+
+{# -----------------upload_photos Tab start---2----------------------- #}
+
+
+{#<div class="tab-pane photo {% if tab  ==  '2' %}in active{% else %}fade{% endif %}" id="upload_photos">#}
+{##}
+{#<p>&nbsp;</p>#}
+{#<div class="overflow_hidden">#}
+{#<div class="col-md-3 col-sm-4 col-xs-6"><div class="fileUpload" style="width:100%; height:100%; background-image:none;"><input type="file" class="upload"><img class="img-responsive center-block" src="../images/upload_imaes.jpg" alt="Image" title="Image"></div></div>#}
+{##}
+{#<div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">#}
+{#<em><input type="checkbox" id="custom_checkbox" class="custom_position">#}
+{#<label for="custom_checkbox" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="http://southsimcoephysio.ca/wp-content/uploads/2014/03/Medical.jpg" alt="Image" title="Image">#}
+{#</div>#}
+{##}
+{#<div class="col-md-3 col-sm-4 col-xs-6 select_delete">#}
+{#<em><input type="checkbox" id="custom_checkbox1" class="custom_position">#}
+{#<label for="custom_checkbox1" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="../images/del_img.jpg" alt="Image" title="Image">#}
+{#</div>#}
+{##}
+{#<div class="col-md-3 col-sm-4 col-xs-6 select_delete">#}
+{#<em><input type="checkbox" id="custom_checkbox3" class="custom_position">#}
+{#<label for="custom_checkbox3" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="../images/del_img.jpg" alt="Image" title="Image">#}
+{#</div>#}
+{##}
+{#<div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">#}
+{#<em><input type="checkbox" id="custom_checkbox4" class="custom_position">#}
+{#<label for="custom_checkbox4" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="http://southsimcoephysio.ca/wp-content/uploads/2014/03/Medical.jpg" alt="Image" title="Image">#}
+{#</div>#}
+{#<div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">#}
+{#<em><input type="checkbox" id="custom_checkbox5" class="custom_position">#}
+{#<label for="custom_checkbox5" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="http://southsimcoephysio.ca/wp-content/uploads/2014/03/Medical.jpg" alt="Image" title="Image">#}
+{#</div>#}
+{#<div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">#}
+{#<em><input type="checkbox" id="custom_checkbox6" class="custom_position">#}
+{#<label for="custom_checkbox6" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="http://southsimcoephysio.ca/wp-content/uploads/2014/03/Medical.jpg" alt="Image" title="Image">#}
+{#</div>#}
+{#<div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">#}
+{#<em><input type="checkbox" id="custom_checkbox7" class="custom_position">#}
+{#<label for="custom_checkbox7" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="http://southsimcoephysio.ca/wp-content/uploads/2014/03/Medical.jpg" alt="Image" title="Image">#}
+{#</div>#}
+{##}
+{##}
+{#</div>#}
+{#<p>&nbsp;</p>#}
+{#<p class="text-center"><button type="button" class="btn btn-default  bg_ccc p_lr_60 bg_d0d0d0">Delete Photos</button></p>#}
+{#</div>#}
+
+{# -----------------upload_photos Tab start---2----------------------- #}
+
+            <!--TAB END-->
+
+            <!--TAB START-->
+
+{# -----------------education_and_registration Tab start---3----------------------- #}
+
+{#<div class="tab-pane {% if tab  == '3' %}in active{% else %}fade{% endif %}" id="education_and_registration">#}
+{##}
+{##}
+{#<p>&nbsp;</p>#}
+{#<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Education</span></h1>#}
+{#<p>&nbsp;</p>#}
+{#<hr class="hr_modify">#}
+{#<button type="button" class="btn btn-link btn_link_modify" data-toggle="collapse" data-target="#add_new"><i class="fa fa-plus fa-fw"></i> Add New</button>#}
+{##}
+{#<div class="collapse" id="add_new">#}
+{#<form action="{% url 'live_doctor_listing_add' %}?tab=1" method="post" class="m_t_15">#}
+{#<div class="overflow_hidden">#}
+{#<div class="col-md-4"><div class="form-group"><input type="text" class="form-control " placeholder="Degree" name="degree"></div></div>#}
+{#    <div class="col-md-4"><div class="form-group"><input type="text" class="form-control " placeholder="Collages" name = "college"></div></div>#}
+{#    <div class="col-md-4"><div class="form-group"><input type="text" class="form-control " placeholder="Year" name = "year"></div></div>#}
+{#<div class="col-md-6 col-sm-6">#}
+{#<button type="submit" class="btn btn-success ">Add</button> &nbsp; <button type="button" class="btn btn-default bg_d0d0d0 ">Cancel</button>#}
+{#</div>#}
+{#</div>#}
+{#</form>#}
+{#</div>#}
+{#<hr class="hr_modify">#}
+{#<p>&nbsp;</p>#}
+{#<div class="table-responsive education_table">#}
+{#<table class="table table-bordered">#}
+{#<thead class="bg_ededed">#}
+{#<tr>#}
+{#<th>Sr. No.</th>#}
+{#<th>Degree</th>#}
+{#<th>Collage</th>#}
+{#<th>Year</th>#}
+{#<th>Action</th>#}
+{#</tr>#}
+{#</thead>#}
+{##}
+{#<tbody>#}
+{#{% if live_doc_education_list %}#}
+{#    {% for i in live_doc_education_list %}#}
+{#        <tr>#}
+{#        <td>{{ forloop.counter }}</td>#}
+{#        <td>{{ i.degree }}</td>#}
+{#        <td>{{ i.college }}</td>#}
+{#        <td>{{ i.year }}</td>#}
+{#        <td>#}
+{#            <a href="#"> <i class="fa fa-pencil fa-fw"></i></a>   |#}
+{#            <a class="text_blue" href="{% url 'live_doctor_delete_education' doctor_id i.id %}"  title="" data-original-title="Delete"><i class="fa fa-trash-o text-danger fa-fw"></i></a>&nbsp;  &nbsp;#}
+{##}
+{#        </td>#}
+{#        </tr>#}
+{#    {% endfor %}#}
+{#{% endif %}#}
+{##}
+{##}
+{##}
+{##}
+{#</tbody>#}
+{#</table>#}
+{#</div>#}
+{##}
+{#<p>&nbsp;</p>#}
+{#<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Registration</span></h1>#}
+{#<p>&nbsp;</p>#}
+{##}
+{#<form action="{% url 'live_doctor_update_registration' doctor_id %}" method="post">#}
+{#<div class="row">#}
+{##}
+{#<div class="col-md-6 col-sm-6">#}
+{#<div class="form-group "><input type="text" class="form-control" name="mci" value = "{{ live_doctor.mciRegistrationNo }}"></div>#}
+{#</div>#}
+{##}
+{#<div class="col-md-6 col-sm-6">#}
+{#<div class="form-group "><input type="text" class="form-control" name="board" value = "{{ live_doctor.registrationBoard }}"></div>#}
+{#</div>#}
+{##}
+{#<div class="col-md-3 col-sm-3">#}
+{#<div class="form-group ">#}
+{##}
+{#    <select class="form-control" name="year">#}
+{#        <option disabled>Registration Year</option>#}
+{#        {% for i in year_list %}#}
+{#            {% if live_doctor.registrationYear == i %}#}
+{#                <option selected value="{{ i }}">{{ i }}</option>#}
+{#            {% else %}#}
+{#                 <option  value="{{ i }}">{{ i }}</option>#}
+{#            {% endif %}#}
+{##}
+{##}
+{#        {% endfor %}#}
+{#    </select>#}
+{##}
+{#</div>#}
+{#</div>#}
+{##}
+{#<div class="col-md-9 col-sm-9"><button type="submit" class="btn btn-success  p_lr_30">Save</button></div>#}
+{##}
+{#</div>#}
+{#</form>#}
+{#<p>&nbsp;</p>#}
+{##}
+{#<div class="row">#}
+{#<!--left start-->#}
+{#<form action="{% url 'upload_registration_pic' doctor_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}#}
+{#<div class="col-md-6 col-sm-6" style="border-right: 1px dashed #000000;">#}
+{#<h5 class="font_weight_600">Upload your Degree Cartificate</h5>#}
+{#<div class="thumbnail"><img src="" width="200" height="180"> </div>#}
+{#<input id="DegreeImage" type="file" class="" name="DegreeImage">#}
+{#<button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload</button>#}
+{#<p>&nbsp;</p>#}
+{#</div>#}
+{#</form>#}
+{##}
+{#<!--left end-->#}
+{##}
+{#<!--right start-->#}
+{#<form action="{% url 'upload_aadhar_pic' doctor_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}#}
+{#<div class="col-md-6 col-sm-6">#}
+{#<h5 class="font_weight_600">Upload your Passport or Aadhar Card Copy</h5>#}
+{#<div class="thumbnail"><img src="" width="200" height="180"> </div>#}
+{#<input id="aadharImage" type="file" class="" name="aadharImage">#}
+{#<button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload</button>#}
+{#<p>&nbsp;</p>#}
+{#{% comment %}<p class=" text-right">#}
+{#<a href="my_profile.html" class="btn btn-info  p_lr_60">Submit</a>#}
+{#</p>{% endcomment %}#}
+{#</div>#}
+{#<!--right end-->#}
+{##}
+{#</div>#}
+{#</form>#}
+{#</div>#}
+
+
+
+{# -----------------education_and_registration Tab end---3----------------------- #}
+
+
+            <!--TAB END-->
+
+            <!--TAB START-->
+
+{# -----------------Experience Tab start---4----------------------- #}
+
+{#<div class="tab-pane {% if tab == '4' %}in active{% else %}fade{% endif %}" id="experience">#}
+{#<p>&nbsp;</p>#}
+{#<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Experience</span></h1>#}
+{#<p>&nbsp;</p>#}
+{##}
+{#<form action="{% url 'live_doctor_listing_edit' %}?tab=4" method="post">#}
+{#<div class="row">#}
+{##}
+{#<div class="col-md-2"><input type="text" class="form-control" placeholder="Experience" name="experience" ></div>#}
+{#    <div class="col-md-2"><input type="text" class="form-control" placeholder="From Year" name="fromYear" ></div>#}
+{#    <div class="col-md-2"><input type="text" class="form-control" placeholder="To Year" name="toYear" ></div>#}
+{#    <div class="col-md-2"><input type="text" class="form-control" placeholder="designation" name="designation" ></div>#}
+{#    <div class="col-md-2"><input type="text" class="form-control" placeholder="city" name="city" ></div>#}
+{##}
+{#<div class="col-md-2"><button type="submit" class="btn btn-info p_lr_30">Add</button></div>#}
+{#</div>#}
+{#</form>#}
+{##}
+{#<div class="row  m_0">#}
+{#<p>&nbsp;</p>#}
+{##}
+{##}
+{#<div class="table-responsive m_tb_10">#}
+{#    <table class="table table-bordered text-center">#}
+{#        <thead class="bg_ededed">#}
+{#        <tr>#}
+{#            <th class="text-center font_weight_400 font_size_16">Sr. No.</th>#}
+{#            <th class="text-center font_weight_400 font_size_16">Experience</th>#}
+{#            <th class="text-center font_weight_400 font_size_16">From Year</th>#}
+{#            <th class="text-center font_weight_400 font_size_16">To Year</th>#}
+{#            <th class="text-center font_weight_400 font_size_16">Designation</th>#}
+{#            <th class="text-center font_weight_400 font_size_16">City</th>#}
+{#            <th class="text-center font_weight_400 font_size_16">Action</th>#}
+{#        </tr>#}
+{#        </thead>#}
+{##}
+{#        <tbody>#}
+{#        {% if live_doc_exp_list %}#}
+{#            {% for i in live_doc_exp_list %}#}
+{#            <tr>#}
+{#                <td>{{ forloop.counter }}</td>#}
+{#                <td>{{ i.name }}</td>#}
+{#                <td>{{ i.fromYear }}</td>#}
+{#                <td>{{ i.toYear }}</td>#}
+{#                <td>{{ i.designation }}</td>#}
+{#                <td>{{ i.city }}</td>#}
+{#                <td><a class="bg_none text_blue border_none" title="Edit"  ><i class="fa fa-pencil fa-fw"></i></a> &nbsp; | &nbsp;#}
+{#                    <a class="text_blue" href="{%  url 'delete_live_doctor_experience' doctor_id i.id %}" title="Delete"  ><i class="fa fa-trash-o text-danger fa-fw"></i></a>#}
+{##}
+{#                </td>#}
+{#            </tr>#}
+{#            {% endfor %}#}
+{#        {% endif %}#}
+{#        </tbody>#}
+{#    </table>#}
+{#</div>#}
+{##}
+{#</div>#}
+{#</div>#}
+
+{# -----------------Experience Tab end-----4--------------------- #}
+            <!--TAB END-->
+
+            <!--TAB START-->
+
+{# -----------------work_schedule Tab start---5----------------------- #}
+
+{#<div class="tab-pane {% if tab == '5' %}in active{% else %}fade{% endif %}" id="work_schedule">#}
+{##}
+{#<form role="form">#}
+{#<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Add New Work Schedule</span></h1>#}
+{#<p>&nbsp;</p>#}
+{##}
+{#<div class="row">#}
+{#<div class="col-md-6">#}
+{#<div class="form-group">#}
+{#<select class="form-control"><option>Please Select Clinic/Hospitals</option></select></div>#}
+{#</div>#}
+{#<div class="col-md-6">#}
+{#<div class="form-group ">#}
+{#<input type="text" class="form-control" placeholder="Designation"></div>#}
+{#</div>#}
+{#</div>#}
+{#<div class="clearfix"></div>#}
+{##}
+{#<div class="row clearfix m_tb_20">#}
+{##}
+{#<div class="col-md-4 col-lg-2 m_tb_20 font_size_17 p_r_0 font_weight_600 p_t_10">Appointment Minutes:</div>#}
+{#<div class="col-md-2 m_tb_20"><select class="form-control"><option>Time Slot</option></select></div>#}
+{##}
+{#<div class="col-lg-4 col-md-4 col-sm-6 m_tb_20"><input type="text" class="form-control " placeholder="Consultation Charges"></div>#}
+{#</div>#}
+{##}
+{#<div class="row">#}
+{#<div class="col-lg-2 col-md-3"><h1>Visiting Hours:</h1></div>#}
+{#<div class="col-lg-10 col-md-9">#}
+{##}
+{#<!--one start-->#}
+{#<label><input type="radio" name="schedule">Clinic Hours  are same for the whole week</label>#}
+{#<table class="table table-bordered">#}
+{#<tbody>#}
+{#<tr>#}
+{#<td><strong>Days</strong></td>#}
+{#<td>#}
+{#<label class="checkbox-inline"><input type="checkbox">Mon</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Tue</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Wed</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Thu</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Fri</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Sat</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Sun</label>#}
+{#</td>#}
+{#</tr>#}
+{#<tr>#}
+{#<td><strong>Timing</strong></td>#}
+{#<td>#}
+{#<div class="col-md-4">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#</div>#}
+{##}
+{##}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-4">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#</td>#}
+{#</tr>#}
+{#</tbody>#}
+{#</table>#}
+{#<!--one end-->#}
+{##}
+{#<!--two start-->#}
+{#<label><input type="radio" name="schedule">Clinic Hours in two sessions</label>#}
+{#<table class="table table-bordered">#}
+{#<tbody>#}
+{#<tr>#}
+{#<td><strong>Days</strong></td>#}
+{#<td>#}
+{#<label class="checkbox-inline"><input type="checkbox">Mon</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Tue</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Wed</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Thu</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Fri</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Sat</label>#}
+{#<label class="checkbox-inline"><input type="checkbox">Sun</label>#}
+{#</td>#}
+{#</tr>#}
+{#<tr>#}
+{#<td><strong>Session 1</strong></td>#}
+{#<td>#}
+{#<div class="col-md-4">#}
+{# <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-4">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td><strong>Session 1</strong></td>#}
+{#<td>#}
+{#<div class="col-md-4">#}
+{# <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-4">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#</td>#}
+{#</tr>#}
+{#</tbody>#}
+{#</table>#}
+{#<!--two end-->#}
+{##}
+{#<!--three start-->#}
+{#<label><input type="radio" name="schedule">Clinic Hours  are not same for the whole week</label>#}
+{#<table class="table table-bordered">#}
+{#<tbody>#}
+{#<tr class="text-center">#}
+{#<td><strong>Days</strong></td>#}
+{#<td><strong>Session 1</strong></td>#}
+{#<td><strong>Session 2</strong></td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td><input type="checkbox"> Mon</td>#}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{##}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{#  </tr>#}
+{##}
+{#<tr>#}
+{#<td><input type="checkbox"> Mon</td>#}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{##}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{#  </tr>#}
+{##}
+{#<tr>#}
+{#<td><input type="checkbox"> Mon</td>#}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{##}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{#  </tr>#}
+{##}
+{#<tr>#}
+{#<td><input type="checkbox"> Mon</td>#}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{##}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{#  </tr>#}
+{##}
+{#<tr>#}
+{#<td><input type="checkbox"> Mon</td>#}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{##}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{#  </tr>#}
+{##}
+{#<tr>#}
+{#<td><input type="checkbox"> Mon</td>#}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{##}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{#  </tr>#}
+{##}
+{#<tr>#}
+{#<td><input type="checkbox"> Mon</td>#}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{##}
+{#<td>#}
+{#<div class="col-md-5">#}
+{#<div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  <div class="col-md-1 text-center p_t_10">To</div>#}
+{##}
+{#  <div class="col-md-5">#}
+{#  <div class="form-group">#}
+{#                <div class='input-group date datetimepicker3'>#}
+{#                    <input type='text' class="form-control" />#}
+{#                    <span class="input-group-addon">#}
+{#                        <span class="fa fa-clock-o"></span>#}
+{#                    </span>#}
+{#                </div>#}
+{#            </div>#}
+{#  </div>#}
+{##}
+{#  </td>#}
+{#  </tr>#}
+{##}
+{#</tbody>#}
+{#</table>#}
+{#<!--three end-->#}
+{##}
+{#</div>#}
+{##}
+{#</div>#}
+{##}
+{#<p class="text-right"><a href="#" class="btn btn-info  m_t_15">Save</a></p>#}
+{##}
+{#<p>&nbsp;</p>#}
+{#</form>#}
+{##}
+{#<!-- HOSPITAL DETAILS START-->#}
+{#<div class="row m_0 p_lr_20 bg_f3f3f3">#}
+{#<p>&nbsp;</p><p>&nbsp;</p>#}
+{##}
+{#<!--One thumbnail Start-->#}
+{#<div class="thumbnail alert p_tb_8_lr_60">#}
+{##}
+{#<!--line start-->#}
+{#<div class="row">#}
+{#<div class="col-md-10">#}
+{##}
+{#<h3><i class="fa fa-map-marker text_blue font_size_32"></i> Manipal Hospital - Test 1</h3>#}
+{#<p class="text_666 p_l_10">No. 70, 2nd and 3rd Floor, Grace Towers, Above Navnit Motors, Millers Road, Bangalore – 560052</p>#}
+{#</div>#}
+{#<div class="col-md-2 p_t_20 text-center"><span class="label label-warning font_size_18"><i class="fa fa-rupee"></i> 300/-</span></div>#}
+{#</div>#}
+{#<!--line end-->#}
+{##}
+{#<!--line start-->#}
+{#<div class="clearfix"></div>#}
+{#<table class="table m_tb_30">#}
+{#<tbody>#}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Mon</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Tue</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Wed</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Thu</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Fri</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Sat</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Sun</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{#</tbody>#}
+{##}
+{#</table>#}
+{#<!--line end-->#}
+{##}
+{#<p class="font_size_16">Appointment Minutes  : <span class="text-muted">15 Minutes</span> <span class="close cursor_pointers font_weight_400 font_size_14"><i class="fa fa-trash-o fa-fw"></i> Delete Schedule</span>#}
+{#</p>#}
+{#<p>&nbsp;</p>#}
+{#</div>#}
+{#<!--One thumbnail End-->#}
+{##}
+{#<!--two thumbnail Start-->#}
+{#<div class="thumbnail alert p_tb_8_lr_60">#}
+{##}
+{#<!--line start-->#}
+{#<div class="row">#}
+{#<div class="col-md-10">#}
+{##}
+{#<h3><i class="fa fa-map-marker text_blue font_size_32"></i> Manipal Hospital - Test 2</h3>#}
+{#<p class="text_666 p_l_10">No. 70, 2nd and 3rd Floor, Grace Towers, Above Navnit Motors, Millers Road, Bangalore – 560052</p>#}
+{#</div>#}
+{#<div class="col-md-2 p_t_20 text-center">#}
+{#<span class="label label-warning font_size_18"><i class="fa fa-rupee"></i> 300/-</span>#}
+{#<button type="button" class="btn btn-info m_tb_10">Set as a default Practice</button>#}
+{#</div>#}
+{#</div>#}
+{#<!--line end-->#}
+{##}
+{#<!--line start-->#}
+{#<div class="clearfix"></div>#}
+{#<table class="table m_tb_30">#}
+{#<tbody>#}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Mon</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Tue</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Wed</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Thu</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Fri</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Sat</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{##}
+{#<tr>#}
+{#<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>Sun</strong></td>#}
+{#<td><i class="fa fa-clock-o text_blue fa-fw"></i> 11:00 AM to 07.45 PM</td>#}
+{#</tr>#}
+{#</tbody>#}
+{##}
+{#</table>#}
+{#<!--line end-->#}
+{##}
+{#<p class="font_size_16">Appointment Minutes  : <span class="text-muted">15 Minutes</span> <span class="close cursor_pointers font_weight_400 font_size_14"><i class="fa fa-trash-o fa-fw"></i> Delete Schedule</span>#}
+{#</p>#}
+{#<p>&nbsp;</p>#}
+{#</div>#}
+{#<!--two thumbnail End-->#}
+{##}
+{#</div>#}
+{#</div>#}
+{# -----------------work_schedule Tab end---5---------------------- #}
+    <!--TAB END-->
+
+
+
+            <!--TAB START-->
+{# -----------------rewardRecognization Tab start---6----------------------- #}
+
+{#<div class="tab-pane {% if tab == '6' %}in active{% else %}fade{% endif %} " id="rewardRecognization">#}
+{##}
+{#<p>&nbsp;</p>#}
+{#<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Rewards &amp; Recognization</span></h1>#}
+{#<p>&nbsp;</p>#}
+{#<hr class="hr_modify">#}
+{#<button type="button" class="btn btn-link btn_link_modify" data-toggle="collapse" data-target="#add_newagain"><i class="fa fa-plus fa-fw"></i> Add New</button>#}
+{#<div class="collapse" id="add_newagain">#}
+{#<form action="{% url 'live_doctor_listing_edit' doctor_id %}?tab=6" class="m_t_15" method="post">#}
+{#<div class="row">#}
+{#<div class="col-sm-4"><div class="form-group"><input type="text" class="form-control" placeholder="Reward" name="name"></div></div>#}
+{#<div class="col-sm-4"><div class="form-group"><input type="text" class="form-control" placeholder="Year" name="year"></div></div>#}
+{##}
+{#<div class="col-sm-4">#}
+{#<button type="submit" class="btn btn-success ">Add</button>#}
+{#</div>#}
+{#</div>#}
+{#</form>#}
+{#</div>#}
+{#<hr class="hr_modify">#}
+{#<p>&nbsp;</p>#}
+{#<div class="table-responsive education_table">#}
+{#<table class="table table-bordered">#}
+{#<thead class="bg_ededed">#}
+{#<tr>#}
+{#<th>Sr. No.</th>#}
+{#<th>Rewards</th>#}
+{#<th>Year</th>#}
+{#<th>Action</th>#}
+{#</tr>#}
+{#</thead>#}
+{##}
+{#<tbody>#}
+{#{% if live_doc_rewardrecog_list %}#}
+{#    {% for i in live_doc_rewardrecog_list %}#}
+{#        <tr>#}
+{#        <td>{{ forloop.counter }}</td>#}
+{#        <td>{{ i.name }}</td>#}
+{#        <td>{{ i.year }}</td>#}
+{##}
+{#        <td><a class="text_blue" href="{% url 'delete_live_doctor_reward_recog' doctor_id i.id %}?tab=6 " data-toggle="tooltip" title="" data-original-title="Delete"><i class="fa fa-trash-o text-danger fa-fw"></i></a></td>#}
+{#        </tr>#}
+{#    {% endfor %}#}
+{#{% endif %}#}
+{##}
+{#</tbody>#}
+{#</table>#}
+{#</div>#}
+{#</div>#}
+{# -----------------rewardRecognization Tab end---6----------------------- #}
+
+            <!--TAB END-->
+
+            <!--TAB START-->
+
+{# -----------------Membership Tab start---7----------------------- #}
+
+{#<div class="tab-pane {% if tab == '7' %}in active{% else %}fade{% endif %}" id="Membership">#}
+{#<p>&nbsp;</p>#}
+{#<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Membership</span></h1>#}
+{#<p>&nbsp;</p>#}
+{#<hr class="hr_modify">#}
+{#<button type="button" class="btn btn-link btn_link_modify m_tb_10" data-toggle="collapse" data-target="#add_newagain_again"><i class="fa fa-plus fa-fw"></i> Add New</button>#}
+{#<div class="collapse" id="add_newagain_again">#}
+{##}
+{#<form method="post" action="{% url 'live_doctor_listing_edit' doctor_id %}?tab=7">#}
+{#    <div class="row">#}
+{#    <div class="col-sm-9">#}
+{#        <input type="text" class="form-control" placeholder="Membership" name="membership">#}
+{#    </div>#}
+{##}
+{#    <div class="col-sm-3">#}
+{#    <button type="submit" class="btn btn-success ">Add</button>#}
+{#    </div>#}
+{#    </div>#}
+{#</form>#}
+{##}
+{##}
+{#</div>#}
+{#<hr class="hr_modify">#}
+{#<p>&nbsp;</p>#}
+{#<div class="table-responsive education_table">#}
+{#<table class="table table-bordered">#}
+{#<thead class="bg_ededed">#}
+{#<tr>#}
+{#<th>Sr. No.</th>#}
+{#<th>Membership</th>#}
+{#<th>Action</th>#}
+{#</tr>#}
+{#</thead>#}
+{##}
+{#<tbody>#}
+{#{% if live_doc_memb_list %}#}
+{#    {% for i in live_doc_memb_list %}#}
+{#        <tr>#}
+{#        <td>{{ forloop.counter }}</td>#}
+{#        <td>{{ i.name }}</td>#}
+{#        <td><a class="text_blue" href="#"  title="" data-original-title="Edit"><i class="fa fa-pencil fa-fw"></i></a> &nbsp; | &nbsp; <a class="text_blue" href="{% url 'delete_live_doctor_membership' doctor_id i.id %}" title="" ><i class="fa fa-trash-o text-danger fa-fw"></i></a></td>#}
+{#        </tr>#}
+{#    {% endfor %}#}
+{#{% endif %}#}
+{##}
+{#</tbody>#}
+{#</table>#}
+{#</div>#}
+{#</div>#}
+
+{# -----------------Membership Tab end---7----------------------- #}
+
+            <!--TAB END-->
+        </div>
+
+    </div>
+
+
+
+      <script type="text/javascript">
+        $(document).ready(function () {
+            $('#zone').change(function () {
+                var zone = $('#zone').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                $.ajax({
+                    type: 'post',
+                    url: DOMAIN + '/doctor/zone_location/',
+                    data: {action: "get_filter", zone_id: zone},
+                    beforeSend: function () {
+                        var text = 'getting zone location  of ' + zone + ' . please wait..';
+                        ajaxindicatorstart(text);
+                    },
+                    success: function (data) {
+                        ajaxindicatorstop();
+                        var obj = JSON.parse(data);
+
+                        if (obj.length != 0) {
+                            $("#zone_location option").remove();
+                            $("#zone_location").trigger("chosen:updated");
+                            var key_sel = "";
+                            var value_sel = 'Select Zone Location';
+                            var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                            $("#zone_location").append(select);
+                            $("#zone_location").val(key_sel);
+                            $("#zone_location").trigger("chosen:updated");
+                            for (var i = 0; i < obj.length; i++) {
+                                var option = '<option value=' + obj[i].id + '>' + obj[i].name + '</option>';
+                                $("#zone_location").append(option);
+                                $("#zone_location").trigger("chosen:updated")
+
+                            }
+
+                        }
+                    },
+                    error: function (jqXHR, ex) {
+                    }
+                });
+            });
+
+
+        });
+    </script>
+
+
+
+
+    <script type="text/javascript">
+        function ValidateMobileCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{10},)*\d{10}$/.test(value));
+            if (!check) {
+                alert("Please put correct Mobile No");
+
+            }
+            return check
+
+        }
+        function ValidatePhoneCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8},)*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct Phone No");
+
+            }
+            return check
+
+        }
+        function eitherMobileAndTelephone(mobile, telephone) {
+            if (mobile != '' || telephone != '') {
+                return true;
+            }
+            alert("Please either mobile no or telephone no");
+            return false
+
+        }
+
+        function checkcategory(category) {
+            if (category != '') {
+                return true;
+            }
+
+            alert("Please put category value");
+            return false;
+
+        }
+
+        function validateMyForm() {
+            var mobile_val = document.getElementById('mobile').value;
+            var phone_val = document.getElementById('phone').value;
+            var category_val = document.getElementById("category").value;
+            var mobile = ValidateMobileCSV(document.getElementById('mobile').value);
+            var phone = ValidatePhoneCSV(document.getElementById('phone').value);
+            var eitherMobile = eitherMobileAndTelephone(mobile_val, phone_val)
+            var category = checkcategory(category_val);
+            if (mobile && phone && eitherMobile && category) {
+                return true
+            }
+            return false
+        }
+        $(document).ready(function () {
+            $('#datePicker')
+                    .datepicker({
+                        format: 'dd/mm/yyyy'
+                    })
+                    .on('changeDate', function (e) {
+                        // Revalidate the date field
+                        $('#eventForm').formValidation('revalidateField', 'date');
+                    });
+        });
+    </script>
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    </script>
+
+     <script type="text/javascript">
+            $(function () {
+                $('.datetimepicker3').datetimepicker({
+                    format: 'L'
+                });
+            });
+        </script>
+{% endblock %}

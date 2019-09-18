@@ -1,0 +1,2185 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+    <div class="p_10 text_white" style="background: rgba(0,0,0,0.3);">
+
+        {% for a in organisation_data %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                         id="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            <div class="row">
+                {% if request.user|can_view_admin %}
+                    <div class="col-md-6"><a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info">Back</a></div>
+                {% endif %}
+                <div class="col-md-12">
+                    <div class="m_b_10">
+                        <button class="btn btn-warning" data-target="#markAsComplate" data-toggle="collapse"
+                                type="button"><i
+                                class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button>
+                        {% if a.free_text %}
+                            <span style="padding: 3px; color:white;">Reviewer Remark : {{ a.free_text | capfirst }}</span>
+                        {% endif %}
+                        <span style="padding: 4px; color:white; background-color: #9c9c9c; border-radius: 3px">Validation Mode : {{ a.resource_validate.nmae }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse" id="markAsComplate">
+                <div class="thumbnail p_10">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form role="form" action="
+                                {% if request.user|can_view_caller_doc_org %}{% url 'mark-caller-organisation' %}{% elif request.user|can_view_review_doc_org %}{% url 'mark-reviewer-organisation' %}{% elif request.user|can_view_publisher %}{% url 'mark-reviewer-organisation'  %}{% endif %}"
+                                  method="post">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ a.id }}" name="organisation_id">
+                                {% if request.user|can_view_review_doc_org %}
+                                    <div class="col-md-4">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in user_data_complete %}
+                                                {% if b.is_doctor_caller and b.user.is_active %}
+
+                                                    <option value="{{ b.user_id }}">{{ b.user.username }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in user_data_complete %}
+                                                {% if b.is_doctor_caller and b.user.is_active %}
+
+                                                    <option value="{{ b.user_id }}">{{ b.user.username }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_caller_doc_org %}
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in user_data_complete %}
+                                                {% if b.is_doctor_reviewer and b.user.is_active %}
+
+                                                    <option value="{{ b.user_id }}">{{ b.user.username }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="validator_name">
+                                            <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Complete</button>
+                                    </div>
+                                {% endif %}
+                            {#   caller complete #}
+
+                                {% if request.user|can_view_review_doc_org %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+
+
+                        {% if request.user|can_view_review_doc_org %}
+                            <div class="col-md-12">
+                                <form role="form" class="m_tb_10" method="post"
+                                      action="{% url 'mark-publisher-organisation' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{ a.id }}" name="organisation_id" id="organisation_id">
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="publisher_name" id="publisher_name">
+                                            <option value="" disabled>Select Publisher User</option>
+                                            {% for b in user_data_complete %}
+                                                {% if b.is_publisher and b.user.is_active %}
+
+                                                    <option value="{{ b.user_id }}">{{ b.user.username }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="validator_name" id="validator_id">
+                                            <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="button"
+                                                onclick="organisation_move_to_next_stage()">Move to Next Stage
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        {% endif %}
+                        </div>
+                </div>
+                  {# NEW Form  to move organisation data from publisher user to review user#}
+                 {% if request.user|can_view_publisher %}
+                  <div class="thumbnail p_10">
+                                <div class="row">
+                                        <div class="col-md-12 m_b_15 ">
+                                    <form role="form" action=" {% url 'mark-reverse-organisation-to-reviewer' %}"
+                                    method="post"  >
+                                     <input type="hidden" value="{{ a.id }}" name="organisation_id">
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in user_data_complete %}
+                                                {% if b.is_doctor_reviewer and b.user.is_active %}
+                                                    <option value="{{ b.user_id }}">{{ b.user.username }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>
+                                    </div>
+                                     </form>
+                                </div>
+                                </div>
+                        </div>
+               <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action="  {#  /mark/complete/lab/publisher/ #}" method="post">
+                                <input type="hidden" value=" {#  #}" name=organisation_id">
+                                <button type="submit" value="submit" class="btn btn-info">Publish To Live
+                                    </button>
+                            </form>
+                        </div>
+                </div>
+                </div>
+                  {% endif %}
+            </div>
+
+            <div class="m_tb_10">
+                <ul class="nav nav-tabs">
+                    <li class="{% if tab == '1' %}active{% endif %}"><a href="#edit_org"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=1')"
+                                                                        data-toggle="tab">Organization Details</a></li>
+                    <li class="{% if tab == '2' %}active{% endif %}"><a href="#owner_profile"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=2')"
+                                                                        data-toggle="tab">Owner Profile</a></li>
+                    <li class="{% if tab == '3' %}active{% endif %}"><a href="#consultant_doctor"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=3')"
+                                                                        data-toggle="tab">Counsaltant Doctor </a></li>
+                    <li class="{% if tab == '4' %}active{% endif %}"><a href="#associates"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=4')"
+                                                                        data-toggle="tab">Associates</a></li>
+                    <li class="{% if tab == '5' %}active{% endif %}"><a href="#package_association"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=5')"
+                                                                        data-toggle="tab">Package Association</a></li>
+                    <li class="{% if tab == '6' %}active{% endif %}"><a href="#manage_branch"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=6')"
+                                                                        data-toggle="tab">Manage Branches</a></li>
+                    <li class="{% if tab == '7' %}active{% endif %}"><a href="#therapist_association"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=7')"
+                                                                        data-toggle="tab">Therapist Association</a></li>
+                    <li class="{% if tab == '8' %}active{% endif %}"><a href="#dietitian_association"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=8')"
+                                                                        data-toggle="tab">DietitianAssociation</a></li>
+                    <li class="{% if tab == '9' %}active{% endif %}"><a href="#manage_account"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=9')"
+                                                                        data-toggle="tab">Manage Accounts</a></li>
+                    <li class="{% if tab == '10' %}active{% endif %}"><a href="#veryfied_field"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=10')"
+                                                                        data-toggle="tab">Verified Fields</a></li>
+                    <li class="{% if tab == '11' %}active{% endif %}"><a href="#merge_field"
+                                                                        onclick="refreshURL('{% url 'live-organisation-listing-edit' a.id %}?tab=11')"
+                                                                        data-toggle="tab">Merge Field</a></li>
+                </ul>
+  <!--****************************************************************************** Tab -1 Starts******************************************************************************************************                  -->
+                    {% if tab == '1' %}
+                    <div class="tab-pane label_black fade {% if tab == '1' %}in active{% endif %}" id="edit_org">
+                        <div class="panel-group m_t_10" id="cbf">
+                          <!--<p>Clinic Basic Profile</p>-->
+                          <!--Clinic Basic Profile start-->
+                          <div class="well well-sm text_logo font_weight_600"><i class="fa fa-hospital-o fa-fw"></i> {{ a.name }} </div>
+                          <div class="panel border_radius_none">
+                            <div class="panel-heading bg_666 p_tb_0 row m_0"> <span class="pull-right m_t_5"> <a class="panel-title" data-parent="#cbf" data-toggle="collapse"  data-target="#gf1"> <i class="fa fa-minus text_white"></i> </a> </span>
+                              <div class="m_t_5">
+                                <label style="width:auto;" class="font_weight_600"> <strong class="text_white">Clinic Basic Profile</strong> </label>
+                              </div>
+                            </div>
+                            <div id="gf1" class="panel-collapse collapse in">
+                              <div class="panel-body p_t_5">
+                                <form action="{% url 'live-organisation-listing-edit' organisation_id %}?tab=1" method="post" name="basicProfile">
+                                  <div class="row m_0">
+                                    <!--ONE START-->
+                                    <input type="hidden" class="form-control" name="xxx" value="basic_profile">
+                                    <div class="form-group col-md-6">
+
+                                      <label>Clinic Name:</label>
+                                      <input type="text" class="form-control" name="name" value="{{a.name}}" placeholder="Clinic Name"  required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                      <label>Clinic Tag Line:</label>
+                                      <input type="text" class="form-control" name="tagLine" value="{{a.tagline}}" placeholder="Clinic tagline" required>
+                                    </div>
+                                    <div class="col-md-6" >
+                                      <label>Clinic Category*:</label>
+                                      <div class="form-group selectdiv">
+                                        <select class="form-control chosen-select" name="category">
+                                            <option value="" selected>-- Category --</option>
+                                            {% if hospital_category %}
+                                                {% for cate  in hospital_category %}
+                                                    {% if a.category == cate.category_name %}
+                                                        <option selected
+                                                                value="{{ cate.category_name }}"> {{ cate.category_name|capfirst }}</option>
+                                                    {% else %}
+                                                        <option value="{{ cate.category_name }}"> {{ cate.category_name|capfirst }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                      <label>Clinic Type*:</label>
+                                      <label>Type</label>
+                                        <select id="type" name="type" class="form-control chosen-select"
+                                                multiple>
+                                            <option value="">-- Hospital Type ---</option>
+                                            {% if hospital_type %}
+                                                {% for type in hospital_type %}
+                                                    {% if type.type_name in a.type %}
+                                                        <option value="{{ type.type_name }}"
+                                                                selected>{{ type.type_name }}</option>
+                                                    {% else %}
+                                                        <option value="{{ type.type_name }}">{{ type.type_name }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                      <label>Clinic Department*:</label>
+                                      <select id="department" name="department" class="form-control chosen-select"
+                                                multiple>
+                                            <option>-- Hospital Department ---</option>
+                                            {% if department_obj %}
+                                                {% for dep in department_obj %}
+                                                    {% if dep.id in department %}
+                                                        <option value="{{ dep.id }}"
+                                                                selected>{{ dep.name }}</option>
+                                                    {% else %}
+                                                        <option value="{{ dep.id }}">{{ dep.name }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                      <label>Clinic Facility:</label>
+                                      <select id="facility" name="facility" class="form-control chosen-select"
+                                                multiple>
+                                            <option>-- Hospital Facility ---</option>
+                                            {% if facility_obj %}
+                                                {% for fac in facility_obj %}
+                                                    {% if fac.id in facility %}
+                                                        <option value="{{ fac.id }}"
+                                                                selected>{{ fac.name }}</option>
+                                                    {% else %}
+                                                        <option value="{{ fac.id }}">{{ fac.name }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Clinic address</span></h1>
+                                    <p>&nbsp;</p>
+                                    <div class="form-group col-md-6">
+                                      <label>Address:</label>
+                                      <input type="text" class="form-control" name="Address" placeholder="Address" value="{{a.street}}" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <label>Country:</label>
+                                      <div class="form-group selectdiv">
+                                        <select class="chosen-select" name="country_id">
+                                            <option value="">--Select Country--</option>
+                                            {% for countryone in country %}
+                                                {% if a.country_id == countryone.id %}
+                                                    <option value="{{ countryone.id }}"
+                                                            selected>{{ countryone.name|capfirst }}</option>
+                                                {% else %}
+                                                    <option value="{{ countryone.id }}">{{ countryone.name|capfirst }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <label>State:</label>
+                                      <div class="form-group selectdiv">
+                                        <select class="chosen-select" name="state_id">
+                                            <option value="">--Select State--</option>
+                                            {% for stateone in state %}
+                                                {% if a.state_id == stateone.id %}
+                                                    <option value="{{ stateone.id }}"
+                                                            selected>{{ stateone.name|capfirst }}</option>
+                                                {% else %}
+                                                    <option value="{{ stateone.id }}">{{ stateone.name|capfirst }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <label>City:</label>
+                                      <div class="form-group selectdiv">
+                                        <select class="chosen-select" name="city_id">
+                                            <option value="">--Select City--</option>
+                                            {% for cityone in city %}
+                                                {% if a.city_id == cityone.id %}
+                                                    <option value="{{ cityone.id }}"
+                                                            selected>{{ cityone.name|capfirst }}</option>
+                                                {% else %}
+                                                    <option value="{{ cityone.id }}">{{ cityone.name|capfirst }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <label>Location:</label>
+                                      <div class="form-group selectdiv">
+                                        <select class="chosen-select" name="locality_id" id="locality_id">
+                                            <option value="">--Select Location--</option>
+                                            {% for localityone in locality %}
+                                                {% if a.locality_id == localityone.id %}
+                                                    <option value="{{ localityone.id }}"
+                                                            selected>{{ localityone.name|capfirst }}</option>
+                                                {% else %}
+                                                    <option value="{{ localityone.id }}">{{ localityone.name|capfirst }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                      <label>Pin Code:</label>
+                                      <input type="text" class="form-control" name="pincode" placeholder="Pin Code"
+                                               id="pincode" onchange="ValidatePincode(this.value)" name="pincode_id" value="{{ a.pincode }}">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                      <label>&nbsp;</label>
+                                    </div>
+                                    <!--ONE END-->
+
+                                    <!--ONE START-->
+                                    <p>&nbsp;</p>
+                                    <h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Clinic Contact details</span></h1>
+                                    <p>&nbsp;</p>
+                                    <div class="form-group col-md-3" >
+                                      <label>Phone NO:</label>
+                                      <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone" value="{{ a.phone }}">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                      <label>Mobile number:</label>
+                                      <input type="text" class="form-control" id="mobile"
+                                               onchange="ValidateMobileCSV(this.value)" name="mobile_no" value="{{ a.mobile_no|default_if_none:"" }}" placeholder="Mobile">
+                                    </div>
+                                    <div class="form-group col-md-3" >
+                                      <label>Fax:</label>
+                                      <input type="text" class="form-control" id="fax" name="fax" value="{{ a.fax }}"
+                                               placeholder="Fax">
+                                    </div>
+                                    <div class="form-group col-md-3" >
+                                      <label>Emergency number:</label>
+                                      <input type="text" class="form-control" id="phone" name="emergency_no"
+                                               value="{{ a.emergency_no }}" placeholder="Emergency No.">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                      <label>Email:</label>
+                                      <input type="text" class="form-control"
+                                               value="{{ a.email|default_if_none:'' }}" name="email" placeholder="Email">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                      <label>Alternate Email:</label>
+                                      <input type="email" class="form-control" name="alemail" value="{{ a.alternateEmail|default_if_none:'' }}" placeholder="Alternate Email">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                      <label>Website:</label>
+                                      <input type="text" class="form-control" name="website" id="website"
+                                               onchange="isValidURL(this.value)" value="{{ a.website|default_if_none:'' }}" placeholder="Website">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                      <label>DID:</label>
+                                      <input type="text" class="form-control" name="did" value="{{ a.did}}" placeholder="DID">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                      <label>EXTENSION:</label>
+                                      <input type="text" class="form-control" name="extension" value="{{ a.extension}}" placeholder="EXTENSION">
+                                    </div>
+                                  </div>
+                                  <div class="col-md-12 text-right">
+                                    <button type="submit" class="btn btn-success waves-effect p_lr_30" >Save!!</button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                          <!--Clinic Basic Profile end-->
+
+                          <!--Clinic OPD Timing start-->
+                          <div class="panel border_radius_none">
+                            <div class="panel-heading bg_666 p_tb_0 row m_0"> <span class="pull-right m_t_5"> <a class="panel-title" data-parent="#cbf" data-toggle="collapse"  data-target="#gf2"> <i class="fa fa-plus text_white"></i> </a> </span>
+                              <div class="m_0" style="width: 200px; margin-top: 5px;">
+                                <label style="width:auto;" class="font_weight_600"> <strong class="text_white">Clinic OPD Timing</strong> </label>
+                              </div>
+                            </div>
+                            <div id="gf2" class="collapse panel-collapse">
+                              <div class="panel-body p_t_5">
+                                <div class="row">
+
+                                  <form action="{% url 'live-organisation-listing-edit' organisation_id %}?tab=1" method="post" name="scheduleForm" >
+                                    <input type="hidden" class="form-control" name="xxx" value="opd_timing">
+                                      <div class="tableschedule">
+
+                    <div class="left_schedule">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>From Day</label>
+                                        <select name="from_day" class="form-control" required>
+                                          <option value="">Select day</option>
+                                          <option value="mon">Monday</option>
+                                          <option value="tue">Tuesday</option>
+                                          <option value="wed">Wednesday</option>
+                                          <option value="thu">Thursday</option>
+                                          <option value="fri">Friday</option>
+                                          <option value="sat">Saturday</option>
+                                          <option value="sun">Sunday</option>
+                                        </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>To Day</label>
+                                        <select name="to_day" class="form-control" >
+                                          <option value="">Select day</option>
+                                          <option value="mon">Monday</option>
+                                          <option value="tue">Tuesday</option>
+                                          <option value="wed">Wednesday</option>
+                                          <option value="thu">Thursday</option>
+                                          <option value="fri">Friday</option>
+                                          <option value="sat">Saturday</option>
+                                          <option value="sun">Sunday</option>
+                                        </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right_schedule">
+
+                        <div class="pull-left m_r_20">
+                            <label class="pull-left text_white font_weight_400 form">From Time</label>
+                            <div class="clearfix"></div>
+                            <div class="value_left">
+                                <select name="start_time" class="form-control" required >
+                                    <option value="" selected>Open</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="12:30">12:30</option>
+                                    <option value="1:00">1:00</option>
+                                    <option value="1:30">1:30</option>
+                                    <option value="2:00">2:00</option>
+                                    <option value="2:30">2:30</option>
+                                    <option value="3:00">3:00</option>
+                                    <option value="3:30">3:30</option>
+                                    <option value="4:00">4:00</option>
+                                    <option value="4:30">4:30</option>
+                                    <option value="5:00">5:00</option>
+                                    <option value="5:30">5:30</option>
+                                    <option value="6:00">6:00</option>
+                                    <option value="6:30">6:30</option>
+                                    <option value="7:00">7:00</option>
+                                    <option value="7:30">7:30</option>
+                                    <option value="8:00">8:00</option>
+                                    <option value="8:30">8:30</option>
+                                    <option value="9:00">9:00</option>
+                                    <option value="9:30">9:30</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="10:30">10:30</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="11:30">11:30</option>
+                                </select>
+                            </div>
+                            <div class="value_right">
+                                <select name="start_period" class="form-control" required>
+                                    <option selected value="">Select Meridiem</option>
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="pull-left">
+                            <label class="pull-left text_white font_weight_400">To Time</label>
+                            <div class="clearfix"></div>
+                            <div class="value_left">
+                                <select name="end_time" class="form-control" required>
+                                    <option value="" selected>Open</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="12:30">12:30</option>
+                                    <option value="1:00">1:00</option>
+                                    <option value="1:30">1:30</option>
+                                    <option value="2:00">2:00</option>
+                                    <option value="2:30">2:30</option>
+                                    <option value="3:00">3:00</option>
+                                    <option value="3:30">3:30</option>
+                                    <option value="4:00">4:00</option>
+                                    <option value="4:30">4:30</option>
+                                    <option value="5:00">5:00</option>
+                                    <option value="5:30">5:30</option>
+                                    <option value="6:00">6:00</option>
+                                    <option value="6:30">6:30</option>
+                                    <option value="7:00">7:00</option>
+                                    <option value="7:30">7:30</option>
+                                    <option value="8:00">8:00</option>
+                                    <option value="8:30">8:30</option>
+                                    <option value="9:00">9:00</option>
+                                    <option value="9:30">9:30</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="10:30">10:30</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="11:30">11:30</option>
+                                </select>
+                            </div>
+                            <div class="value_right">
+                                <select name="end_period" class="form-control" required>
+                                    <option selected value="">Select Meridiem</option>
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="plus_icon">
+                            <button type="button" class="remove text_666"><i class="fa fa-minus-square"></i></button>
+                            <button type="button" class="clone text_666"><i class="fa fa-plus-square"></i></button>
+                        </div>
+{#                        <input type="hidden" id="{{ schedule_id }}" name="id">#}
+                    </div>
+                    <div class="clearfix"></div>
+
+                </div>
+
+                                        {% comment %}<div class="col-lg-3">
+                                          <div class="form-group">
+                                            <label>From Day</label>
+                                            <select name="from_day" class="form-control" required>
+                                              <option value="">Select day</option>
+                                              <option value="mon">Monday</option>
+                                              <option value="tue">Tuesday</option>
+                                              <option value="wed">Wednesday</option>
+                                              <option value="thu">Thursday</option>
+                                              <option value="fri">Friday</option>
+                                              <option value="sat">Saturday</option>
+                                              <option value="sun">Sunday</option>
+                                            </select>
+                                          </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                          <div class="form-group">
+                                            <label>To Day</label>
+                                            <select name="to_day" class="form-control" >
+                                              <option value="">Select day</option>
+                                              <option value="mon">Monday</option>
+                                              <option value="tue">Tuesday</option>
+                                              <option value="wed">Wednesday</option>
+                                              <option value="thu">Thursday</option>
+                                              <option value="fri">Friday</option>
+                                              <option value="sat">Saturday</option>
+                                              <option value="sun">Sunday</option>
+                                            </select>
+                                          </div>
+                                        </div>{% endcomment %}
+
+                                      {% comment %}<div class="col-lg-6 p_0 m_t_25">
+                                        <div class="row p_b_10" >
+                                          <div class="col-md-5">
+                                            <div class="right_schedule">
+                                            <div class="input-group">
+                                              <select name="start_time" class="form-control"  required>
+                                                <option value="">From Time</option>
+                                                <option value="12:00">12:00</option>
+                                                <option value="12:30">12:30</option>
+                                                <option value="1:00">1:00</option>
+                                                <option value="1:30">1:30</option>
+                                                <option value="2:00">2:00</option>
+                                                <option value="2:30">2:30</option>
+                                                <option value="3:00">3:00</option>
+                                                <option value="3:30">3:30</option>
+                                                <option value="4:00">4:00</option>
+                                                <option value="4:30">4:30</option>
+                                                <option value="5:00">5:00</option>
+                                                <option value="5:30">5:30</option>
+                                                <option value="6:00">6:00</option>
+                                                <option value="6:30">6:30</option>
+                                                <option value="7:00">7:00</option>
+                                                <option value="7:30">7:30</option>
+                                                <option value="8:00">8:00</option>
+                                                <option value="8:30">8:30</option>
+                                                <option value="9:00">9:00</option>
+                                                <option value="9:30">9:30</option>
+                                                <option value="10:00">10:00</option>
+                                                <option value="10:30">10:30</option>
+                                                <option value="11:00">11:00</option>
+                                                <option value="11:30">11:30</option>
+                                              </select>
+                                              <div class="input-group-addon">
+                                                <select name="start_period"  required>
+                                                  <!--<option value="">Select Meridiem</option>-->
+                                                  <option value="AM">AM</option>
+                                                  <option value="PM">PM</option>
+                                                </select>
+                                              </div>
+                                            </div>
+                                            </div>
+                                          </div>
+                                          <div class="col-md-5">
+                                            <div class="input-group">
+                                              <select id="" name="end_time" required class="form-control" >
+                                                <option value="">Open</option>
+                                                <option value="12:00">12:00</option>
+                                                <option value="12:30">12:30</option>
+                                                <option value="1:00">1:00</option>
+                                                <option value="1:30">1:30</option>
+                                                <option value="2:00">2:00</option>
+                                                <option value="2:30">2:30</option>
+                                                <option value="3:00">3:00</option>
+                                                <option value="3:30">3:30</option>
+                                                <option value="4:00">4:00</option>
+                                                <option value="4:30">4:30</option>
+                                                <option value="5:00">5:00</option>
+                                                <option value="5:30">5:30</option>
+                                                <option value="6:00">6:00</option>
+                                                <option value="6:30">6:30</option>
+                                                <option value="7:00">7:00</option>
+                                                <option value="7:30">7:30</option>
+                                                <option value="8:00">8:00</option>
+                                                <option value="8:30">8:30</option>
+                                                <option value="9:00">9:00</option>
+                                                <option value="9:30">9:30</option>
+                                                <option value="10:00">10:00</option>
+                                                <option value="10:30">10:30</option>
+                                                <option value="11:00">11:00</option>
+                                                <option value="11:30">11:30</option>
+                                              </select>
+                                              <div class="input-group-addon">
+                                                <select id="" name="end_period" required >
+                                                  <!--<option value="">Select Meridiem</option>-->
+                                                  <option value="AM">AM</option>
+                                                  <option value="PM">PM</option>
+                                                </select>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="col-md-2 m_t_5">
+                                            <button type="button" class="remove text_666"><i class="fa fa-minus-square"></i></button>
+                                            <button type="button" class="clone text_666"><i class="fa fa-plus-square"></i></button>
+                                          </div>
+                                        </div>
+                                      </div>{% endcomment %}
+                                      <div class="col-md-12">
+                                        <button type="submit" class="btn btn-success waves-effect p_lr_30" style="padding: 6px 30px;">Save</button>
+                                        <button type="button" class="btn btn-default waves-effect bg_ededed" >Cancel</button>
+                                      </div>
+                                    </div>
+                                  </form>
+                                  <p>&nbsp;</p>
+                                  <div class="table-responsive table_modify_for_all">
+                                    <table class="table table-bordered text-center">
+                                      <thead class="bg_ededed">
+                                        <tr>
+
+                          <th rowspan="2">From Days</th>
+                          <th rowspan="2">To Days</th>
+                          <th colspan="2">Timing</th>
+                            <th rowspan="2">Action</th>
+
+                        </tr>
+                        <tr>
+                          <th>Start Time</th>
+                          <th>End Time</th>
+
+
+                        </tr>
+                                      </thead>
+                                      <tbody>
+                                      {% for i in schedule_list %}
+                                         <tr>
+                                            <td>{{ i.from_day|upper }}</td>
+                                            <td>{{ i.to_day|upper }}</td>
+                                            <td>{% for time in i.timing %}
+                                                {{ time.start_time }}
+                                                <br>
+                                                {% endfor %}
+                                                </td>
+                                            <td>{% for time in i.timing %}
+                                                {{ time.end_time }}
+                                                <br>
+                                                {% endfor %}</td>
+                                            <td><a class="text_blue" href="{% url 'delete-live-organisation-schedule' organisation_id %}?id={{ i.id }}" title="Delete" ><i class="fa fa-trash-o text-danger fa-fw"></i></a></td>
+                                         </tr>
+                                      {% endfor %}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                           <script>
+ $(document).ready(function () {
+     var check = $('#byappointment');
+
+     if ("True" === "{{ by_check }}") {
+         check.attr('checked', true);
+          $(".left_schedule").hide();
+             $(".right_schedule").hide();
+     }
+     });
+     var regex = /^(.+?)(\d+)$/i;
+     var cloneIndex = $(".right_schedule").length;
+
+     function clone() {
+         $(this).parents(".right_schedule").clone()
+                 .appendTo(".tableschedule")
+                 .attr("id", "right_schedule" + cloneIndex)
+                 .find("*")
+                 .each(function () {
+                     var id = this.id || "";
+                     var match = id.match(regex) || [];
+                     if (match.length == 3) {
+                         this.id = match[1] + (cloneIndex);
+
+                     }
+                 })
+                 .on('click', 'button.clone', clone)
+                 .on('click', 'button.remove', remove);
+         cloneIndex++;
+     }
+
+     function remove() {
+         $(this).parents(".right_schedule").remove();
+     }
+
+     $("button.clone").on("click", clone);
+     if (cloneIndex > 1) {
+         $("button.remove").on("click", remove);
+     }
+     function valueChanged() {
+         if ($('#byappointment').is(":checked")) {
+             $(".left_schedule").hide();
+             $(".right_schedule").hide();
+         }
+         else {
+
+
+             $(".left_schedule").show();
+             $(".right_schedule").show();
+         }
+     }
+$('#alert').fadeIn().delay(2000).fadeOut('slow');
+
+    </script>
+                            <!--Clinic OPD Timing end-->
+
+                            <!--Upload Profile Photo, Logo and Stamp start-->
+                            <div class="panel border_radius_none">
+                              <div class="panel-heading bg_666 p_tb_0 row m_0"> <span class="pull-right m_t_5"> <a class="panel-title" data-parent="#cbf" data-toggle="collapse"  data-target="#gf3"> <i class="fa fa-plus text_white"></i> </a> </span>
+                                <div class="m_0" style="width: 350px; margin-top: 5px;">
+                                  <label style="width:auto;"  class="font_weight_600"> <strong class="text_white">Upload Profile Photo, Logo and Stamp</strong> </label>
+                                </div>
+                              </div>
+                              <div id="gf3" class="collapse panel-collapse">
+                                <div class="row">
+                                    <form action="{% url 'live_org_upload_image' organisation_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                                        <div class="col-md-6 col-sm-3">
+                                        <h5 class="font_weight_600 text_666">Upload Profile image</h5>
+                                        <input name="ii" type="hidden" value="profileImage">
+                                        <input type="checkbox"  class="custom_position"  name="check_action">
+                                        <div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src="{{ hostport }}{{ a.profileImage }}"></img>   </div>
+                                        <input id="profile_image" type="file" class="inputvisible" name="profile_image">
+                                        <button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload Profile photo</button>
+                                        <button  style="margin-top: 15px;!important;" type="submit" onclick = checkboxx() class="btn btn-danger ">Delete</button>
+
+                                        <p>&nbsp;</p>
+                                        </div>
+                                    </form>
+
+
+                                <form action="{% url 'live_org_upload_image' organisation_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                                    <div class="col-md-6 col-sm-3">
+                                    <h5 class="font_weight_600 text_666">Upload logo</h5>
+                                    <input name="ii" type="hidden" value="logo">
+                                    <div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src="{{ hostport }}{{ a.logo }}"></img>   </div>
+                                    <input id="logo" type="file" class="inputvisible" name="logo">
+                                    <button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload Logo</button>
+                                    <p>&nbsp;</p>
+                                    </div>
+                                </form>
+
+                                <form action="{% url 'live_org_upload_image' organisation_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                                    <div class="col-md-6 col-sm-3">
+                                    <h5 class="font_weight_600 text_666">Upload stamp</h5>
+                                    <input name="ii" type="hidden" value="stamp">
+                                    <div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src="{{ hostport }}{{ a.stamp }}"></img>   </div>
+                                    <input id="stamp" type="file" class="inputvisible" name="stamp">
+                                    <button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload stamp</button>
+                                    <p>&nbsp;</p>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                            </div>
+                            <!--Upload Profile Photo, Logo and Stamp end-->
+
+                            <!--Rewards and Recognization start-->
+                            <div class="panel border_radius_none">
+                              <div class="panel-heading bg_666 p_tb_0 row m_0"> <span class="pull-right m_t_5"> <a class="panel-title"  data-parent="#cbf" data-toggle="collapse"  data-target="#gf4"> <i class="fa fa-plus text_white"></i> </a> </span>
+                                <div class="m_0" style="width: 200px; margin-top: 5px;">
+                                  <label style="width:auto;" class="font_weight_600"> <strong class="text_white">Rewards & Recognization</strong> </label>
+                                </div>
+                              </div>
+                              <div  id="gf4" class="collapse panel-collapse">
+                                <div class="panel-body p_t_5">
+                                  <button type="button" class="btn btn-link waves-effect btn_link_modify font_size_14" data-toggle="collapse" data-target="#add_newagain"><i class="fa fa-plus fa-fw"></i> Add New</button>
+                                  <div class="collapse" id="add_newagain">
+                                    <form role="form" class="m_t_15" name="formValidate" actioin="{% url 'live-organisation-listing-edit' organisation_id %}?tab=1" method="post">
+                                      <input type="hidden" class="form-control" name="xxx" value="reward_recog">
+                                      <div class="row">
+                                        <div class="col-lg-6">
+                                          <div class="form-group" >
+                                            <input type="text" name="reward" class="form-control" placeholder="Reward*"
+                                                                minlength="3"
+                                                               maxlength="300" required>
+                                            <span class="text-danger" >Please Enter valid Name (only Alphabets)</span> </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                          <div class="form-group">
+                                            <select id = "year1"class="form-control" name="year" required>
+                                              <option value="">Year*</option>
+                                            </select>
+                                          </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                          <button type="submit" class="btn btn-info waves-effect"  style="padding: 6px 30px;">Add</button>
+                                          &nbsp;
+                                          <button type="button" class="btn btn-default waves-effect bg_d0d0d0 " >Cancel</button>
+                                        </div>
+                                      </div>
+                                    </form>
+                                  </div>
+                                  <hr class="hr_modify">
+                                  <p>&nbsp;</p>
+                                  <div class="table-responsive table_modify_for_all">
+                                    <table class="table table-bordered text-center">
+                                      <thead class="bg_ededed">
+                                        <tr>
+                                          <th class="text-center font_weight_400 font_size_16">Sr. No.</th>
+                                          <th class="text-center font_weight_400 font_size_16">Rewards</th>
+                                          <th class="text-center font_weight_400 font_size_16">Year</th>
+                                          <th class="text-center font_weight_400 font_size_16">Action</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr >
+                                            {% if organisation_reward_obj%}
+                                            {% for oo in  organisation_reward_obj%}
+                                              <td>{{ forloop.counter}}</td>
+                                              <td>{{oo.name}}</td>
+                                              <td>{{oo.year}}</td>
+                                          <td><!--<button class="text_blue"  title="Edit" data-toggle="collapse" data-target="#add_new" ng-click="editRewardAsDoctor($index,reward)"><i class="fa fa-pencil fa-fw"></i></button> &nbsp; | &nbsp;-->
+                                            <a class="text_blue" href="{% url 'live_org_delete_rewrecog' oo.id %}" data-toggle="tooltip" title="Delete" ><i class="fa fa-trash-o text-danger fa-fw"></i></a></td>
+                                        </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <!--Rewards and Recognization end-->
+
+                            <!--Registration Details start-->
+                            <div class="panel border_radius_none">
+                              <div class="panel-heading bg_666 p_tb_0 row m_0"> <span class="pull-right m_t_5"> <a class="panel-title"  data-parent="#cbf" data-toggle="collapse"  data-target="#gf5"> <i class="fa fa-plus text_white"></i> </a> </span>
+                                <div class="m_0" style="width: 200px; margin-top: 5px;">
+                                  <label style="width:auto;" class="font_weight_600"> <strong class="text_white">Registration Details</strong> </label>
+                                </div>
+                              </div>
+                              <div class="collapse panel-collapse" id="gf5">
+                                <div class="panel-body">
+                                  <form role="form" name="formValidate" action="{% url 'live-organisation-listing-edit' organisation_id%}?tab=1" method="post">
+                                    <input type="hidden" class="form-control" name="xxx" value="registration_detail">
+                                    <div class="row">
+                                      <div class="col-md-6 col-sm-6">
+                                        <label class="font_weight_400 font_size_14 text-muted">Registration Details</label>
+                                        <div class="form-group">
+                                          <input type="text" name="mciNo" class="form-control" placeholder="Registration Detail"
+                                                            maxlength="50" value ="{{a.registration_details}}" required>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-6 col-sm-6 p_t_25">
+                                        <button type="submit" class="btn btn-success waves-effect p_lr_30" style="padding: 6px 30px;">Save</button>
+                                        <button type="button" class="btn btn-default waves-effect bg_ededed">Cancel</button>
+                                      </div>
+                                    </div>
+                                  </form>
+                                </div>
+                                <div class="panel-body">
+                                  <div class="overflow_hidden">
+                                        <form action="{% url 'live_org_upload_image' organisation_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                                            <div class="col-md-6 col-sm-6">
+                                            <h5 class="font_weight_600 text_666">Upload registration image</h5>
+                                            <input name="ii" type="hidden" value="registration">
+                                            <div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src=""></img>   </div>
+                                            <input id="registration" type="file" class="inputvisible" name="registration">
+                                            <button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload registration image</button>
+                                            <p>&nbsp;</p>
+                                            </div>
+                                        </form>
+                                  </div>
+                                  <div class="row">
+                                      {% for i in reg_imgage %}
+                                        <div class="col-md-6 col-sm-6">
+                                        <div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src="{{ hostport }}{{ i.image }}"></img>   </div>
+                                        <p>&nbsp;</p>
+                                        </div>
+                                      {% endfor%}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <!--Registration Details end-->
+
+                            <!--Upload Gallery start-->
+                            <div class="panel border_radius_none">
+                              <div class="panel-heading bg_666 p_tb_0 row m_0"> <span class="pull-right m_t_5"> <a class="panel-title"  data-parent="#cbf" data-toggle="collapse"  data-target="#gf6"> <i class="fa fa-plus text_white"></i> </a> </span>
+                                <div class="m_0" style="width: 200px; margin-top: 5px;">
+                                  <label style="width:auto;" class="font_weight_600 text_666"> <strong class="text_white">Upload Gallery</strong> </label>
+                                </div>
+                              </div>
+                              <div class="collapse panel-collapse" id="gf6">
+                                <div class="panel-body">
+                                  <div class="overflow_hidden">
+                                        <form action="{% url 'live_org_upload_image' organisation_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                                            <div class="col-md-6 col-sm-6">
+                                            <h5 class="font_weight_600 text_666">Upload registration image</h5>
+                                            <input name="ii" type="hidden" value="gallery_image">
+                                            <div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src=""></img>   </div>
+                                            <input id="gallery_image" type="file" class="inputvisible" name="gallery_image">
+                                            <button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload registration image</button>
+                                            <p>&nbsp;</p>
+                                            </div>
+                                        </form>
+                                  </div>
+                                  <div class="row">
+                                      {% for i in gal_imgage %}
+                                        <div class="col-md-6 col-sm-6">
+                                        <div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src="{{ hostport }}{{ i.image }}"></img>   </div>
+                                        <p>&nbsp;</p>
+                                        </div>
+                                      {% endfor%}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <!--Upload Gallery end-->
+
+                            <script>
+                            $(document).ready(function(){
+                                $('.collapse').on('shown.bs.collapse', function(){
+                                    $(this).parent().find(".fa-plus").removeClass("fa-plus").addClass("fa-minus");
+                                }).on('hidden.bs.collapse', function(){
+                                    $(this).parent().find(".fa-minus").removeClass("fa-minus").addClass("fa-plus");
+                                });
+                            });
+                        </script>
+                            <style>
+                            .input-group-addon{padding-top: 0; padding-bottom: 0;}
+                            .selectdiv:after{top:5px;}
+                            input[type=file] {
+                        display: none;}
+
+                        </style>
+                          </div>
+                        </div>
+                    </div>
+                    {% endif %}
+  <!--***************************************************************** Tab - 2 Starts *********************************************************************************************************************-->
+                    {% if tab == '2' %}
+                    <div class="tab-pane fade {% if tab == '2' %}in active{% endif %}" id="owner_profile">
+                         <div class="form-group">
+                            {% if owner_details_obj.isDoctor == True %}
+                                  <input type="radio" name="ownerProf" id="doctor" disabled>
+                                  <label for="doctor" >Non Doctor</label>
+                                  <input type="radio" name="ownerProf"  id="noneDoctor"   style="margin-left:20px;" checked disabled>
+                                  <label for="noneDoctor"> Doctor</label>
+                            {% else %}
+                                  <input type="radio" name="ownerProf" id="doctor" checked disabled>
+                                  <label for="doctor" >Non Doctor</label>
+                                  <input type="radio" name="ownerProf"  id="noneDoctor"   style="margin-left:20px;" disabled>
+                                  <label for="noneDoctor"> Doctor</label>
+                            {% endif %}
+                         </div>
+                        <!--Doctor Start-->
+                        {% if owner_details_obj.isDoctor == True %}
+                            <div id="ownerDoctor" class="row" >
+                            <div>
+                            <div class="row m_0">
+                                <div style="overflow:auto; height:400px; padding: 5px 20px;">
+                                    <div class="table-responsive table_modify_for_all">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>Category</th>
+                                                <th>Current User</th>
+                                                <th>Stage</th>
+                                                <th>Activated</th>
+                                                <th>Created At</th>
+                                                <th>Updated At</th>
+                                                <th class="col-md-2">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>{{ live_doc_obj.firstName | capfirst }}</td>
+                                                    <td>{{ live_doc_obj.lastName | capfirst }}</td>
+                                                    <td>{{ cat.name | capfirst }}</td>
+                                                    <td>{{ live_doc_obj.current_user.username | capfirst }}</td>
+                                                    <td>{{ live_doc_obj.stage.stage_name | capfirst }}</td>
+                                                    <td>{% if live_doc_obj.activationStatus %}Yes{% else %}No{% endif %}</td>
+                                                    <td>{{ live_doc_obj.createdAt }}</td>
+                                                    <td>{{ live_doc_obj.updatedAt }}</td>
+                                                    <td><a href="{% url 'live_doctor_listing_edit' live_doc_obj.id %}?tab=1"
+                                                           class="btn btn-default btn-sm" style="padding:0 3px;">
+                                                        <i class="fa fa-edit"></i></a></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                            </div>
+                            <!--Doctor End-->
+                            <!--Non-Doctor Start-->
+                        {% else %}
+                        <div id="ownerDoctor" class="row" >
+                        <div>
+                        <form action="{% url 'live-organisation-listing-edit' 1 %}?tab=2" method="post">
+                            <input type="hidden"  name="user_id" value="{{ owner_details_obj.user_id }}" >
+                            <input type="hidden"  name="i_id" value="{{ owner_details_obj.id }}" >
+
+                            <div class="row m_0">
+                                <p>&nbsp;</p>
+                                <h1 class="login_detils position_relative"><span
+                                            class="font_weight_700 text_666">Basic Details</span></h1>
+                                <p>&nbsp;</p>
+                                <div class="form-group col-md-3">
+                                    <label>First Name:</label>
+                                    <input type="text" placeholder="First Name" name="fname" class="form-control" value="{{ owner_details_obj.firstName }}" disabled>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label>Last Name:</label>
+                                    <input type="text" placeholder="Last Name" name="lname" class="form-control" value="{{ owner_details_obj.lastName }}" disabled>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label>DOB:</label>
+                                    <input type="text"  class="form-control datetimepicker1 dob "
+                                               placeholder="DOB"  id="ncdob" name="dob" value="{{ owner_details_obj.dob|show_dob }}">
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label>Gender:</label>
+                                    <div class="text-muted">
+                                            <input type="radio" class="with-gap" id="OwnerPm" {% if owner_details_obj.gender == 'male' or owner_details_obj.gender == 'Male' %} checked=""{% endif %} name="gender" value="male" >
+                                            <label for="OwnerPm" class="text_999"> Male</label>
+
+                                            <input type="radio"  ID="OwnerPf" class="with-gap" {% if owner_details_obj.gender == "female" or owner_details_obj.gender == 'Female' %} checked="" {% endif %} name="gender" value="female" >
+                                            <label for="OwnerPf" class="text_999">&nbsp; Female</label>
+                                    </div>
+                                </div>
+                                <div class="clearfix">
+                            </div>
+                            <div class="m_0 clearfix">
+                                    <h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Contact details</span> </h1>
+                                    <p>&nbsp;</p>
+                                    <div class="form-group col-md-3">
+                                        <label>Phone number:</label>
+                                        <input type="text" placeholder="Phone number" maxlength="10" minlength="10"
+                                               only-numbers
+                                               class="form-control" value="{{ owner_details_obj.phoneNo }}" name="phone">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Fax:</label>
+                                        <input type="text" placeholder="Fax" maxlength="10" minlength="10"
+                                               only-numbers
+                                               class="form-control" value="{{ owner_details_obj.fax }}" name="fax">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Mobile number:</label>
+                                        <input type="text" placeholder="Mobile number" maxlength="10" minlength="10"
+                                                only-numbers class="form-control" name="mobile" value="{{ owner_details_obj.mobileNo }}" disabled>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Skype:</label>
+                                        <input type="email" placeholder="Skype" name="skype"
+                                               class="form-control" value="{{ owner_details_obj.skypeId }}" >
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Email id:</label>
+                                        <input type="email" placeholder="Email id" name="email"
+                                                class="form-control" value="{{ owner_details_obj.email }}" disabled>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Alternate email id:</label>
+                                        <input type="email" placeholder="Alternate email id" class="form-control" name="altemail" value="{{ owner_details_obj.alternateEmail }}" >
+                                    </div>
+                                    <div class="row">
+                                        <button class="btn btn-info btn-sm" type="submit">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src="{{ hostport }}{{ owner_details_obj.profileImage }}"></img>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6" style="height:100%;">
+                                    <div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src="{{ hostport }}{{ owner_details_obj.IDCardImage }}"></img>
+                                    </div>
+                                </div>
+                                <p>&nbsp;</p>
+                            </div>
+                        </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+  <!--***************************************************************** Tab - 3 Starts *********************************************************************************************************************-->
+                    {% if tab == '3' %}
+                    <div class="tab-pane fade {% if tab == '3' %}in active{% endif %}" id="consultant_doctor">
+                        <div style="margin-top:20px!important; "><label>Live Doctor</label></div>
+                           <div class="table-responsive table_modify_for_all ">
+                              <table class="table table-bordered m_b_0">
+                                 <thead class="bg_ededed">
+                                    <tr>
+                                        <th>Sr. No.</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Zone</th>
+                                        <th>Zone Location</th>
+                                        <th>Talk To Doc</th>
+                                        <th>Curent User</th>
+                                        <th>Category</th>
+                                        <th>Stage</th>
+                                        <th>Duplicate</th>
+                                        <th>Created At</th>
+                                        <th>Updated At</th>
+                                        <th>Action</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                 {% if live_doctor %}
+                                    {% for i in live_doctor %}
+                                    <tr>
+                                       <td>{{ forloop.counter }}</td>
+                                       <td>{{ i.firstName | capfirst }}</td>
+                                       <td>{{ i.lastName | capfirst }}</td>
+                                       <td>{{ i.zone.name}}</td>
+                                       <td>{{ i.zone_location.name}}</td>
+                                       <td>{{ i.talk_to_doc}}</td>
+                                       <td>{{ i.current_user}}</td>
+                                       <td>{{ i.category|get_category}}</td>
+                                       <td>{{ i.stage.stage_name}}</td>
+                                       <td><a href="{% url 'view_duplicates' i.id %}" ><img src="/static/images/images/notes_warning.png" alt="Smiley face" height="20" width="20"></a></td>
+                                       <td>{{ i.createdAt}}</td>
+                                       <td>{{ i.updatedAt}}</td>
+                                       <td>
+                                         <a href="{% url 'live_doctor_listing_edit' i.id %}?tab=1" class="btn btn-default btn-sm" style="padding:0 3px;"> <i class="fa fa-edit"></i></a>
+                                            {% if i.is_disable == False %}<a href="{% url 'deactivate_single_live_doctor' i.id %}" class="btn btn-danger btn-sm" style="padding:0 3px;">Disable </a>{% endif %}
+                                            {% if i.is_disable == True %}<a href="{% url 'activate_single_live_doctor' i.id %}" class="btn btn-success btn-sm" style="padding:0 3px;">Enable </a>{% endif %}
+                                          {% if i.id in ii%}
+                                             <a href="{% url 'associate-disassociate-live-organisation' a.id i.id %}" class="btn btn-danger dropdown-toggle" style="padding:0 4px;" >DisAssociate
+                                             </a>
+                                           <div class="dropup">
+                                          {% else %}
+                                              <a href="{% url 'associate-disassociate-live-organisation' a.id i.id %}?flag=1" class="btn btn-info dropdown-toggle" style="padding:0 4px;" >Associate
+                                            </a>
+                                          {% endif %}
+
+                                       </div>
+                                       </td>
+                                        <td>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                 {% else %}
+                                     <tr><td colspan="14">No Live Doctor Found</td></tr>
+                                 {% endif %}
+                                 </tbody>
+                              </table>
+                           </div>
+
+                           <div style="margin-top:50px!important; "><label>None Live Doctor</label></div>
+                           <div class="table-responsive table_modify_for_all">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Sr No</th>
+                                        <th>Name</th>
+                                        <th>Zone</th>
+                                        <th>Zone Location</th>
+                                        <th>Category</th>
+                                        <th>Current User</th>
+                                        <th>Stage</th>
+                                        <th>Created At</th>
+                                        <th>Updated At</th>
+                                        <th style="min-width: 110px!important;">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if doctor_obj %}
+                                    {% for i in doctor_obj %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ i.name | capfirst }}</td>
+                                            <td>{{ i.zone}}</td>
+                                            <td>{{ i.zone_location}}</td>
+                                            <td>{{ i.category}}</td>
+                                            <td>{{ i.stage}}</td>
+                                            <td>{{ i.current_user}}</td>
+                                            <td>{{ i.createdAt}}</td>
+                                            <td>{{ i.updatedAt}}</td>
+                                            <td><a class="btn btn-default btn-sm p_0" href="{% url 'doctor-listing-edit' i.id %}"><i
+                                                class="fa fa-pencil-square-o fa-fw"></i></a> | <a href="
+                                                {% if i.is_disable %}{% url 'doctor-data-enable' i.id %}{% else %}{% url 'doctor-data-deactivate' i.id %}{% endif %}"
+                                                                                                  class="btn btn-default btn-sm">
+                                             {% if d.is_disable %}Enable {% else %}Disable {% endif %}</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                    {% else %}
+                                         <tr><td colspan="10">No Doctor Found</td></tr>
+                                     {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endif %}
+  <!--***************************************************************** Tab - 4 Starts *********************************************************************************************************************-->
+                    {% if tab == '4' %}
+                    <div class="tab-pane fade {% if tab == '4' %}in active{% endif %}" id="associates">
+                          <div class="table-responsive table_modify_for_all ">
+                              <table class="table table-bordered m_b_0">
+                                 <thead class="bg_ededed">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Mobile Number</th>
+                                        <th>Email ID</th>
+                                        <th>Roles</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                 {% if org_data %}
+                                    {% for i in org_data %}
+                                    <tr>
+                                    <td>{{i.firstName}} {{i.lastName}}</td>
+                                    <td>{{i.mobileNo}}</td>
+                                    <td>{{i.email}}
+                                    <td>{{i.user_type}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                 {% else %}
+                                     <tr><td colspan="5">No Associates Found</td></tr>
+                                 {% endif %}
+                                 </tbody>
+                              </table>
+                    </div>
+                    </div>
+                    {% endif %}
+  <!--***************************************************************** Tab - 5 Starts *********************************************************************************************************************-->
+                    {% if tab == '5' %}
+                    <div class="tab-pane fade {% if tab == '5' %}in active{% endif %}" id="package_association">
+                        <div class="row m_0">
+                        <div class="table-responsive table_modify_for_all">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                    <th>Sr No</th>
+                                    <th>Organization Plan Name</th>
+                                    <th>Plan Price</th>
+                                    <th>Provider ID</th>
+                                    <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% if plan_list %}
+                                    {% for key,value in plan_list.items %}
+                                        <tr>
+                                        <td>{{ forloop.counter}}</td>
+                                        <td>{{ value.plan_name | capfirst }}</td>
+                                        <td>{{ value.plan_price }}</td>
+                                        <td>{{ value.provider_id  }}</td>
+                                        <td>
+                                        <a class="btn btn-danger btn-sm p_0" href="{% url 'organisation-listing-edit' a.id %}?tab=4&delete=delete&planid={{ key }}"><i class="fa fa-trash-o text-danger fa-fw text_333"></i></a>
+                                        </td>
+                                    {% endfor %}
+                                </tbody>
+                                 {% endif %}
+                            </table>
+                                {% comment %}{% if plan_list %}
+                                    <div class="text-right">
+                                        <ul class="pagination">
+                                            {% if plan_list.has_previous %}
+                                                <li class="prev"><a href="?page={{ plan_list.previous_page_number }}">Prev</a></li>
+                                            {% endif %}
+                                            <li><a>Page {{ plan_list.number }} of {{ plan_list.paginator.num_pages }}</a></li>
+                                            {% if plan_list.has_next %}
+                                                <li class="next"><a href="?page={{ plan_list.next_page_number }}">Next</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                {% endif %}{% endcomment %}
+                        </div>
+
+                        <div class="m_tb_10">
+                            <div class="m_tb_10">
+                                <h4 class="font_weight_600">Add New Plan <span class="pull-right"><a
+                                        href="{{ back_to_url }}" class="btn btn-info btn-sm">Go Back</a></span></h4>
+
+                            </div>
+                            <form role="form" action="#" method="post" enctype="multipart/form-data">
+                                <div class="row">
+                                    {% csrf_token %}
+                                    <div class="col-md-12">
+                                        <div class="form-group col-md-6">
+                                            <label>Package Name</label>
+                                            <input type="text" name="package_name" class="form-control">
+                                        </div>
+                                            <div class="form-group col-md-6">
+                                            <label>package Rates</label>
+                                            <input type="text" class="form-control" name="package_rates">
+                                                 </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                             <div class="form-group col-md-6">
+                                                <label>Provider Name </label>
+                                                <select class="form-control" name="provider_name">
+                                                  <option value="" disabled>----Select Provider---</option>
+                                                {% for i in provider_list %}
+                                                    <option value="{{ i.id }}">{{ i.owner_name | capfirst}}</option>
+                                                    {% endfor %}
+                                                    </select>
+                                             </div>
+                                       </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row m_0" style="background: rgba(0,0,0,0.1);">
+                                            <div class="col-md-10" id="sss">
+                                                <label>Package details:</label>
+                                                <div class="clearfix"></div>
+                                                 <div id="app">
+                                <div id="wrap1">
+                                    <div id="in1" class="form-group col-md-12">
+
+                                        <input type="text" name="investigations" class="form-control" placeholder="Investigations"
+                                               >
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>&nbsp;</label>
+                                    <div class="form-group p_t_10 text_666">
+
+                                        <button type="button" id="btn2"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn1"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                <div id="wrap2">
+                                    <div id="in2" class="form-group col-md-12">
+
+                                        <input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests"
+                                               >
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label>&nbsp;</label>
+                                    <div class="form-group p_t_10 text_666">
+
+                                        <button type="button" id="btn4"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn3"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                <div id="wrap3">
+                                    <div id="in3" class="form-group col-md-12">
+
+                                        <input type="text" name="diabetes_evaluation" class="form-control" placeholder="Diabetes Evaluation"
+                                               >
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>&nbsp;</label>
+                                    <div class="form-group p_t_10 text_666">
+
+                                        <button type="button" id="btn6"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn5"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                <div id="wrap4">
+                                    <div id="in4" class="form-group col-md-12">
+
+                                        <input type="text"  name="consultations" class="form-control" placeholder="Consultations"
+                                               >
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>&nbsp;</label>
+                                    <div class="form-group p_t_10 text_666">
+
+                                        <button type="button" id="btn8"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn7"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+
+                                {#      <div class="form-group col-md-6">#}
+                                {##}
+                                {#  <textarea class="form-control" name="bullet_body"></textarea>#}
+                                {#  </div>#}
+                            </div>
+                                            </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group col-md-12">
+                                                <label>Package Description</label>
+                                                <textarea class="form-control" name="package_description"></textarea>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label>Type</label>
+                                                <select class="form-control" name="type"></select>
+                                            </div>
+
+
+                                            <div class="form-group col-md-6">
+                                                <label>Instructions</label>
+                                                <textarea class="form-control" name="instructions"></textarea>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label>Validity</label>
+                                                <input type="text" name="validity" class="form-control">
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label>Timings</label>
+                                                <input type="text" name="timings" class="form-control">
+                                            </div>
+
+                                            <p class="text-right">
+                                                <button class="btn btn-info btn-sm" type="submit">Submit</button>
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                            </div>
+                    </div>
+                    {% endif %}
+  <!--***************************************************************** Tab - 6 Starts *********************************************************************************************************************-->
+                    {% if tab == '6' %}
+                    <div class="tab-pane fade {% if tab == '6' %}in active{% endif %}" id="manage_branch">
+                        <div class="table-responsive table_modify_for_all">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                <th>Sr No</th>
+                                <th>Status</th>
+                                <th>Location</th>
+                                <th>OPD Timing</th>
+                                <th>Address</th>
+                                <th>Mobile Number</th>
+                                <th>Email</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if org_branch %}
+                                {% for i in org_branch %}
+                                    {% if i.id != a.id%}
+                                        <tr>
+                                            <td>{{forloop.counter}}</td>
+                                            <td>{% if i.activation == True %}<a href="{% url 'live_org_disable_enable_branches' a.id %}?f=0" class="btn btn-danger btn-sm" style="padding:0 3px;">Disable </a>{% endif %}
+                                                {% if i.activation == False %}<a href="{% url 'live_org_disable_enable_branches' a.id %}?f=1" class="btn btn-success btn-sm" style="padding:0 3px;">Enable </a>{% endif %}</td>
+                                            <td>{{i.locality}}</td>
+                                            <td>{% for s in i.schedule_data %}
+                                                    <p>{{ s.from_day|upper }}-{{ s.to_day|upper }},
+                                                    {% for time in s.timing %}
+                                                        {{ time.start_time }}
+                                                    {% endfor %}
+                                                    {% for time in s.timing %}
+                                                        {{ time.end_time }}
+                                                    {% endfor %}</p>
+                                                {% endfor %}
+                                            </td>
+                                            <td>{{i.street}}</td>
+                                            <td>{{i.mobile_no}}</td>
+                                            <td>{{i.email}}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                            {% else %}
+                                <tr><td colspan="7">No Associated Therapists Found</td></tr>
+                            {% endif %}
+                        </table>
+                            <div class="text-right">
+                                <ul class="pagination">
+                                    {% if plan_list.has_previous %}
+                                        <li class="prev"><a href="?page={{ plan_list.previous_page_number }}">Prev</a></li>
+                                    {% endif %}
+                                    <li><a>Page {{ plan_list.number }} of {{ plan_list.paginator.num_pages }}</a></li>
+                                    {% if plan_list.has_next %}
+                                        <li class="next"><a href="?page={{ plan_list.next_page_number }}">Next</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                         </div>
+                    </div>
+                    {% endif %}
+  <!--***************************************************************** Tab - 7 Starts *********************************************************************************************************************-->
+                    {% if tab == '7' %}
+                    <div class="tab-pane fade {% if tab == '7' %}in active{% endif %}" id="therapist_association">
+                        <div class="table-responsive table_modify_for_all">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                <th>Sr No</th>
+                                <th>Therapist Name</th>
+                                <th>Therapist ID</th>
+                                <th>Therapist City</th>
+                                <th>Therapist Locality</th>
+                                <th>Consultancy Fee</th>
+                                <th>Department</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if attach_obj %}
+                                {% for i in attach_obj %}
+                                    <tr>
+                                    <td>{{ forloop.counter}}</td>
+                                    <td>{{ i.therapist.name }}</td>
+                                    <td>{{ i.therapist.id }}</td>
+                                    <td>{{ i.therapist.city.name }}</td>
+                                    <td>{{ i.therapist.locality.name }}</td>
+                                    <td>{{ i.consultancy_fee }}</td>
+                                    <td>{{ i.org_department.name }}</td>
+                                {% endfor %}
+                            </tbody>
+                            {% else %}
+                                <tr><td colspan="7">No Associated Therapists Found</td></tr>
+                            {% endif %}
+                        </table>
+                            <div class="text-right">
+                                <ul class="pagination">
+                                    {% if plan_list.has_previous %}
+                                        <li class="prev"><a href="?page={{ plan_list.previous_page_number }}">Prev</a></li>
+                                    {% endif %}
+                                    <li><a>Page {{ plan_list.number }} of {{ plan_list.paginator.num_pages }}</a></li>
+                                    {% if plan_list.has_next %}
+                                        <li class="next"><a href="?page={{ plan_list.next_page_number }}">Next</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                         </div>
+                    </div>
+                    {% endif %}
+  <!--***************************************************************** Tab - 8 Starts *********************************************************************************************************************-->
+                    {% if tab == '8' %}
+                    <div class="tab-pane fade {% if tab == '8' %}in active{% endif %}" id="dietitian_association">
+                        <div class="table-responsive table_modify_for_all">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                    <th>Sr No</th>
+                                    <th>Dietitian Name</th>
+                                    <th>Dietitian ID</th>
+                                    <th>Dietitian City</th>
+                                    <th>Dietitian Locality</th>
+                                    <th>Dietitian Fee</th>
+                                    <th>Department</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% if attach_obj2%}
+                                    {% for i in attach_obj2%}
+                                        <tr>
+                                        <td>{{ forloop.counter}}</td>
+                                        <td>{{ i.dietitian.name }}</td>
+                                        <td>{{ i.dietitian.id }}</td>
+                                        <td>{{ i.dietitian.city.name }}</td>
+                                        <td>{{ i.dietitian.locality.name }}</td>
+                                        <td>{{ i.consultancy_fee }}</td>
+                                        <td>{{ i.org_department.name }}</td>
+                                    {% endfor %}
+                                </tbody>
+                                {% else %}
+                                    <tr><td colspan="7">No Associated Dietitians Found</td></tr>
+                                {% endif %}
+                            </table>
+                            <div class="text-right">
+                                <ul class="pagination">
+                                    {% if plan_list.has_previous %}
+                                        <li class="prev"><a href="?page={{ plan_list.previous_page_number }}">Prev</a></li>
+                                    {% endif %}
+                                    <li><a>Page {{ plan_list.number }} of {{ plan_list.paginator.num_pages }}</a></li>
+                                    {% if plan_list.has_next %}
+                                        <li class="next"><a href="?page={{ plan_list.next_page_number }}">Next</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+  <!--***************************************************************** Tab - 9 Starts *********************************************************************************************************************-->
+                    {% if tab == '9' %}
+                    <div class="tab-pane fade {% if tab == '9' %}in active{% endif %}" id="manage_account">
+                    <div  id="update_email">
+                        <form action="#" method="post" >
+                            <h2>Manage Account</h2>
+                            <div class="form-group">
+                                <label>Mobile</label>
+                                <input type="text" name="gtmobile" pattern="^[1-9][0-9]*$" maxlength="10" minlength="10"  class="form-control" value= "{{a.mobile_no}}"  placeholder="Set mobile" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" name="gtmail"  class="form-control" value= "{{email}}" placeholder="Set email"  required>
+                            </div>
+
+                            <div class="form-group form-group-lg text-right">
+                                <button type="submit" class="btn btn-info waves-effect border_radius_none p_lr_60" disabled>Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% if a.activation == True %}
+                    <a type="button" class="btn btn-warning" href="{% url 'live_org_disable_enable_branches' a.id %}?f=0" >Deactivate User</a><br>
+                    {% endif%}
+                    {% if a.activation == False %}
+                    <a type="button" class="btn btn-warning" href="{% url 'live_org_disable_enable_branches' a.id %}?f=1">Activate User</a><br>
+                    {% endif%}
+                    <button type="button" class="btn btn-link btn_link_modify m_tb_10" data-toggle="collapse" data-target="#add_new_user"  style="color:#fff;"><i class="fa fa-plus fa-fw"></i>Create Login Account</button>
+                    <div class="collapse" id="add_new_user">
+                    <form action="{% url 'create_user_account_for_live_organisation' a.id %}"  method="post">
+                        <div class="form-group form-group-lg"><input type="text" class="form-control" value= "" name="firstName" disabled></div>
+                        <div class="form-group form-group-lg"><input type="text" class="form-control" value= "" name="lastName" disabled></div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="text" class="form-control" value = "{{a.email}}" name ="emaill" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender: &nbsp; &nbsp; &nbsp; </label>
+                            <label class="radio-inline" style="padding-top: 0;">
+                                <input type="radio" id="male" value="male" name="gender"   disabled> Male
+                            </label>
+                            <label class="radio-inline" style="padding-top: 0;">
+                                <input type="radio" id="female" value="female" name="gender"  disabled> Female
+                            </label>
+                        </div>
+                         <div class="form-group">
+                            <label>current Password *</label>
+                            <input type="password" name="curr" class="form-control" placeholder="Current Password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Set Password *</label>
+                            <input type="password" name="setp" class="form-control" placeholder="Set Password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password *</label>
+                            <input type="password" name="confpa" class="form-control" placeholder="Confirm Password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile Number *</label>
+                            <input type="text" class="form-control" value = "{{a.mobile_no}}" name ="mobile" disabled>
+                        </div>
+                        <div class="form-group form-group-lg text-right">
+                            <button type="submit" class="btn btn-info waves-effect border_radius_none p_lr_60">Submit</button>
+                        </div>
+                    </form>
+                    </div>
+                    </div>
+                    {% endif %}
+  <!--***************************************************************** Tab - 10 Starts *********************************************************************************************************************-->
+                    {% if tab == '10' %}
+                    <div class="tab-pane fade {% if tab == '10' %}in active{% endif %}" id="veryfied_field">
+                        <label style="margin-top: 20px;color: black;">Please Select Verified Fields</label>
+                        <div class="table table_modify_for_all p_tb_10">
+                            <form method="post" action="{% url 'live-organisation-listing-edit' a.id %}?tab=10">
+                                <select name="vfields" class="form-control chosen-select" multiple>
+                                    {% for iii in full_list %}
+                                        {% if iii in verified_list %}
+                                            <option value={{ iii }} selected>{{ iii }}</option>
+                                        {% else %}
+                                            <option value={{ iii }}>{{ iii }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            <button type="submit" class="btn btn-info m_tb_10">Save</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+  <!--***************************************************************** Tab - 11 Starts *********************************************************************************************************************-->
+                    {% if tab == '11' %}
+                    <div class="tab-pane fade {% if tab == '11' %}in active{% endif %}" id="merge_field">
+
+                        {% for k,v in merge_field.items %}
+                                <p>{{k}}   ::  {{v}}</p>
+                        {% endfor %}
+
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+    </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+<style>
+    input[type=file].inputvisible{display:block;}
+</style>
+
+            <script type="application/javascript">
+                function ValidateMobileCSV(value) {
+                    if (!value) {
+                        return true;
+                    }
+                    var check = (/^(\d{10},)*\d{10}$/.test(value));
+                    if (!check) {
+                        alert("Please put correct Mobile No");
+
+                    }
+                    return check
+
+                }
+                function ValidatePhoneCSV(value) {
+                    if (!value) {
+                        return true;
+                    }
+                    var check = (/^(\d{8},)*\d{8}$/.test(value));
+                    if (!check) {
+                        alert("Please put correct Phone No");
+
+                    }
+                    return check
+
+                }
+                function ValidateFax(value) {
+                    if (!value) {
+                        return true;
+                    }
+                    var check = (/^(\d{8})*\d{8}$/.test(value));
+                    if (!check) {
+                        alert("Please put correct Fax No");
+
+                    }
+                    return check
+
+                }
+
+                function ValidatePincode(value) {
+                    if (!value) {
+                        return true;
+                    }
+                    var check = (/^(\d{6})*\d{6}$/.test(value));
+                    if (!check) {
+                        alert("Please put correct Pin Code No");
+
+                    }
+                    return check
+
+                }
+
+                function validateMyForm() {
+                    var mobile = ValidateMobileCSV(document.getElementById('mobile').value);
+                    var phone = ValidatePhoneCSV(document.getElementById('phone').value);
+                    var fax = ValidateFax(document.getElementById('fax').value);
+                    var pincode = ValidatePincode(document.getElementById('pincode').value);
+                    var website = isValidURL(document.getElementById('website').value);
+                    if (mobile && phone && pincode && fax && website) {
+                        return true
+                    }
+                    return false
+                }
+
+                function isValidURL(url) {
+                    if (!url) {
+                        return true;
+                    }
+                    var RegExp = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+                    if (RegExp.test(url)) {
+                        return true;
+                    } else {
+                        alert("Please put valid website url");
+                        return false;
+                    }
+                }
+
+                function checkboxx(){
+                    
+                }
+
+            </script>
+            <script>
+
+                $(document).ready(function () {
+                    $('#ncdob')
+                            .datepicker({
+                                format: 'dd/mm/yyyy'
+                            })
+                            .on('changeDate', function (e) {
+                                // Revalidate the date field
+                                $('#eventForm').formValidation('revalidateField', 'date');
+                     });
+
+                });
+                $(document).ready(function () {
+                    var hospital = $('#is_hospital');
+                    var clinical = $('#is_clinical');
+                    if ("True" === "{{ a.is_hospital }}") {
+                        hospital.attr('checked', true);
+                    }
+                    if ("True" === "{{ a.is_clinic }}") {
+                        clinical.attr('checked', true);
+                    }
+                    hospital.click(function () {
+
+                        if (!hospital.prop('checked')) {
+                            hospital.attr('checked', false);
+                            clinical.attr('checked', true);
+                        }
+                        else {
+                            hospital.attr('checked', true);
+                            clinical.attr('checked', false);
+                        }
+
+                    });
+                    clinical.click(function () {
+
+                        if (!clinical.prop('checked')) {
+                            hospital.attr('checked', true);
+                            clinical.attr('checked', false);
+                        }
+                        else {
+                            hospital.attr('checked', false);
+                            clinical.attr('checked', true);
+                        }
+
+                    });
+                });
+            </script>
+            <script>
+                {#                $('#alert').fadeIn().delay(2000).fadeOut('slow');#}
+
+                function refreshURL(url) {
+                    window.location = url
+                }
+
+                $(document).ready(function () {
+                    $("#zone").chosen().change(function () {
+                        var zone = $('#zone').val();
+                        var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                        $.ajax({
+                            type: 'post',
+                            url: DOMAIN + '/doctor/zone_location/',
+                            data: {action: "get_filter", zone_id: zone},
+                            beforeSend: function () {
+                                var text = 'getting zone location  of ' + zone + ' . please wait..';
+                                ajaxindicatorstart(text);
+                            },
+                            success: function (data) {
+                                ajaxindicatorstop();
+                                // alert(data);
+
+                                {#                 console.log(JSON.parse(data));#}
+                                var obj = JSON.parse(data);
+                                {#                 var len_obj = Object.keys(obj).length;#}
+                                //console.log(len_obj);
+                                //alert(len);
+                                if (obj.length != 0) {
+                                    $("#zone_location option").remove();
+                                    $("#zone_location").trigger("chosen:updated");
+                                    var key_sel = '';
+                                    var value_sel = 'Select Zone Location';
+                                    var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                    $("#zone_location").append(select);
+                                    $("#zone_location").val(key_sel);
+                                    $("#zone_location").trigger("chosen:updated");
+                                    for (var i = 0; i < obj.length; i++) {
+                                        var name = obj[i].name;
+                                        name = name.capitalize();
+                                        var option = '<option value=' + obj[i].id + '>' + name + '</option>';
+                                        $("#zone_location").append(option);
+                                        $("#zone_location").trigger("chosen:updated")
+
+                                    }
+
+                                }
+                            },
+                            error: function (jqXHR, ex) {
+                            }
+                        });
+                    });
+                    {#         $("#zone_location").chosen().change(function () {#}
+                    {#             alert($("#zone_location").val())#}
+                    {#         })#}
+
+                });
+
+                String.prototype.capitalize = function () {
+                    return this.charAt(0).toUpperCase() + this.slice(1);
+                }
+                function checkRequiredParameter() {
+                    var category = document.getElementById('category_id').value;
+                    var zone = document.getElementById('zone').value;
+                    if (zone && category) {
+                        return true;
+                    }
+                    alert("Zone and Category selection mandatory parameter");
+                    return false;
+                }
+                $('#insightList').multiselect({
+                    enableClickableOptGroups: true
+                });
+                $('.img-wrap .close').on('click', function () {
+                    var id = $(this).closest('.img-wrap').find('img').data('id');
+                    $('#image_id' + id).val(id);
+                    $("#org_image_delete" + id).submit();
+
+                });
+            </script>
+
+            <script>
+                $("#checkAll").change(function () {
+                    $("input:checkbox").prop('checked', $(this).prop("checked"));
+                });
+                var $rows = $('#table tr');
+                $('#search').keyup(function () {
+                    var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+                    $rows.show().filter(function () {
+                        var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                        return !~text.indexOf(val);
+                    }).hide();
+                });
+
+            </script>
+        {% endfor %}
+    </div>
+    {% if tab == '5' %}
+   <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        function readURL(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah').attr('src', e.target.result);
+
+                    $('#blah').hide();
+                    $('#blah').fadeIn(650);
+
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#imgInp").change(function () {
+            readURL(this);
+        });
+        var clone_indexa = $("#wrap1").length;
+        var clone_indexb = $("#wrap2").length;
+        var clone_indexc = $("#wrap3").length;
+        var clone_indexd = $("#wrap4").length;
+
+
+        $("#btn1").click(function () {
+            $("#wrap1").append('<div id = "in1"  class="form-group col-md-12"><input type="text" name="investigations" class="form-control" placeholder="Investigations" ></div>');
+            clone_indexa++;
+
+        });
+        $("#btn2").click(function () {
+            if (clone_indexa > 1) {
+                $("#in1").remove();
+
+                clone_indexa--;
+
+            }
+        });
+
+        $("#btn3").click(function () {
+            $("#wrap2").append('<div id = "in2"  class="form-group col-md-12"><input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests" ></div>');
+            clone_indexb++;
+        });
+        $("#btn4").click(function () {
+            if (clone_indexb > 1) {
+                $("#in2").remove();
+                clone_indexb--;
+            }
+        });
+
+        $("#btn5").click(function () {
+            $("#wrap3").append('<div id = "in3"  class="form-group col-md-12"><input type="text" name="diabetes_evaluation" class="form-control" placeholder="Diabetes Evaluation" ></div>');
+            clone_indexc++;
+        });
+        $("#btn6").click(function () {
+            if (clone_indexc > 1) {
+                $("#in3").remove();
+                clone_indexc--;
+            }
+        });
+
+        $("#btn7").click(function () {
+            $("#wrap4").append('<div id = "in4" class="form-group col-md-12"><input type="text" name="Consultations" class="form-control" placeholder="Consultations" ></div>');
+            clone_indexd++;
+        });
+        $("#btn8").click(function () {
+            if (clone_indexd > 1) {
+                $("#in4").remove('');
+                clone_indexd--;
+            }
+        });
+
+
+    </script>
+ {% else %}
+
+<script>
+    $("#blah").change(function() {
+  readURL(this);
+});
+ </script>
+{% endif %}
+<script type="text/javascript">
+
+        $( document ).ready(getyear1()
+        );
+        function getyear1()
+        {
+            var j=0;
+            var listfromyear,i,year;
+            var d = new Date();
+            var dat = d.getFullYear();
+            var year =1900;
+
+            listfromyear = [];
+            for (i = year; i <= dat; i++) {
+                i = parseInt(i);
+                listfromyear.push(i);
+            }
+            console.log(listfromyear);
+
+
+
+            var select = document.getElementById("year1");
+            for(i in listfromyear) {
+                select.options[select.options.length] = new Option(listfromyear[i], listfromyear[i]);
+            }
+            var gtyrdb = $('#getyrfromdb').val();
+
+            console.log('gtyrdb')
+            console.log(gtyrdb)
+            console.log(typeof  gtyrdb)
+
+            // $('selected.nishyear').val(gtyrdb);
+            // $("#year1 option[value=gtyrdb]").prop('selected', true);
+            $('#year1').val(gtyrdb).prop('selected', true);
+        }
+    </script>
+
+    <script>
+ $(document).ready(function () {
+     var regex = /^(.+?)(\d+)$/i;
+     var cloneIndex = $(".right_schedule").length;
+
+     function clone() {
+         $(this).parents(".right_schedule").clone()
+                 .appendTo(".tableschedule")
+                 .attr("id", "right_schedule" + cloneIndex)
+                 .find("*")
+                 .each(function () {
+                     var id = this.id || "";
+                     var match = id.match(regex) || [];
+                     if (match.length == 3) {
+                         this.id = match[1] + (cloneIndex);
+
+                     }
+                 })
+                 .on('click', 'button.clone', clone)
+                 .on('click', 'button.remove', remove);
+         cloneIndex++;
+     }
+
+     function remove() {
+         $(this).parents(".right_schedule").remove();
+     }
+
+     $("button.clone").on("click", clone);
+     if (cloneIndex > 1) {
+         $("button.remove").on("click", remove);
+     }
+$('#alert').fadeIn().delay(2000).fadeOut('slow');
+
+    </script>
+{% endblock %}

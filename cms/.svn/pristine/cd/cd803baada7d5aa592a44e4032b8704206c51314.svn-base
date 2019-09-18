@@ -1,0 +1,1029 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+{% endif %}
+
+
+    <div style="padding-bottom:50px;"><button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button></div>
+
+
+    <!--COLLAPSE START-->
+         {% if dietitian_obj.stage_id != 5 %}
+
+            <div id="markAsComplate" class="collapse">
+                <div class="thumbnail p_10">
+                    <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% if request.user|can_view_caller_dietitian %}{% url 'mark-caller-complete-dietitian' %}{% elif request.user|can_view_reviewer_dietitian %}{% url 'mark-reverse-dietitian-to-caller'  %}{% elif request.user|can_view_publisher %}{% url 'mark-reverse-dietitian-to-caller'  %} {% endif %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ dietitian_obj.id }}" name="dietitian_id">
+                                {% if request.user|can_view_reviewer_dietitian %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% if caller_user_data %}
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {# Form portion to move lab data from publisher user to caller user#}
+                                {% if request.user|can_view_publisher %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% if caller_user_data %}
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if request.user|can_view_caller_dietitian %}
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            {% if reviewer_user_data %}
+                                            {% for b in reviewer_user_data %}
+                                                <option value="" disabled>Select Reviewer User</option>
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <select class="form-control" name="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% if  valid_choice %}
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Complete</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_reviewer_dietitian %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+
+                        {% if request.user|can_view_reviewer_dietitian %}
+                            <div class="col-md-12">
+                                <form action = "{% url 'mark-reviewer-complete-dietitian' %}" method = "post">
+                                <input type="hidden" value="{{ dietitian_obj.id }}" name="dietitian_id" id="dietitian_id">
+                                <div class="col-md-4">
+                                    <select class="form-control" name="publisher_name" id="publisher_name">
+                                        <option value="" disabled>Select Publisher User</option>
+                                        {% if publisher_user_data %}
+                                        {% for b in publisher_user_data %}
+
+                                            <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+
+                                        {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+                              <div class="col-md-4">
+                                        <select class="form-control" name="validator_name" id="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% if valid_choice %}
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+                                <div class="col-md-4">
+                                    <button type = "submit"  value = "submit" class="btn btn-info" >Move to Next
+                                        Stage
+                                    </button>
+                                </div>
+                              </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# NEW Form  to move lab data from publisher user to review user#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-reverse-dietitian-to-reviewer' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ dietitian_obj.id }}" name="dietitian_id">
+
+
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% if reviewer_user_data  %}
+                                            {% for b in reviewer_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>
+                                    </div>
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+
+
+                {# NEW Form  to PUBLISH  lab data from and move lab to stage 4 (PUBLISHED)#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-complete-publisher-dietitian-stage-four' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ dietitian_obj.id }}" name="dietitian_id">
+
+
+                                <button type = "submit"  value = "submit" class="btn btn-info" >Publish To Live
+                                    </button>
+
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+         {% endif %}
+            </div>
+        {% endif %}
+        <!--COLLAPSE END-->
+
+
+
+
+
+
+
+
+                <ul class="nav nav-tabs">
+                    <li class="{% if tab == '1' %}active{% endif %}"><a href="#dietitiantab1"
+                                                                        onclick="refreshURL('{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=1')"
+                                                                        data-toggle="tab">Dietitian Details</a></li>
+                    <li class="{% if tab == '2' %}active{% endif %}"><a href="#dietitiantab2"
+                                                                        onclick="refreshURL('{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=2')"
+                                                                        data-toggle="tab">Manage Packages</a></li>
+                    <li class="{% if tab == '3' %}active{% endif %}"><a href="#dietitiantab3"
+                                                                        onclick="refreshURL('{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=3')"
+                                                                        data-toggle="tab">Attach with Organisation</a></li>
+{#                    <li class="{% if tab == '3' %}active{% endif %}"><a href="#labtab3"#}
+{#                                                                        onclick="refreshURL('{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=3')"#}
+{#                                                                        data-toggle="tab">Manage Branches</a></li>#}
+{#                    <li class="{% if tab == '4' %}active{% endif %}"><a href="#labtab4"#}
+{#                                                                        onclick="refreshURL('{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=4')"#}
+{#                                                                        data-toggle="tab">Package Association</a></li>#}
+
+
+                </ul>
+
+
+
+
+        <div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+        <div class="well well-sm text_logo font_weight_600"><i class="fa fa-flask fa-fw"></i> Edit Dietitian
+
+{#            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info btn-sm pull-right"#}
+{#                       style="margin-top: -5px;">Go Back</a>#}
+
+            <a href="{% if user_is_publisher %}{% url  'publisher-dietitian-listing'  %}{% elif request.user.is_superuser%} {% url 'dietitian-assignment' %} {% else %}{% url  'dietitian-listing' %}{% endif %}" class="btn btn-info btn-sm pull-right">Go Back</a>
+
+
+        </div>
+        {% if tab == '1' %}
+            <div class="row" id="dietitiantab1">
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=1">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Dietitian Name</label>
+                        <input type="text" class="form-control" name="name" value="{{ dietitian_obj.name }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Dietitian Address</label>
+                        <textarea rows="2" class="form-control"  name="address">{{ dietitian_obj.address }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label><b>Remarks</b></label>
+                        <textarea rows="2" class="form-control"  name="remarks" style="color: orangered;">{{ dietitian_obj.remarks }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pincode</label><span style="color: orangered;">&nbsp;&nbsp;*max 10 characters</span>
+                    <td  >
+                    <input type ="text" style="width:150px!important;" class="form-control" value="{{ dietitian_obj.pincode }}" name="apincode" ></textarea>
+                    </td>
+                    </div>
+
+                    {# -------NOV 21---NISHANK--------START---  #}
+
+                       <div class="form-group">
+                        <label>Dietitian Services </label>
+                        <select id="dietitian_services" class="chosen-select" name="dietitian_services" multiple>
+                            <option value="" disabled>--Select Service--</option>                          
+                            {% if dietitian_services_master %}
+                            {% for service in dietitian_services_master %}
+                                {% if service.id|slugify in dietitian_services_list %}
+                                <option value="{{ service.id }}" selected>{{ service.name | capfirst}}</option>
+                                {% else %}
+                                <option value="{{ service.id }}">{{ service.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                        </div>
+
+                        <div class="form-group">
+                        <label>Dietitian Type</label>
+                        <select id="dietitian_speciality" class="chosen-select" name="dietitian_type" multiple>
+                            <option value="" disabled>--Select Type--</option>
+                            {% if dietitian_type_master %}
+                            {% for type in dietitian_type_master %}
+                             {% if type.id|slugify in dietitian_type_list %}
+                             <option value="{{ type.id }}" selected>{{ type.name | capfirst}}</option>
+                             {% else %}
+                             <option value="{{ type.id }}" >{{ type.name | capfirst}}</option>
+                             {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                        </div>
+
+
+
+                     {# -------NOV 21---NISHANK--------End--- #}
+
+
+                    <div class="form-group">
+                        <label>Country</label>
+                        <select id="zone" class="chosen-select" name="country_id">
+                            <option value="">--Select Country--</option>
+                            {% for i in country_obj %}
+                                {% if  i.id == dietitian_obj.country_id%}
+                                <option value="{{ i.id }}"selected>{{ i.name | capfirst}}</option>
+                                {% else %}
+                                 <option value="{{ i.id }}">{{ i.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>State</label>
+                        <select id="state" class="chosen-select" name="state_id">
+                            <option value="">--Select State--</option>
+                            {% for i in state_obj %}
+                                {% if  i.id == dietitian_obj.state_id%}
+                                <option value="{{ i.id }}"selected>{{ i.name | capfirst}}</option>
+                                {% else %}
+                                <option value="{{ i.id }}">{{ i.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>City</label>
+                        <select id="city" class="chosen-select" name="city_id">
+                            {% for cityc in city %}
+                                {% if dietitian_obj.city_id == cityc.id %}
+                                    <option value="{{ dietitian_obj.city.id }}" selected>{{ dietitian_obj.city.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ cityc.id }}" >{{ cityc.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <select id="locality" class="chosen-select" name="locality_id">
+                            {% for loc in locality %}
+                            {% if dietitian_obj.locality_id == loc.id %}
+                             <option value="{{ dietitian_obj.locality.id }}" selected>{{ dietitian_obj.locality.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {# -------Locality to from 25nNov Nishank start ----------------- #}
+                        <div class="form-group" style="border: 2px white">
+                        <h3>Area Covered</h3>
+
+                        <label>FROM</label>
+                        <select id="location-2" class="chosen-select" name="locality_idfrom">
+                            <option value ='msg'>----Select Locality---</option>
+                            {% for loc in locality %}
+                            {% if dietitian_obj.dietitian_locality_coverage_from_id == loc.id %}
+                             <option value="{{ loc.id }}" selected>{{ loc.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+
+                        <label>TO</label>
+                        <select id="location-3" class="chosen-select" name="locality_idto">
+                            <option value ='msg'>----Select Locality---</option>
+                            {% for loc in locality %}
+                            {% if dietitian_obj.dietitian_locality_coverage_to_id == loc.id %}
+                             <option value="{{ loc.id }}" selected>{{ loc.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+
+                        </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Telephone</label>
+                        <input type="text" class="form-control" value="{{ dietitian_obj.telephone }}" name="telephone">
+                    </div>
+                    <div class="form-group">
+                        <label>Alternate Telephone</label>
+                        <input type="text" class="form-control" value="{{ dietitian_obj.alternate_telephone }}" name="alternate_telephone">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        <input type="text" class="form-control" value="{{ dietitian_obj.mobile }}" name="mobile">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" class="form-control" value="{{ dietitian_obj.email }}" name="email">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Rates</label>
+                        <input type="text" class="form-control" value="{{ dietitian_obj.rates }}" name="rates">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Institution</label>
+                        <input type="text" class="form-control" value="{{ dietitian_obj.institution }}" name="institution">
+                    </div>
+                    <div class="form-group">
+                        <label>Experience</label>
+                        <input type="text" class="form-control" value="{{ dietitian_obj.experience }}"  name="experience">
+                    </div>
+                     <div class="form-group">
+                        <label>Qualification</label>
+                        <input type="text" class="form-control" value="{{ dietitian_obj.qualification }}" name="qualification">
+                    </div>
+
+
+                    <div class="clearfix col-md-12 text-right">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+                 </div>
+                    </form>
+                </div>
+                <!--RIGHT PANEL END-->
+
+{#        </div>#}
+
+
+
+        {% endif %}
+
+        {% if tab == '2' %}
+            <div class="row" id="dietitiantab2">
+
+            <!--LEFT PANEL START-->
+            <div class="table-responsive table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+
+                    <th>Sr No</th>
+                    <th>Package Name</th>
+                    <th>Package Price</th>
+                    <th>Package Description</th>
+                    <th>Action</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% if  package_list %}
+                    {% for k,v in package_list.items %}
+                        <form target="{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=2" method = "post">
+                        <input type="hidden" class="form-control" name="edit" value = "edit">
+                        <input type="hidden" class="form-control" name="package_id" value = "{{ k }}">
+                            <tr>
+
+
+                            <td>{{ forloop.counter }}</td>
+                            <td><input type="text" class="form-control" name="package_name2" placeholder="Package Name" value = "{{ v.package_name | capfirst }}"></td>
+                            <td><input type="text" class="form-control" name="package_price" placeholder="Package Price" value = "{{ v.package_price | capfirst }}"></td>
+                            <td><textarea rows="2" class="form-control" name="package_description" placeholder="Package Description">{{ v.package_description | capfirst }}</textarea></td>
+                            <td>
+                                <a class="btn btn-danger btn-sm p_0" href="{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=2&delete=delete&package_id={{ k }}"><i class="fa fa-trash-o text-danger fa-fw text_333"></i></a>
+
+                               <button type="submit" class="btn btn-info">Update</button>
+
+                            </td>
+
+                        </tr>
+                        </form>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7"><b>No Packages Found</b></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+        </div>
+
+
+
+         {#  *********************************DISPLAY EXISTNG***********END*************            #}
+
+            <div class="row" id = "labtab2">
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=2">
+                {% csrf_token %}
+                 <div class="col-md-6">
+
+
+
+                    <div class="col-md-12">
+
+                              <div class="row m_0" style="background: rgba(0,0,0,0.1);">
+
+                              <div class="col-md-10" id="sss">
+                                <label style="color: white;size:32px!important;">&nbsp;&nbsp;&nbsp; Add Packages</label><div class="clearfix"></div>
+                              <div id="app">
+
+
+                              <div class="form-group col-md-6">
+                              <label>Package Name</label>
+                              <input type="text"  class="form-control" name="package_name" placeholder = "Package Name"></textarea>
+                              </div>
+
+
+                              <div class="form-group col-md-6">
+                              <label>Package Price</label>
+                              <input type="text" class="form-control" name="package_price" placeholder = "Package Price"></textarea>
+                              </div>
+
+                              <div class="form-group col-md-6">
+                              <label>Package Description</label>
+                              <textarea rows="2" class="form-control" name="package_description" placeholder = "Package Description"></textarea>
+                              </div>
+
+                              <div class="clearfix"></div>
+                              </div>
+                              </div>
+                              <div class="col-md-2">
+                                  <label>&nbsp;</label>
+                                  <div class="form-group p_t_10">
+                                    <label style="display:None;">Add-Rem</label>
+                                    <button type="button" id="btnn2"><i class="fa fa-minus-square"></i></button>
+                                    <button type="button" id="btnn1"><i class="fa fa-plus-square"></i></button>
+                                  </div>
+                              </div>
+                              </div>
+                     </div>
+
+
+
+
+
+
+                    <div class="clearfix col-md-12 text-right p_t_10">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                </div>
+
+                 </div>
+                <!--RIGHT PANEL END-->
+            </form>
+        </div>
+{#   %%%%%%%%%%%%%%%##!!          #}
+                </div>
+                <!--RIGHT PANEL END-->
+
+{#        </div>#}
+
+        {% endif %}
+
+
+        {% if tab == '3' %}
+            <div class="row">
+            <div class="col-md-6"></ins><span class="text-info font_weight_600"><i style="color:red;"> Current Dietitian :</i> <i style="color:white;"><ins>{{ dietitian_obj.name }}</ins></i></span>
+            </div>
+            </div>
+
+            <div class="row" id="dietitiantab3">
+
+            <!--LEFT PANEL START-->
+            <div class="table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+
+                    <th>Sr No</th>
+                    <th>Organisation Name</th>
+                    <th>Organisation Street</th>
+                    <th>Organisation Department</th>
+                    <th>Organisation City</th>
+                    <th>Organisation Locality</th>
+                    <th>Consultation Fee</th>
+                    <th class="col-md-2">Action</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% if  attachlist %}
+                    {% for i in attachlist %}
+                         <form method="post" action="{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=3">
+                         <input type="hidden" class="form-control" name="org_id" value = "{{i.organisation.id}}">
+                         <input type="hidden" class="form-control" name="edit" value = "edit">
+                            <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.organisation.name | capfirst }}</td>
+                            <td>{{ i.organisation.street | capfirst }}</td>
+                            <td>
+
+                                <div class="form-group">
+                                    <label>Organisation Department</label>
+                                    <select id="city" class="chosen-select" name="department_id">
+                                        <option value="">--Select Department--</option>
+                                        {% for department in department_obj %}
+                                          {% if department.id == i.org_department_id %}
+                                        <option value="{{ department.id }}" selected>{{ department.name | capfirst}}</option>
+                                          {% else %}
+                                        <option value="{{ department.id }}">{{ department.name | capfirst}}</option>
+                                          {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                            </td>
+                            <td>{{ i.organisation.city.name | capfirst }}</td>
+                            <td>{{ i.organisation.locality.name | capfirst }}</td>
+                            <td><input type="text" class="form-control" name="consultancy_fee" value = "{{ i.consultancy_fee | capfirst }}" ></td>
+                            <td>
+
+                            <a class="btn btn-default btn-sm p_0" href="{% url 'time-schedule-dietitian' dietitian_obj.id i.organisation.id %}" #}><i class="fa fa-clock-o fa-fw text_333"></i></a>
+
+                            <span class="p_lr_5">|</span>
+
+                             <a class="btn btn-danger btn-sm p_0" href="{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=3&delog=delog&org_id={{i.organisation.id}}"><i class="fa fa-trash-o text-danger fa-fw text_white"></i></a>
+                            <span class="p_lr_5"></span>
+
+                            <button type="submit" class="btn btn-info btn-sm" style="width:60px;font-size: small; padding-top:0; padding-bottom:0; ">Update</button></a>
+
+                        </td>
+
+                        </tr>
+                        </form>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" ><b>No Associations with Organisations Found</b></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+            <style>
+            .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{vertical-align: middle;}
+            </style>
+
+
+{#           *********************************DISPLAY EXISTNG***********END*************#}
+
+            <div class="row">
+             <label style="margin-left:15px;color: white;font-size: x-large "><ins>Add Diettitian Organisation Association</ins></label>
+            </div>
+
+            <div class="row" id = "dietitiantab3">
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'dietitian-listing-edit' dietitian_obj.id %}?tab=3">
+                {% csrf_token %}
+                 <div class="col-md-6">
+                 <input type="hidden" name="add" value="yes_please">
+                 <div class="form-group">
+                        <label>Country</label>
+                        <select id="zone" class="chosen-select" name="country_id">
+                            <option value="">--Select Country--</option>
+                            {% for i in country_obj %}
+
+                                <option value="{{ i.id }}">{{ i.name | capfirst}}</option>
+
+                            {% endfor %}
+                        </select>
+                  </div>
+
+
+                    <div class="form-group">
+                        <label>State</label>
+                        <select id="state" class="chosen-select" name="state_id">
+                            <option value="">--Select State--</option>
+                            {% for i in state_obj %}
+
+                                <option value="{{ i.id }}">{{ i.name | capfirst}}</option>
+
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>City</label>
+                        <select id="city" class="chosen-select" name="city_id">
+                            <option value="">--Select City--</option>
+                            {% for cityc in city %}
+
+                                    <option value="{{ cityc.id }}" >{{ cityc.name | capfirst}}</option>
+
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <select id="locality" class="chosen-select" name="locality_id">
+                            <option value="">--Select Locality--</option>
+                            {% for loc in locality %}
+
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+
+                            {% endfor %}
+                        </select>
+                    </div>
+                    </div>
+                    <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Organisation</label>
+                        <select id="diet_org" class="chosen-select" name="diet_org_id">
+                            <option value="">--Select Organisation--</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Consultation Fee</label>
+                        <input type="text" class="form-control" placeholder = "Consultation Fee" name="consultancy_fee">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Organisation Department</label>
+                        <select id="city" class="chosen-select" name="department_id">
+                            <option value="">--Select Department--</option>
+                            {% for department in department_obj %}
+                                    <option value="{{ department.id }}" >{{ department.name | capfirst}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="clearfix col-md-12 text-right p_t_10">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+                    </div>
+                   </form>
+
+
+            </div>
+
+
+
+
+
+        {% endif %}
+
+
+    <!--Right End-->
+    <script>
+        var clone_indexa = $("#wrap1").length;
+        var clone_indexb = $("#wrap2").length;
+        var clone_indexc = $("#wrap3").length;
+        var clone_indexd = $("#wrap4").length;
+
+
+        $("#btn1").click(function () {
+            $("#wrap1").append('<div id = "in1"  class="form-group col-md-12"><input type="text" name="investigations" class="form-control" placeholder="Investigations" ></div>');
+            clone_indexa++;
+
+        });
+        $("#btn2").click(function () {
+            if (clone_indexa > 1) {
+                $("#in1").remove();
+
+                clone_indexa--;
+
+            }
+        });
+
+        $("#btn3").click(function () {
+            $("#wrap2").append('<div id = "in2"  class="form-group col-md-12"><input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests" ></div>');
+            clone_indexb++;
+        });
+        $("#btn4").click(function () {
+            if (clone_indexb > 1) {
+                $("#in2").remove();
+                clone_indexb--;
+            }
+        });
+
+        $("#btn5").click(function () {
+            $("#wrap3").append('<div id = "in3"  class="form-group col-md-12"><input type="text" name="diabetes_evaluation" class="form-control" placeholder="Diabetes Evaluation" ></div>');
+            clone_indexc++;
+        });
+        $("#btn6").click(function () {
+            if (clone_indexc > 1) {
+                $("#in3").remove();
+                clone_indexc--;
+            }
+        });
+
+        $("#btn7").click(function () {
+            $("#wrap4").append('<div id = "in4" class="form-group col-md-12"><input type="text" name="Consultations" class="form-control" placeholder="Consultations" ></div>');
+            clone_indexd++;
+        });
+        $("#btn8").click(function () {
+            if (clone_indexd > 1) {
+                $("#in4").remove('');
+                clone_indexd--;
+            }
+        });
+
+    </script>
+
+
+
+    <script>
+
+    function refreshURL(url) {
+                    window.location = url
+                }
+
+
+     $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    function readURL(input) {
+
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      $('#blah').attr('src', e.target.result);
+
+      $('#blah').hide();
+      $('#blah').fadeIn(650);
+
+    };
+
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#imgInp").change(function() {
+  readURL(this);
+});
+var clone_index = $("#app").length;
+
+$("#btnn1").click(function(){
+        $("#sss").append('<div id="app"><div class="form-group col-md-6"><label>Package Name</label><input type="text"  class="form-control" name="package_name" placeholder = "Package Name"></textarea></div><div class="form-group col-md-6"><label>Package Price</label><input type="text" class="form-control" name="package_price" placeholder = "Package Price"></textarea></div><div class="form-group col-md-6"><label>Package Description</label><textarea rows="2" class="form-control" name="package_description" placeholder = "Package Description"></textarea></div><div class="clearfix"></div></div>');
+    clone_index++;
+    });
+     $("#btnn2").click(function(){
+         if(clone_index>1){
+        $("#app").remove();
+             clone_index--;
+             }
+    });
+
+    var clone_indextwo = $("#insert").length;
+
+$("#btn1new").click(function(){
+        $("#appnew").append('<div id = "insert" class="form-group col-md-6"><textarea class="form-control" placeholder = "Doctor on Board" name="lab_doctors_on_board"></textarea> </div> </div>');
+    clone_indextwo++;
+    });
+     $("#btn2new").click(function(){
+         if(clone_indextwo>1){
+        $("#insert").remove();
+             clone_indextwo--;
+             }
+    });
+
+
+
+
+
+
+
+{##}
+{#var clone_indextab4bb = $("#in2").length;#}
+{##}
+{#$("#bbtn3").click(function(){#}
+{#        $("#wrapnew32").append('<div id="in2" class="form-group col-md-12"><input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests"></div>');#}
+{#    clone_indextab4bb++;#}
+{#    });#}
+{#     $("#bbtn3").click(function(){#}
+{#         if(clone_indextab4bb>1){#}
+{#        $("#in2").remove();#}
+{#             clone_indextab4bb--;#}
+{#             }#}
+{#    });#}
+
+
+    $(function(){
+  $('.js-popup-link').click(function(e){
+    e.preventDefault()
+    $('#popup').dialog({modal: true}).dialog('open').load(this.href)
+  })
+})
+
+
+    </script>
+
+    <script>
+    $(document).ready(function () {
+            $("#state").chosen().change(function () {
+                var state = $('#state').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (state > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_city/',
+                        data: {action: "get_filter", state_id: state},
+                        beforeSend: function () {
+                            var text = 'Getting City  of ' + state + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.city_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.city_list.length != 0) {
+                                $("#city option").remove();
+                                $("#city").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select City--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#city").append(select);
+                                $("#city").val(key_sel);
+                                $("#city").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.city_list.length; i++) {
+                                    var option = '<option value=' + obj.city_list[i].id + '>' + obj.city_list[i].name + '</option>';
+                                    $("#city").append(option);
+                                    $("#city").trigger("chosen:updated")
+
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select State...")
+                }
+
+
+            });
+
+            $("#city").chosen().change(function () {
+                var city = $('#city').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (city > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_location/',
+                        data: {action: "get_filter", city_id: city},
+                        beforeSend: function () {
+                            var text = 'Getting Location of ' + city + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.location_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.location_list.length != 0) {
+                                $("#location option").remove();
+                                $("#location").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select Location--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#location").append(select);
+                                $("#location").val(key_sel);
+                                $("#location").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.location_list.length; i++) {
+                                    var option = '<option value=' + obj.location_list[i].id + '>' + obj.location_list[i].name + '</option>';
+                                    $("#location").append(option);
+                                    $("#location").trigger("chosen:updated")
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select City...")
+                }
+            });
+
+        });
+
+    </script>
+
+
+
+
+{% endblock user_management %}

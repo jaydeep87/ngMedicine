@@ -1,0 +1,556 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <div style="padding-bottom:50px;"><button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button></div>
+
+
+    <!--COLLAPSE START-->
+           {% if pharmacy.stage_id != 5 %}
+            <div id="markAsComplate" class="collapse">
+                <div class="thumbnail p_10">
+                    <div class="row">
+                        <div class="col-md-12 m_b_15">
+
+
+                            <form role="form" action="{% if request.user|can_view_caller_pharma %}{% url 'mark-caller-complete-pharmacy' %}{% elif request.user|can_view_review_pharma %}{% url 'mark-reverse-pharmacy-to-caller'  %}{% elif request.user|can_view_publisher %}{% url 'mark-reverse-pharmacy-to-caller'  %} {% endif %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ pharmacy.id }}" name="pharmacy_id">
+                                {% if request.user|can_view_review_pharma %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {# Form portion to move Pharmacy data from publisher user to caller user#}
+                                {% if request.user|can_view_publisher %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if request.user|can_view_caller_pharma %}
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            {% for b in reviewer_user_data %}
+                                                <option value="" disabled>Select Reviewer User</option>
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <select class="form-control" name="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Complete</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_review_pharma %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+                        {% if request.user|can_view_review_pharma %}
+                            <div class="col-md-12">
+                                <form action = "{% url 'mark-reviewer-complete-pharmacy' %}" method = "post">
+                                <input type="hidden" value="{{ pharmacy.id }}" name="pharmacy_id" id="pharmacy_id">
+                                <div class="col-md-4">
+                                    <select class="form-control" name="publisher_name" id="publisher_name">
+                                        <option value="" disabled>Select Publisher User</option>
+                                        {% for b in publisher_user_data %}
+
+                                            <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                              <div class="col-md-4">
+                                        <select class="form-control" name="validator_name" id="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                <div class="col-md-4">
+                                    <button type = "submit"  value = "submit" class="btn btn-info" >Move to Next
+                                        Stage
+                                    </button>
+                                </div>
+                              </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# NEW Form  to move pharmacy data from publisher user to review user#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-reverse-pharmacy-to-reviewer' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ pharmacy.id }}" name="pharmacy_id">
+
+
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in reviewer_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>
+                                    </div>
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+
+
+                {# NEW Form  to PUBLISH  Pharmacy data from and move bloodbank to stage 4 (PUBLISHED)#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-complete-publisher-pharmacy-stage-four' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ pharmacy.id }}" name="pharmacy_id">
+
+
+                                <button type = "submit"  value = "submit" class="btn btn-info" >Publish To Live
+                                    </button>
+
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+            </div>
+           {% endif %}
+        <!--COLLAPSE END-->
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+        <div class="well well-sm text_logo font_weight_600"><i class="fa fa-flask fa-fw"></i> Edit Pharmacy Info
+
+{#            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info btn-sm pull-right"#}
+{#                       style="margin-top: -5px;">Go Back</a>#}
+
+        <a href="{% if user_is_publisher %}{% url  'publisher-pharmacy-listing'  %}{% elif request.user.is_superuser%} {% url 'pharmacy-assignment' %} {% else %}{% url  'pharmacy-listing' %}{% endif %}" class="btn btn-info btn-sm pull-right">Go Back</a>
+
+
+        </div>
+        <div class="row">
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'pharmacy-listing-edit' pharmacy.id %}">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" value="{{ pharmacy.name }}" class="form-control" name="name"
+                               placeholder="Pharmacy Name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea rows="2" class="form-control" placeholder="Address"
+                                  name="address">{{ pharmacy.address }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Country</label>
+                        <select id="zone" class="chosen-select" name="country_id">
+                            <option value="">--Select Country--</option>
+                            {% for country in country_obj %}
+                                {% if pharmacy.country_id == country.id %}
+                                    <option value="{{ country.id }}" selected>{{ country.name | capfirst }}</option>
+                                {% else %}
+                                    <option value="{{ country.id }}">{{ country.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <select id="state" class="chosen-select" name="state_id">
+                            <option value="">--Select State--</option>
+                            {% for state in state_obj %}
+                                {% if pharmacy.state_id == state.id %}
+                                    <option value="{{ state.id }}" selected>{{ state.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ state.id }}">{{ state.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <select id="city" class="chosen-select" name="city_id">
+                            <option value="">--Select City--</option>
+                            {% for cityc in city %}
+                                {% if pharmacy.city_id == cityc.id %}
+                            <option value="{{ cityc.id }}" selected>{{ cityc.name | capfirst}}</option>
+                            {% else %}
+                            <option value="{{ cityc.id }}" >{{ cityc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <select id="location" class="chosen-select" name="locality_id">
+                            <option value="">--Select Locality--</option>
+                              {% for loc in locality %}
+                            {% if pharmacy.locality_id == loc.id %}
+                             <option value="{{ loc.id }}" selected>{{loc.name | capfirst}}</option>
+                            {% else %}
+                            <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Pincode</label>
+                        <span style="color: orangered;">&nbsp;&nbsp;*max 10 characters</span>
+                        <input type="text" value="{{ pharmacy.pincode }}" class="form-control" placeholder="Pincode" name="pincode">
+                    </div>
+                </div>
+                <!--LEFT PANEL END-->
+
+                <!--RIGHT PANEL START-->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Contact Person</label>
+                        <input type="text" class="form-control" value="{{ pharmacy.contact_person }}"
+                               name="contact-person" placeholder="Contact person">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Telephone</label>
+                        <input type="text" class="form-control" placeholder="Telephone " value="{{ pharmacy.telephone }}"
+                               name="telephone">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        <input type="text" class="form-control" placeholder="Mobile" name="mobile"
+                               value="{{ pharmacy.mobile }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pharmacy Service</label>
+                        <select id="service" class="chosen-select" name="service" multiple>
+                            <option value="">--Select Service--</option>
+                            {% for i in service_obj %}
+                                {% if i.id|slugify in pharmacy_services_list %}
+                                <option value="{{ i.id }}" selected >{{ i.name | capfirst}}</option>
+                                {% else %}
+                                <option value="{{ i.id }}" >{{ i.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pharmacy Type</label>
+                        <select id="type" class="chosen-select" name="type" multiple>
+                            <option value="">--Select Service--</option>
+                            {% for i in type_obj %}
+                                {% if i.id|slugify in pharmacy_type_list %}
+                                <option value="{{ i.id }}" selected>{{ i.name | capfirst}}</option>
+                                {% else %}
+                                <option value="{{ i.id }}">{{ i.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                     <div class="form-group">
+                        <label>Timings</label>
+                        <input type="text" class="form-control" name="timings" placeholder="Timings" value="{{ pharmacy.timings }}">
+                        </div>
+
+                     <div class="clearfix"></div>
+                            <div class="form-group">
+                                <label class="checkbox-inline">
+
+                                                    <input style="width: 50px; height:30px;margin-right:10px;margin-left: 1px;" type="checkbox" name="is_emergency"
+                                                               {% if pharmacy.is_emergency %}value="1" checked {% else %}value="0"
+                                                        {% endif %}
+                                                        onclick="$(this).attr('value', this.checked ? 1 : 0)">
+                                <span class="p_l_15" style="padding-left: 45px;color: red;">    Emergency Services Available</span>
+                            </label>
+                      </div>
+                <p class="text-right"><button type="submit" class="btn btn-info">Submit</button></p>
+                <!--RIGHT PANEL END-->
+            </form>
+
+
+        </div>
+
+</div>
+
+    <!--Right End-->
+    <script type="application/javascript">
+        function ValidateMobileCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{10},)*\d{10}$/.test(value));
+            if (!check) {
+                alert("Please put correct 10 digit Mobile No");
+
+            }
+            return check
+
+        }
+        function ValidatePhoneCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8},)*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct 8 digitPhone No");
+
+            }
+            return check
+
+        }
+        function ValidateFax(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8})*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct Fax No");
+
+            }
+            return check
+
+        }
+
+        function ValidatePincode(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{6})*\d{6}$/.test(value));
+            if (!check) {
+                alert("Please put correct Pin Code No");
+
+            }
+            return check
+
+        }
+
+        function validateMyForm() {
+            var mobile = ValidateMobileCSV(document.getElementById('mobile').value);
+            var phone = ValidatePhoneCSV(document.getElementById('phone').value);
+            var fax = ValidateFax(document.getElementById('fax').value);
+            var pincode = ValidatePincode(document.getElementById('pincode').value);
+            var website = isValidURL(document.getElementById('website').value)
+            if (mobile && phone && pincode && fax && website) {
+                return true
+            }
+            return false
+        }
+
+        function isValidURL(url) {
+            if (!url) {
+                return true;
+            }
+            var RegExp = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+            if (RegExp.test(url)) {
+                return true;
+            } else {
+                alert("Please put valid website url");
+                return false;
+            }
+        }
+
+    $(document).ready(function () {
+           $("#state").chosen().change(function () {
+                var state = $('#state').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (state > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_city/',
+                        data: {action: "get_filter", state_id: state},
+                        beforeSend: function () {
+                            var text = 'Getting City  of ' + state + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.city_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.city_list.length != 0) {
+                                $("#city option").remove();
+                                $("#city").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select City--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#city").append(select);
+                                $("#city").val(key_sel);
+                                $("#city").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.city_list.length; i++) {
+                                    var option = '<option value=' + obj.city_list[i].id + '>' + obj.city_list[i].name + '</option>';
+                                    $("#city").append(option);
+                                    $("#city").trigger("chosen:updated")
+
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select State...")
+                }
+
+
+            });
+
+            $("#city").chosen().change(function () {
+                var city = $('#city').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (city > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_location/',
+                        data: {action: "get_filter", city_id: city},
+                        beforeSend: function () {
+                            var text = 'Getting Location of ' + city + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.location_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.location_list.length != 0) {
+                                $("#location option").remove();
+                                $("#location").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select Location--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#location").append(select);
+                                $("#location").val(key_sel);
+                                $("#location").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.location_list.length; i++) {
+                                    var option = '<option value=' + obj.location_list[i].id + '>' + obj.location_list[i].name + '</option>';
+                                    $("#location").append(option);
+                                    $("#location").trigger("chosen:updated")
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select City...")
+                }
+            });
+
+        });
+    </script>
+{% endblock %}

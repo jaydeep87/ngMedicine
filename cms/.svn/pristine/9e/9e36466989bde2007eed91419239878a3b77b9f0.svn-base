@@ -1,0 +1,247 @@
+[
+  {
+    "model": "hfu_cms.department",
+    "pk": 1,
+    "fields": {
+      "name": "Anesthesiology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 2,
+    "fields": {
+      "name": "Audiology and Speech Therapy"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 3,
+    "fields": {
+      "name": "Ayurveda"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 4,
+    "fields": {
+      "name": "Cardiology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 5,
+    "fields": {
+      "name": "Dental"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 6,
+    "fields": {
+      "name": "Dermatology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 7,
+    "fields": {
+      "name": "Endocrinology and Diabetology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 8,
+    "fields": {
+      "name": "Clinical Nutrition and Dietetics"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 9,
+    "fields": {
+      "name": "ENT"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 10,
+    "fields": {
+      "name": "Gastroenterology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 11,
+    "fields": {
+      "name": "General Medicine"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 12,
+    "fields": {
+      "name": "Gynecology and Obstetrics"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 13,
+    "fields": {
+      "name": "Homeopathy"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 14,
+    "fields": {
+      "name": "Immunology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 15,
+    "fields": {
+      "name": "Naturopathy"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 16,
+    "fields": {
+      "name": "Nephrology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 17,
+    "fields": {
+      "name": "Neurology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 18,
+    "fields": {
+      "name": "Neurology + Psychology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 19,
+    "fields": {
+      "name": "Nuclear Medicine"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 20,
+    "fields": {
+      "name": "Oncology/Cancer"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 21,
+    "fields": {
+      "name": "Ophthalmology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 22,
+    "fields": {
+      "name": "Orthopedic"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 23,
+    "fields": {
+      "name": "Pathology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 24,
+    "fields": {
+      "name": "Peadiatrics and Neonatology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 25,
+    "fields": {
+      "name": "Psychology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 26,
+    "fields": {
+      "name": "Pulmonology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 27,
+    "fields": {
+      "name": "Radiology and Imagining"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 28,
+    "fields": {
+      "name": "Rheumatology"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 29,
+    "fields": {
+      "name": "Sexologist"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 30,
+    "fields": {
+      "name": "Surgery"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 31,
+    "fields": {
+      "name": "Urology and Andrology"
+    }
+  },
+   {
+    "model": "hfu_cms.department",
+    "pk": 32,
+    "fields": {
+      "name": "Critical Care and Emergency Medicine"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 33,
+    "fields": {
+      "name": "Forensic Medicine"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 34,
+    "fields": {
+      "name": "Organ Transplant"
+    }
+  },
+  {
+    "model": "hfu_cms.department",
+    "pk": 35,
+    "fields": {
+      "name": "Physical Rehabilitation"
+    }
+  }
+]

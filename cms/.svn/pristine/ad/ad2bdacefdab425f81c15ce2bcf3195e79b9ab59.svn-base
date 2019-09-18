@@ -1,0 +1,60 @@
+   <div class="table-responsive table_modify_for_all p_tb_10">
+      <table class="table table-bordered m_b_0">
+         <thead class="bg_ededed">
+            <tr>
+               <th><input id="checkAll" type="checkbox"/></th>
+               <th>Sr No</th>
+                <th>Topic title</th>
+                <th>Tag String</th>
+                <th>free_text</th>
+                <th>Current User</th>
+                <th>Stage</th><th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+                <th class="col-md-1">Action</th>
+            </tr>
+         </thead>
+         <tbody>
+             {% if publisher_data %}
+                {% for d in publisher_data %}
+                <tr>
+                   <td><input type="checkbox" value="{{ d.id }}"></td>
+                   <td>{{ forloop.counter }}</td>
+                    <td>{{ d.topic_title | capfirst }}</td>
+                    <td>{{ d.tag_string | capfirst }}</td>
+                    <td>{{ d.free_text | capfirst }}</td>
+                    <td>{{ d.current_user.username | capfirst }}</td>
+                    <td>{{ d.stage.stage_name | capfirst }}</td><td>{{ d.createdAt }}</td>
+                            <td>{{ d.updatedAt }}</td>
+                   {% if d.stage_id != 5 %}
+                       <td>
+                       <a  href ="{% url 'disease-listing-edit' d.id %}"><i class="fa fa-edit"></i></a>
+                       <span class="p_lr_10"></span>
+                       <a class="btn btn-danger btn-sm p_0"
+                                   href="{% url 'delete_disease' d.id %}"><i
+                                        class="fa fa-trash-o text-danger fa-fw text_white"></i></a>
+                   </td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+            {% else %}
+            <tr><td colspan="8">No Data Found</td></tr>
+            {% endif %}
+         </tbody>
+      </table>
+      {% if publisher_data %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if publisher_data.has_previous %}
+            <li class="prev"><a href="?page={{ publisher_data.previous_page_number }}{% if search_data %}&search_data={{ search_data }}{% endif %}">Prev</a> </li>
+            {% endif %}
+            <li><a href="">Page {{ publisher_data.number }} of {{ publisher_data.paginator.num_pages }}</a> </li>
+            {% if publisher_data.has_next %}
+            <li class="next"><a href="?page={{ publisher_data.next_page_number }}{% if search_data %}&search_data={{ search_data }}{% endif %}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+   </div>

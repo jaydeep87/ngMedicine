@@ -1,0 +1,72 @@
+{% load template_tag %}
+<div class="table-responsive table_modify_for_all">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th><input id="checkAll" type="checkbox"/></th>
+            <th>Sr No</th>
+            <th>Doctor Name</th>
+            <th>Stage</th>
+            <th>Category</th>
+            <th>Zone</th>
+            <th>Zone Location</th>
+            {#    <th>City</th>#}
+            {#    <th>Locality</th>#}
+            <th>Revert Comment</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if doctor %}
+            {% for i in doctor %}
+                <tr>
+                    <td><input type="checkbox" value="{{ i.id }}"></td>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.name |capfirst }}</td>
+
+                    <td>{{ i.stage.stage_name|capfirst }}</td>
+                    <td>{{ i.category.name |capfirst }}</td>
+
+                    <td>{{ i.zone.name | capfirst }}</td>
+                    <td>{{ i.zone_location.name | capfirst }}</td>
+                    {#    {% for j in i.attachwithdoctor_set.all|slice:":1" %}#}
+                    {#    <td>{{ j.organisation.city.name|capfirst }}</td>#}
+                    {#    <td>{{ j.organisation.locality.name|capfirst }}</td>#}
+                    {##}
+                    {#        {% endfor %}#}
+
+                    <td style="color:red;">{{ i.free_text|default_if_none:"" }}</td>
+                    <td>{{ i.createdAt }}</td>
+                    <td>{{ i.updatedAt }}</td>
+                    <td><a class="text_white" href="{% url 'doctor-listing-edit' i.id %}"><i class="fa fa-edit"></i></a>
+                        {% if request.user|is_doctor_reviewer %}| <a href="{% if i.is_disable %}{% url 'doctor-data-enable' i.id %}{% else %}{% url 'doctor-data-deactivate' i.id %}{% endif %}"
+class="btn btn-default btn-sm">    {% if i.is_disable %}Enable {% else %}Disable {% endif %}{% endif %}
+
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="8"><b>Doctor's Name could not be found in system...<span
+                        class='fa fa-frown-o fa-lg'></span></b></td>
+            </tr>
+        {% endif %}
+        </tbody>
+
+    </table>
+    {% if doctor %}
+        <div class="text-right">
+            <ul class="pagination">
+                {% if doctor.has_previous %}
+                    <li class="prev"><a href="?page={{ doctor.previous_page_number }}">Prev</a></li>
+                {% endif %}
+                <li><a>Page {{ doctor.number }} of {{ doctor.paginator.num_pages }}</a></li>
+                {% if doctor_all_data.has_next %}
+                    <li class="next"><a href="?page={{ doctor.next_page_number }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+</div>

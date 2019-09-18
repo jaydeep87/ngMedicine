@@ -1,0 +1,16 @@
+<h2>Article Section</h2>
+<div class="row" style="text-align: center;
+  padding: 15px;
+  background-color: lightgray;
+  font-size: large;
+  font-weight: bold;">
+  <div class="col-md-4" style="    margin-top: 5px;
+  background-color: white;" *ngFor="let artcle of articleList">
+    <p>{{artcle.id}}</p>
+    <p>{{artcle.name}}</p>
+    <p>{{artcle.title}}</p>
+    <p>{{artcle.small_description}}</p>
+    <img src="{{artcle.image_url}}" alt="image">
+  </div>
+</div>
+

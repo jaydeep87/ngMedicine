@@ -1,0 +1,18 @@
+[
+  {
+    "model": "providers.businesstype",
+    "pk": 1,
+    "fields": {
+      "name": "Supply"
+    }
+  },
+    {
+    "model": "providers.businesstype",
+    "pk": 2,
+    "fields": {
+      "name": "Service"
+
+    }
+  }
+
+]

@@ -1,0 +1,470 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+
+                            <!--<div class="p_tb_10">
+                                <label class="checkbox-inline font_weight_600"><input type="checkbox" data-unchecked="0"
+                                                                                      value="1" id="is_hospital"
+                                                                                      name=hospital_is> Is
+                                    Hospitals</label>
+                                <label class="checkbox-inline font_weight_600"><input type="checkbox" id="is_clinical"
+                                                                                      data-unchecked="0" value="1"
+                                                                                      name=clinical>Is Clinic</label>
+                            </div> -->
+
+                            <div class="row">
+                                <!--LEFT PANEL START-->
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label>Country</label>
+                                        <select class="chosen-select" name="country_id" id="id_country">
+                                            <option value="">--Select Country--</option>
+                                            {% for countryone in country %}
+                                                {% if a.country_id == countryone.id %}
+                                                    <option value="{{ countryone.id }}"
+                                                            selected>{{ countryone.name|capfirst }}</option>
+                                                {% else %}
+                                                    <option value="{{ countryone.id }}">{{ countryone.name|capfirst }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>State</label>
+                                        <select class="chosen-select" name="state_id" id = "id_state">
+                                            <option value="">--Select State--</option>
+                                            {% for stateone in state %}
+                                                {% if a.state_id == stateone.id %}
+                                                    <option value="{{ stateone.id }}"
+                                                            selected>{{ stateone.name|capfirst }}</option>
+                                                {% else %}
+                                                    <option value="{{ stateone.id }}">{{ stateone.name|capfirst }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>City</label>
+                                        <select class="chosen-select" name="city_id" id = "id_city">
+                                            <option value="">--Select City--</option>
+                                            {% for cityone in city %}
+                                                {% if a.city_id == cityone.id %}
+                                                    <option value="{{ cityone.id }}"
+                                                            selected>{{ cityone.name|capfirst }}</option>
+                                                {% else %}
+                                                    <option value="{{ cityone.id }}">{{ cityone.name|capfirst }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Location</label>
+                                        <select class="chosen-select" name="locality_id" id="locality_id">
+
+                                            <option value="">--Select Location--</option>
+                                            {% for localityone in locality %}
+                                                {% if a.locality_id == localityone.id %}
+                                                    <option value="{{ localityone.id }}"
+                                                            selected>{{ localityone.name|capfirst }}</option>
+                                                {% else %}
+                                                    <option value="{{ localityone.id }}">{{ localityone.name|capfirst }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group form-group-lg">
+                                        <label>Category:<span style="color: red;size: 25px;"></span> </label>
+                                        <select id="category" class="chosen-select" name="category">
+                                        {#    {% if request.user.is_staff %} disabled{% endif %}>#}
+                                            <option value="">--Select Category--</option>
+                                            {% if category_obj %}
+                                                {% for u in category_obj %}
+                                                   <option value="{{ u.id }}" >{{ u.name }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+                                </div>
+
+
+                                <!--LEFT PANEL END-->
+
+                                <!--RIGHT PANEL START-->
+                                <div class="col-md-6">
+
+
+                                    <!--<div class="overflow_hidden">
+                                        <div class="checkbox m_tb_10">
+
+                                            <label>
+                                                <input style="height: 30px;" type="checkbox" class="form-control"
+                                                       name="ambulance_service"
+                                                       value="{{ a.ambulance_service }}" {% if a.ambulance_service %}
+                                                       checked
+                                                {% endif %}
+                                                >
+                                                Ambulance Services</label>
+
+                                        </div>
+                                        <div class="checkbox m_tb_10">
+
+                                            <label>
+                                                <input style="height: 30px;" type="checkbox" class="form-control"
+                                                       name="trauma_center" {% if a.trauma_center %}
+                                                       checked
+                                                {% endif %}
+                                                       value="{{ a.trauma_center }}"
+                                                >
+                                                Trauma Center</label>
+                                        </div>
+                                        <div class="checkbox m_tb_10">
+
+                                            <label>
+                                                <input style="height: 30px;" type="checkbox"
+                                                        {% if a.burn_center %}
+                                                       checked
+                                                        {% endif %}
+                                                       class="form-control" name="burn_center"
+                                                       value="{{ a.burn_center }}"
+                                                >
+                                                Burn Center</label>
+                                        </div>
+
+                                                <div class="clearfix"></div>
+                                                <div class="form-group">
+                                                    <label class="checkbox-inline">
+
+                                                                        <input style="width: 50px; height:30px;margin-right:10px;margin-left: 1px;" type="checkbox" name="is_emergency"
+                                                                                   {% if a.is_emergency %}value="1" checked {% else %}value="0"
+                                                                            {% endif %}
+                                                                            onclick="$(this).attr('value', this.checked ? 1 : 0)">
+                                                    <span class="p_l_15" style="padding-left: 45px;color: red;">    Emergency Services Available</span>
+                                                </label>
+                                                </div>
+                                    </div>-->
+
+                                </div>
+                                <!--RIGHT PANEL END-->
+
+                                    <div class="clearfix col-md-12">
+                                       <button class="btn btn-success" onclick="SearchDoctorForSearchRank()" id="sbutton"> Get Doctors
+                                        </button>
+                                    </div>
+
+                            </div>
+
+
+         <div class="table-responsive table_modify_for_all" style="margin-top: 50px!important;">
+             {% if doctors %}
+                <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Serial No</th>
+                    <th>Name</th>
+                    <th>Stage</th>
+                    <th>Current User</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in doctors %}
+                    <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.firstName }}&bnsp;&bnsp;&bnsp;{{ i.name }}</td>
+                    <td>{{ i.stage.stage_name }}</td>
+                    <td>{{ i.current_user.username }}</td>
+                    <td>{{ i.createdAt }}</td>
+                    <td>{{ i.updatedAt }}</td>
+                    <td>
+                        <a class="btn btn-default btn-sm p_0"
+                                       href="#"><i
+                                            class="fa fa-clock-o fa-fw text_333"></i></a>
+                        <a class="btn btn-default btn-sm p_0" href="#"><i
+                            class="fa fa-pencil-square-o fa-fw"></i></a></td>
+                {% endfor %}
+                </tr>
+                </tbody>
+
+            </table>
+             {% endif %}
+
+             {% if organisation_all_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                    {%  if not organisation_all_data.paginator.num_pages < 2 %}
+                        {% if organisation_all_data.has_previous %}
+                            <li class="prev"><a href="?page={{ organisation_all_data.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if search_data_two %}&search_data_two={{search_data_two}}{% endif %}">Prev</a></li>
+                        {% endif %}
+
+                        <li><a>Page {{ organisation_all_data.number }} of {{ organisation_all_data.paginator.num_pages }}</a></li>
+
+                            {% if organisation_all_data.has_next %}
+                            <li class="next"><a href="?page={{ organisation_all_data.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if search_data_two %}&search_data_two={{search_data_two}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-right">
+                         <ul class="pagination">
+                            <li><a>Page 1 of 1 </a></li>
+                         </ul>
+                        </div>
+                    {% endif %}
+
+                </div>
+             {% endif %}
+
+
+
+
+    </div>
+
+
+    <script type="text/javascript">
+        function ValidateMobileCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{10},)*\d{10}$/.test(value));
+            if (!check) {
+                alert("Please put correct Mobile No");
+
+            }
+            return check
+
+        }
+        function ValidatePhoneCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8},)*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct Phone No");
+
+            }
+            return check
+
+        }
+        function eitherMobileAndTelephone(mobile, telephone) {
+            if (mobile != '' || telephone != '') {
+                return true;
+            }
+            alert("Please either mobile no or telephone no");
+            return false
+
+        }
+
+        function checkcategory(category) {
+            if (category != '') {
+                return true;
+            }
+
+            alert("Please put category value");
+            return false;
+
+        }
+
+        function validateMyForm() {
+            var mobile_val = document.getElementById('mobile').value;
+            var phone_val = document.getElementById('phone').value;
+            var category_val = document.getElementById("category").value;
+            var mobile = ValidateMobileCSV(document.getElementById('mobile').value);
+            var phone = ValidatePhoneCSV(document.getElementById('phone').value);
+            var eitherMobile = eitherMobileAndTelephone(mobile_val, phone_val)
+            var category = checkcategory(category_val);
+            if (mobile && phone && eitherMobile && category) {
+                return true
+            }
+            return false
+        }
+        $(document).ready(function () {
+            $('#datePicker')
+                    .datepicker({
+                        format: 'dd/mm/yyyy'
+                    })
+                    .on('changeDate', function (e) {
+                        // Revalidate the date field
+                        $('#eventForm').formValidation('revalidateField', 'date');
+                    });
+        });
+    </script>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    </script>
+
+    <script>
+    function UpdateDoctorRank(type){
+    var checkedValues = $('input:checkbox:checked').map(function () {
+        return this.value;
+    }).get();
+    var formDATA = {};
+    if (type == 'CC') {
+        Spon_CC_RANK_list = Array();
+        $.each($('input:checkbox:checked'),
+                function () {
+                    //values.push($(this).parent().children('td.seven').text());
+                    Spon_CC_RANK_list.push($(this).parent().parent().children().eq(6).find("input").val());
+
+                });
+        //alert("val---" + values.join(", "));
+        Spon_CC_RANK_list = Spon_CC_RANK_list.filter(function(n){ return n != "" });
+
+        /* Subs_CC_RANK_list = Array();
+        $.each($('input:checkbox:checked'),
+                function () {
+                    //values.push($(this).parent().children('td.seven').text());
+                    Subs_CC_RANK_list.push($(this).parent().parent().children().eq(7).find("input").val());
+
+                });
+        Subs_CC_RANK_list = Subs_CC_RANK_list.filter(function (n) {   return n != ""  }); */
+
+
+        Spon_CC_RANK_list = (Spon_CC_RANK_list).toString().toLowerCase();
+        //Subs_CC_RANK_list = (Subs_CC_RANK_list).toString().toLowerCase();
+        formDATA.Spon_CC_RANK_list = Spon_CC_RANK_list;
+        //formDATA.Subs_CC_RANK_list = Subs_CC_RANK_list;
+
+        Spon_CC_RANK_StartDate = Array();
+        $.each($('input:checkbox:checked'),
+                function () {
+                    //values.push($(this).parent().children('td.seven').text());
+                    Spon_CC_RANK_StartDate.push($(this).parent().parent().children().eq(7).find("input").val());
+
+                });
+        Spon_CC_RANK_StartDate = (Spon_CC_RANK_StartDate).toString().toLowerCase();
+        formDATA.Spon_CC_RANK_StartDate = Spon_CC_RANK_StartDate;
+
+        Spon_CC_RANK_EndDate = Array();
+        $.each($('input:checkbox:checked'),
+                function () {
+                    //values.push($(this).parent().children('td.seven').text());
+                    Spon_CC_RANK_EndDate.push($(this).parent().parent().children().eq(8).find("input").val());
+
+                });
+        Spon_CC_RANK_EndDate = (Spon_CC_RANK_EndDate).toString().toLowerCase();
+        formDATA.Spon_CC_RANK_EndDate = Spon_CC_RANK_EndDate;
+
+
+    }
+    else {
+
+        Spon_CLC_RANK_list = Array();
+        $.each($('input:checkbox:checked'),
+                function () {
+                    //values.push($(this).parent().children('td.seven').text());
+                    Spon_CLC_RANK_list.push($(this).parent().parent().children().eq(6).find("input").val());
+
+                });
+
+        //var Spon_CLC_RANK_list = $('input:text[name=Spon_CLC_RANK]').map(function () {
+        //    return this.value;
+        //}).get();
+        Spon_CLC_RANK_list = Spon_CLC_RANK_list.filter(function (n) {
+            return n != ""
+        });
+
+
+        /*Subs_CLC_RANK_list = Array();
+        $.each($('input:checkbox:checked'),
+                function () {
+                    //values.push($(this).parent().children('td.seven').text());
+                    Subs_CLC_RANK_list.push($(this).parent().parent().children().eq(7).find("input").val());
+
+                });
+        //var Subs_CLC_RANK_list = $('input:text[name=Subs_CLC_RANK]').map(function () {
+        //    return this.value;
+        //}).get();
+        Subs_CLC_RANK_list = Subs_CLC_RANK_list.filter(function (n) {
+            return n != ""
+        }); */
+
+        Spon_CLC_RANK_list = (Spon_CLC_RANK_list).toString().toLowerCase();
+        //Subs_CLC_RANK_list = (Subs_CLC_RANK_list).toString().toLowerCase();
+
+        formDATA.Spon_CLC_RANK_list = Spon_CLC_RANK_list;
+        //formDATA.Subs_CLC_RANK_list = Subs_CLC_RANK_list;
+
+
+        Spon_CLC_RANK_StartDate = Array();
+        $.each($('input:checkbox:checked'),
+                function () {
+                    //values.push($(this).parent().children('td.seven').text());
+                    Spon_CLC_RANK_StartDate.push($(this).parent().parent().children().eq(7).find("input").val());
+
+                });
+        Spon_CLC_RANK_StartDate = (Spon_CLC_RANK_StartDate).toString().toLowerCase();
+        formDATA.Spon_CLC_RANK_StartDate = Spon_CLC_RANK_StartDate;
+
+        Spon_CLC_RANK_EndDate = Array();
+        $.each($('input:checkbox:checked'),
+                function () {
+                    //values.push($(this).parent().children('td.seven').text());
+                    Spon_CLC_RANK_EndDate.push($(this).parent().parent().children().eq(8).find("input").val());
+
+                });
+        Spon_CLC_RANK_EndDate = (Spon_CLC_RANK_EndDate).toString().toLowerCase();
+        formDATA.Spon_CLC_RANK_EndDate = Spon_CLC_RANK_EndDate;
+
+    }
+
+    checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+
+    if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+        alert("Please select value....");
+        return false;
+    }
+    formDATA.checkedValues = checkedValues;
+    formDATA.TYPE = type;
+
+    if (formDATA.checkedValues != '') {
+        $.ajax({
+            type: 'POST',
+            url: Domain + '{% url 'save-doctor-rank' %}',
+            data:{formDATA: formDATA, csrfmiddlewaretoken: '{{ csrf_token }}'},
+                beforeSend: function () {
+                var text = 'Please wait....';
+                ajaxindicatorstart(text);
+            },
+            success: function (resData) {
+                ajaxindicatorstop();
+                resData = JSON.parse(resData);
+                if (resData.Redirect == true) {
+                    alert(resData.Message);
+                    window.location = resData.RedirectUrl;
+                }
+                else {
+
+                    alert(resData.Message);
+                    alert("Please click 'Get Doctors' to Update Values");
+                    //window.location.reload(true);
+                }
+            },
+            error: function(data){
+                alert(JSON.stringify(data));
+                //console.log(JSON.stringify(data));
+                //location.reload();
+            }
+        });
+    }
+    else
+    {
+        alert("Please Check Rows.")
+    }
+
+}
+    </script>
+{% endblock %}

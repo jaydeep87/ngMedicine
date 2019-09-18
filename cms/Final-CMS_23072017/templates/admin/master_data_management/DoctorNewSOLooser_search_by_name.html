@@ -1,0 +1,48 @@
+<div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th><input id="checkAll" type="checkbox"/></th>
+                        <th>Sr No</th>
+                        <th>Service Offered Looser Name</th>
+                        <th>Service Offered ID</th>
+                        <th>Type</th>
+                        <th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in DoctorNewSOLooser_obj %}
+
+                        <tr>
+                            <td><input type="checkbox" value="{{ i.id }}"></td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.name | capfirst }}</td>
+                            <td>{{ i.id }}</td>
+                            <td>{{ i.WorL }}</td>
+                            <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+
+                            <td><a class="text_white" href="{% url 'move_so_looser_to_winners_list' i.id %}"><span style="color: #cd0a0a">Move To Winners List</span></a></td>
+
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                {% if DoctorNewSOLooser_obj %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if DoctorNewSOLooser_obj.has_previous %}
+                                <li class="prev"><a href="?page={{ DoctorNewSOLooser_obj.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ DoctorNewSOLooser_obj.number }} of {{ DoctorNewSOLooser_obj.paginator.num_pages }}</a></li>
+                            {% if DoctorNewSOLooser_obj.has_next %}
+                                <li class="next"><a href="?page={{ DoctorNewSOLooser_obj.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>

@@ -1,0 +1,200 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+{% if messages %}
+{% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+        <div class="row m_0">
+            <h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion <span
+                    class="caret"></span></h4>
+            <div class="form-group" id="select_filterss">
+                <form role="form" method="get" action="{% if request.user|can_view_admin %}{% url 'plan-name-listing-admin' %}{% else %}{% url 'plan-name-listing' %}{% endif %}">
+                    <button type="submit" class="btn btn-info btn-sm">Apply</button>
+                    <a href="{% if request.user|can_view_admin %}{% url 'plan-name-listing-admin' %}{% else %}{% url 'plan-name-listing' %}{% endif %}" class="btn btn-warning btn-sm">Reset</a>
+                    <div class="row m_t_10">
+                        <input type="hidden" value="plan_filter" name="x">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <select class="form-control" name="city_id">
+                                    <option value="">---Select City ---</option>
+                                    {% for cityone in city_obj %}
+                                        {% if city == cityone.id %}
+                                            <option value="{{ cityone.id }}" selected>{{ cityone.name | capfirst }}</option>
+                                        {% else %}
+                                            <option value="{{ cityone.id }}">{{ cityone.name | capfirst }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                        <div class="form-group">
+                            <select class="form-control" name="cat_id" id="plancatnew">
+                                <option value="">--Select Category--</option>
+                                {% for c in cat_obj %}
+                                    {% if cat == c.id %}
+                                        <option value="{{ c.id }}" selected>{{ c.name | capfirst }}</option>
+                                    {% else %}
+                                        <option value="{{ c.id }}">{{ c.name | capfirst }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <select class="form-control" name="sub_cat_id" id="plansubcatnew">
+                                    <option value="">--Select Sub Category---</option>
+                                    {% for s in sub_cat_obj %}
+                                        {% if subcat == s.id %}
+                                            <option value="{{ s.id }}" selected>{{ s.name | capfirst }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                            <select class="form-control" name="provider">
+                            <option value="">----Select Provider---</option>
+                            {% for p in provider_obj %}
+                                {% if provider == p.id %}
+                                    <option value="{{ p.id }}" selected>{{ p.owner_name }} | {{ p.c_city }}</option>
+                                {% else %}
+                                    <option value="{{ p.id }}">{{ p.owner_name }} | {{ p.c_city }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+                    </div>
+                    </div>
+
+                </form>
+            </div>
+
+            {% if request.user|can_view_admin %}
+                    <div style="padding-bottom:0;" class="border_5_light_white p_t_10">
+                <div class="row m_0">
+                <input type="hidden" value="plan" id="type_of"/>
+                    <div class="col-sm-4">
+                        <div class="form-group"><select class="form-control" id="stage">
+                            <option>----Select Stage---</option>
+                            {% for c in stage_data %}
+                                <option value="{{ c.id }}">{{ c.stage_name | capfirst }}</option>
+
+                            {% endfor %}
+                        </select></div>
+
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"><select class="form-control" id="teleuser" name="users_data">
+                            <option>---Select Users---</option>
+                        </select></div>
+                    </div>
+                    <div class="col-sm-4 text-right">
+                        <button class="btn btn-info" type="button" onclick="AssignServicePlan()">Assign</button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        <br>
+        {% if request.user|can_view_admin %}
+        <div class="col-sm-4 p_l_0">
+            <div class="input-group m_b_50">
+                <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                <span class="input-group-btn"> <button class="btn btn-default"
+                       onclick="SearchServicePlan()"> Search</button></span>
+            </div>
+        </div>
+    <script>
+        $("#checkAll").change(function () {
+           $("input:checkbox").prop('checked', $(this).prop("checked"));
+       });
+       var $rows = $('#table tr');
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchServicePlan()
+                }
+            }
+    </script>
+        {% else %}
+            <div class="col-sm-4 p_l_0">
+            <div class="input-group m_b_50">
+                <input type="text" placeholder="Search |" class="form-control" id="searchuser" autofocus="autofocus">
+                <span class="input-group-btn"> <button class="btn btn-default"
+                       onclick="SearchServicePlanUser({{ request.user.id }})"> Search</button></span>
+            </div>
+        </div>
+        <script>
+            $('#alert').fadeIn().delay(2000).fadeOut('slow');
+            var elem = document.getElementById("searchuser");
+            elem.onkeyup = function (e) {
+                if (e.keyCode == 13) {
+                    SearchServicePlanUser({{ request.user.id }})
+                    }
+                }
+        </script>
+        {% endif %}
+        {% if request.user|can_view_caller %}
+            <div class="row m_0"><p class="pull-right"><a class="btn btn-info" href="{% url 'plannew-add' %}"><i
+                    class="fa fa-flask fa-fw"></i> Add New Plan</a></p></div>
+            {% endif %}
+        {% include 'publisher/markascomplete.html' %}
+        </div>
+        <br>
+        {% block table %}
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                    {% if request.user|can_view_admin %}<th><input id="checkAll" type="checkbox"></th>{% endif %}
+                    <th>Sr No</th>
+                    <th>Plan Name</th>
+                    <th>City</th>
+                    <th>Plan Category</th>
+                    <th>Plan Sub Category</th>
+                    <th>Stage</th>
+                    <th>Current User</th>
+                    <th>Free Text</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if plan %}
+                    {% for p in plan %}
+                        <tr>
+                        {% if request.user|can_view_admin %}<td><input type="checkbox" value="{{ p.id }}"></td>{% endif %}
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ p.other_details.plan_name }}</td>
+                        <td>{{ p.city.name }}</td>
+                        <td>{{ p.plan_category.name | capfirst }}</td>
+                        <td>{{ p.plan_sub_category.name | capfirst }}</td>
+                        <td>{{ p.stage.stage_name | capfirst }}</td>
+                        <td>{{ p.current_user.username | capfirst }}</td>
+                        <td>{{ p.free_text | capfirst }}</td>
+                        <td>{{ p.createdAt }}</td>
+                        <td>{{ p.updatedAt }}</td>
+                        {% if p.stage_id != 5 %}<td><a class="text_white" href="{% url 'plannew-edit' p.id %}?tab=1"><i
+                                    class="fa fa-edit"></i></a></td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                    {% endfor %}
+                    </tbody>
+                 {% endif %}
+                </table>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

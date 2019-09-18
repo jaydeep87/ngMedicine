@@ -1,0 +1,35 @@
+{% load staticfiles %}
+{% load template_tag %}
+<!doctype html>
+<html >
+<head>
+<meta charset="utf-8">
+<title>Email-Pricing</title>
+</head>
+
+<body>
+<table align="center" border="0" style="width:600px; border:1px solid #ccc; padding:5px; margin:5px auto; font-family:Gotham, 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+  <tr>
+    <td><img src="{% static 'images/hfu-logo.png' %}" alt="Hfu-logo" title="Health Dynamic Solution Pvt Ltd." style="width:180px;"></td>
+    <td style="text-align:right;"><img src="{% static 'images/app.jpg' %}" alt="Hfu-app" title="Hfu-app" style="width:180px;"></td>
+  </tr>
+  <tr>
+    <td colspan="2"><p style="font-size:14px; color:#666;"> Dear Doctor...<br>
+        <br>
+        At Healthforu.com we realize the difference between a good practice and a great one, and we are here to help you practice better by making your practice better.<br>
+        <br>
+        We are an ISO 27001:2013 complied interactive online healtcare platform, enables innovation & better clinical practices - while saving costs, increasing access and improving the quality of healthcare systems. </p></td>
+  </tr>
+  <tr>
+    <td colspan="2" style="text-align:center;"><img src="{% static 'images/product.jpg' %}" alt="img" title=""></td>
+  </tr>
+  <tr>
+    <td colspan="2"><p style="font-size:14px; color:#666; text-align:center;">Regester yourself today to enjoy a 10 days <span style="color:#666; font-weight:bold;">FREE</span> trial<br>
+        of our platform and make your practice great.<br>
+        <br>
+        <br>
+        <a href="#" style="background:#ed7d31; color:#fff; border:0; padding:7px 25px; font-weight:bold; border-radius:4px; text-decoration:none;">TRY NOW</a> </p></td>
+  </tr>
+</table>
+</body>
+</html>

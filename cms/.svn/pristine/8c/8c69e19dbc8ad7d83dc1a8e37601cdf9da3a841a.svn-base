@@ -1,0 +1,46 @@
+<div class="table-responsive table_modify_for_all">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Sr No</th>
+            <th>locality Name</th>
+            <th>City Name</th>
+            <th>State Name</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for i in locality_obj %}
+
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ i.name | capfirst }}</td>
+                <td>{{ i.citymaster | capfirst}}</td>
+                <td>{{ i.citymaster.statemaster | capfirst }}</td>
+                <td>{{ i.createdAt }}</td>
+                <td>{{ i.updatedAt }}</td>
+                <td><a class="text_white" href="{% url 'edit_master_locality' i.id %}"><i
+                        class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.deletee == False %}<a href="{% url 'manage-master-deactivate' object_id=i.id object_type=65 %}" class="text_white"><i class="fa fa-close"></i></a>
+                {% else %}<a href="{% url 'manage-master-activate' object_id=i.id object_type=65 %}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}</td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+
+    </table>
+        {% if locality_obj %}
+            <div class="text-right">
+                <ul class="pagination">
+                    {% if locality_obj.has_previous %}
+                        <li class="prev"><a href="?page={{ locality_obj.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Prev</a></li>
+                    {% endif %}
+                    <li><a>Page {{ locality_obj.number }} of {{ locality_obj.paginator.num_pages }}</a></li>
+                    {% if locality_obj.has_next %}
+                        <li class="next"><a href="?page={{ locality_obj.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>

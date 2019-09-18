@@ -1,0 +1,173 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+   id="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+<!--Right Start-->
+<div class="p_10" style="background: rgba(0,0,0,0.3);">
+   <div style="padding-bottom:0;" class="border_5_light_white p_t_10">
+      <div class="row m_0">
+         <div class="col-md-6">
+            <div class="row">
+               <div class="col-md-10">
+                  <div class="form-group">
+                     <select class="form-control" id="stage_data">
+                        <option value="">----Select Stage---</option>
+                        {% for c in stage_data %}
+                        <option value="{{ c.id }}">{{ c.stage_name }}</option>
+                        {% endfor %}
+                     </select>
+                  </div>
+               </div>
+               <div class="col-md-2"><button type="button" class="btn btn-info" onclick="SearcheserviceplanByPublisher($('#stage_data').val())">GO</button></div>
+            </div>
+         </div>
+
+         <div class="col-md-6" style="width: 80px;" >
+{#                <a href="{% url 'Serviceplan_error_logs' %}"><img   src="/static/images/images/notes_warning.png" alt="Smiley face" height="42" width="42"></a>#}
+         </div>
+
+         <div class="col-md-6 text-right" style="width: 350px;" >
+            <button class="btn btn-success" type="button" onclick="PublishForPublisher('publish','serviceplan')">Publish</button>
+            <button class="btn btn-danger" type="button" onclick="PublishForPublisher('un-publish','serviceplan')">Un publish</button>
+            <button class="btn btn-warning" type="button" onclick="PublishForPublisher('publish','serviceplan')">Re publish</button>
+         </div>
+      </div>
+   </div>
+    <div class="input-group m_b_50">
+        <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+        <span class="input-group-btn"> <button class="btn btn-default"
+               onclick="SearchServicePlanByPublisher()"> Search</button></span>
+        <script>
+            $("#checkAll").change(function () {
+               $("input:checkbox").prop('checked', $(this).prop("checked"));
+           });
+           var $rows = $('#table tr');
+            $('#alert').fadeIn().delay(2000).fadeOut('slow');
+            var elem = document.getElementById("search");
+            elem.onkeyup = function (e) {
+                if (e.keyCode == 13) {
+                    SearchServicePlanByPublisher()
+                    }
+                }
+        </script>
+    </div>
+
+   <input type="hidden" value="serviceplan" id="xx" name ="yy">
+   {% include 'publisher/markascomplete.html' %}
+   <div class="table-responsive table_modify_for_all p_tb_10">
+      <table class="table table-bordered m_b_0">
+         <thead class="bg_ededed">
+            <tr>
+                <th><input id="checkAll" type="checkbox"/></th>
+                <th>Sr No</th>
+                <th>Plan Name</th>
+                <th>City</th>
+                <th>Plan Category</th>
+                <th>Plan Sub Category</th>
+                <th>Stage</th>
+                <th>User</th>
+                <th>Free Text</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>Action</th>
+            </tr>
+         </thead>
+         <tbody>
+         {% if plan_obj %}
+            {% for p in plan_obj %}
+            <tr>
+                <td><input type="checkbox" value="{{ p.id }}"></td>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ p.other_details.plan_name }}</td>
+                <td>{{ p.city.name }}</td>
+                <td>{{ p.plan_category.name | capfirst }}</td>
+                <td>{{ p.plan_sub_category.name | capfirst }}</td>
+                <td>{{ p.stage.stage_name | capfirst }}</td>
+                <td>{{ p.current_user.username | capfirst }}</td>
+                <td>{{ p.free_text | capfirst }}</td>
+                <td>{{ p.createdAt }}</td>
+                <td>{{ p.updatedAt }}</td>
+                {% if p.stage_id != 5 %}<td><a class="text_white" href="{% url 'plannew-edit' p.id %}?tab=1"><i
+                            class="fa fa-edit"></i></a></td>
+                    {% else %}
+                    <td></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+         {% endif %}
+         </tbody>
+      </table>
+   </div>
+</div>
+<!--Right End-->
+<script>
+   $("#checkAll").change(function () {
+       $("input:checkbox").prop('checked', $(this).prop("checked"));
+   });
+   var $rows = $('#table tr');
+   $('#search').keyup(function () {
+       var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+   
+       $rows.show().filter(function () {
+           var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+           return !~text.indexOf(val);
+       }).hide();
+   });
+   $('#alert').fadeIn().delay(2000).fadeOut('slow');
+   /**
+    * publisher
+     * @constructor
+    */
+   function PublishForPublisher(type,data_type){
+       var checkedValues = $('input:checkbox:checked').map(function () {
+           return this.value;
+       }).get();
+       var formDATA = {};
+       checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+       if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+           alert("Please select value....");
+           return false;
+       }
+       formDATA.checkedValues = checkedValues;
+       formDATA.type = type;
+       formDATA.data_type = data_type;
+       if (formDATA.checkedValues != '') {
+           $.ajax({
+               type: 'POST', url: Domain + '{% url 'data-publish' %}', data: formDATA, beforeSend: function () {
+                   var text = 'Please wait....';
+                   ajaxindicatorstart(text);
+               },
+               success: function (resData) {
+                   ajaxindicatorstop();
+                   resData = JSON.parse(resData);
+                   if (resData.Redirect == true) {
+                       alert(resData.Message);
+                       window.location = resData.RedirectUrl;
+                   }
+                   else {
+   
+                       alert(resData.Message);
+                       window.location.reload(true);
+                   }
+               },
+               error: function(data){
+                   alert('Something Bad Happened');
+                   location.reload();
+               }
+           });
+       }
+       else
+       {
+           alert("Please select Service Plans.")
+       }
+
+   }
+
+       
+</script>
+{% endblock %}

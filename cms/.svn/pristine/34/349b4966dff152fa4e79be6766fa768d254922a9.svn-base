@@ -1,0 +1,58 @@
+<div class="table-responsive table_modify_for_all">
+    <table class="table table-bordered">
+        <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Plan Name</th>
+                    <th>Stage</th>
+                    <th>Provider Name</th>
+                    <th>Free Text</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if life_plan_all_data %}
+                    {% for i in life_plan_all_data %}
+                        <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ i.plan_name | capfirst }}</td>
+                        <td>{{ i.stage.stage_name| capfirst }}</td>
+                        <td>{{ i.provider.owner_name| capfirst }}</td>
+                        <td>{{ i.free_text | capfirst }}</td>
+                        <td>{{ i.createdAt }}</td>
+                        <td>{{ i.updatedAt }}</td>
+                        <td>
+                            <a class="text_white" href="{% url 'life-service-plan-edit' i.id %} "><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">{% if request.user.is_superuser %}|</span>{% if i.activation_status == True %}<a href="{% url 'any-master-object-deactivate' object_id=i.id object_type=15 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'any-master-object-activate' object_id=i.id object_type=15 %}  " class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}{% endif %}
+                        </td>
+                        </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="5"><b>Life Plan could not be found for selected user...<span
+                        class='fa fa-frown-o fa-lg'></span></b>
+                </td>
+            </tr>
+
+        {% endif %}
+
+        </tbody>
+
+    </table>
+    {% if life_plan_all_data %}
+        <div class="text-right">
+            <ul class="pagination">
+                {% if life_plan_all_data.has_previous %}
+                    <li class="prev"><a href="?page={{ life_plan_all_data.previous_page_number }}{% if stage_no %}&stage_id={{stage_no}}{% endif %}">Prev</a></li>
+                {% endif %}
+                <li><a>Page {{ life_plan_all_data.number }} of {{ life_plan_all_data.paginator.num_pages }}</a></li>
+                {% if life_plan_all_data.has_next %}
+                    <li class="next"><a href="?page={{ life_plan_all_data.next_page_number }}{% if stage_no %}&stage_id={{stage_no}}{% endif %}">Next</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+</div>

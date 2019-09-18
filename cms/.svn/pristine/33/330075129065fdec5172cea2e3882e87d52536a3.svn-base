@@ -1,0 +1,51 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'category_listing' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Category</h3>
+<h3 class="m_t_0">{{ count }}</h3>
+</a>
+
+</div>
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'sub_category_listing' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Sub Category</h3>
+<h3 class="m_t_0">{{ count1 }}</h3>
+</a>
+
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'plan_details_listing' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Plan Details</h3>
+<h3 class="m_t_0">{{ count2 }}</h3>
+</a>
+
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'component_listing' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Plan Component</h3>
+<h3 class="m_t_0">{{ count3 }}</h3>
+</a>
+
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'sub_component_listing' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Plan Sub Component</h3>
+<h3 class="m_t_0">{{ count4 }}</h3>
+</a>
+
+</div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,663 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+{% endif %}
+
+
+    <div style="padding-bottom:50px;"><button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button></div>
+
+
+
+
+
+
+                <ul class="nav nav-tabs">
+                    <li class="{% if tab == '1' %}active{% endif %}"><a href="#nurse_bureautab1"
+                                                                        onclick="refreshURL('{% url 'nurse-bureau-global-search' nurse_bureau_obj.id %}?tab=1')"
+                                                                        data-toggle="tab">nurse Bureau Details</a></li>
+                    <li class="{% if tab == '2' %}active{% endif %}"><a href="#nurse_bureautab2"
+                                                                        onclick="refreshURL('{% url 'nurse-bureau-global-search' nurse_bureau_obj.id %}?tab=2')"
+                                                                        data-toggle="tab">Manage Packages</a></li>
+{#                    <li class="{% if tab == '3' %}active{% endif %}"><a href="#labtab3"#}
+{#                                                                        onclick="refreshURL('{% url 'nurse_bureau-listing-edit' nurse_bureau_obj.id %}?tab=3')"#}
+{#                                                                        data-toggle="tab">Manage Branches</a></li>#}
+{#                    <li class="{% if tab == '4' %}active{% endif %}"><a href="#labtab4"#}
+{#                                                                        onclick="refreshURL('{% url 'nurse_bureau-listing-edit' nurse_bureau_obj.id %}?tab=4')"#}
+{#                                                                        data-toggle="tab">Package Association</a></li>#}
+
+
+                </ul>
+
+
+
+
+        <div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+        <div class="well well-sm text_logo font_weight_600"><i class="fa fa-flask fa-fw"></i> Edit nurse Bureau
+
+{#            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info btn-sm pull-right"#}
+{#                       style="margin-top: -5px;">Go Back</a>#}
+
+            <a href="{% if user_is_publisher %}{% url  'publisher-nurse_bureau-listing'  %}{% elif request.user.is_superuser%} {% url 'nurse_bureau-assignment' %} {% else %}{% url  'nurse_bureau-listing' %}{% endif %}" class="btn btn-info btn-sm pull-right">Go Back</a>
+
+
+        </div>
+        {% if tab == '1' %}
+            <div class="row" id="nurse_bureautab1">
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'nurse_bureau-listing-edit' nurse_bureau_obj.id %}?tab=1">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Nurse Bureau Name</label>
+                        <input type="text" class="form-control" name="name" value="{{ nurse_bureau_obj.name }}" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nurse Bureau Address</label>
+                        <textarea rows="2" class="form-control"  name="address"disabled>{{ nurse_bureau_obj.address }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label><b>Remarks</b></label>
+                        <textarea rows="2" class="form-control"  name="remarks" style="color: orangered;"disabled>{{ nurse_bureau_obj.remarks }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pincode</label><span style="color: orangered;">&nbsp;&nbsp;*max 10 characters</span>
+                    <td  >
+                    <input type ="text" style="width:150px!important;" class="form-control" value="{{ nurse_bureau_obj.pincode }}" name="apincode" disabled></textarea>
+                    </td>
+                    </div>
+
+                    {# -------NOV 21---NISHANK--------START---  #}
+
+                       <div class="form-group">
+                        <label>Nurse Bureau Services </label>
+                        <select id="nurse_bureau_services" class="chosen-select" name="nurse_bureau_services" multiple disabled>
+                            <option value="" disabled>--Select Service--</option>                          
+                            {% for service in nurse_bureau_services_master %}
+                                {% if service.id|slugify in nurse_bureau_services_list %}
+                                <option value="{{ service.id }}" selected>{{ service.name | capfirst}}</option>
+                                {% else %}
+                                <option value="{{ service.id }}">{{ service.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+
+                        <div class="form-group">
+                        <label>Nurse Bureau Speciality</label>
+                        <select id="nurse_bureau_speciality" class="chosen-select" name="nurse_bureau_speciality" multiple disabled>
+                            <option value="" disabled>--Select Speciality--</option>                            
+                            {% for speciality in nurse_bureau_speciality_master %}
+                             {% if speciality.id|slugify in nurse_bureau_speciality_list %}
+                             <option value="{{ speciality.id }}" selected>{{ speciality.name | capfirst}}</option>
+                             {% else %}
+                             <option value="{{ speciality.id }}" >{{ speciality.name | capfirst}}</option>
+                             {% endif %}
+                            {% endfor %} 
+                        </select>
+                        </div>
+
+
+
+                     {# -------NOV 21---NISHANK--------End--- #}
+
+
+                    <div class="form-group">
+                        <label>Country</label>
+                        <select id="zone" class="chosen-select" name="country_id" disabled>
+                            <option value="">--Select Country--</option>
+                            {% for i in country_obj %}
+                                {% if  i.id == nurse_bureau_obj.country_id%}
+                                <option value="{{ i.id }}"selected>{{ i.name | capfirst}}</option>
+                                {% else %}
+                                 <option value="{{ i.id }}">{{ i.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>State</label>
+                        <select id="state" class="chosen-select" name="state_id" disabled>
+                            <option value="">--Select State--</option>
+                            {% for i in state_obj %}
+                                {% if  i.id == nurse_bureau_obj.state_id%}
+                                <option value="{{ i.id }}"selected>{{ i.name | capfirst}}</option>
+                                {% else %}
+                                <option value="{{ i.id }}">{{ i.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>City</label>
+                        <select id="city" class="chosen-select" name="city_id" disabled>
+                            {% for cityc in city %}
+                                {% if nurse_bureau_obj.city_id == cityc.id %}
+                                    <option value="{{ nurse_bureau_obj.city.id }}" selected>{{ nurse_bureau_obj.city.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ cityc.id }}" >{{ cityc.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <select id="locality" class="chosen-select" name="locality_id" disabled>
+                            {% for loc in locality %}
+                            {% if nurse_bureau_obj.locality_id == loc.id %}
+                             <option value="{{ nurse_bureau_obj.locality.id }}" selected>{{ nurse_bureau_obj.locality.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {# -------Locality to from 25nNov Nishank start ----------------- #}
+                        <div class="form-group" style="border: 2px white">
+                        <h3>Area Covered</h3>
+
+                        <label>FROM</label>
+                        <select id="location-2" class="chosen-select" name="locality_idfrom" disabled>
+                            <option value ='msg'>----Select Locality---</option>
+                            {% for loc in locality %}
+                            {% if nurse_bureau_obj.nurse_bureau_locality_coverage_from_id == loc.id %}
+                             <option value="{{ loc.id }}" selected>{{ loc.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+
+                        <label>TO</label>
+                        <select id="location-3" class="chosen-select" name="locality_idto" disabled>
+                            <option value ='msg'>----Select Locality---</option>
+                            {% for loc in locality %}
+                            {% if nurse_bureau_obj.nurse_bureau_locality_coverage_to_id == loc.id %}
+                             <option value="{{ loc.id }}" selected>{{ loc.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+
+                        </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Telephone</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.telephone }}" name="telephone" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.mobile }}" name="mobile" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.email }}" name="email" disabled>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Rates</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.rates }}" name="rates" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nurse Bureau Contact Person</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.contact_person }}" name="contact_person" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nurse Bureau Contact Person No</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.contact_person_contact_no }}" name="contact_person_contact_no" disabled>
+                    </div>
+
+                     <div class="form-group">
+                        <label>Nurse Bureau Contact Person Email</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.contact_person_email }}" name="contact_person_email" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Branches</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.branches }}" name="branches" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Website</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.website }}" name="website" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nurse Bureau Packages</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.nurse_bureau_packages }}" name="nurse_bureau_packages" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>No of Nurses</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.no_of_nurses }}" name="no_of_nurses" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nurses Experience</label>
+                        <input type="text" class="form-control"  value="{{ nurse_bureau_obj.nurses_experience }}"  name="nurses_experience" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Experience</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.experience }}"  name="experience" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Certification</label>
+                        <input type="text" class="form-control" value="{{ nurse_bureau_obj.certification }}" name="certification" disabled>
+                    </div>
+
+
+                    <!--<div class="clearfix col-md-12 text-right">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>-->
+                 </div>
+                    </form>
+                </div>
+                <!--RIGHT PANEL END-->
+
+{#        </div>#}
+
+
+
+        {% endif %}
+
+        {% if tab == '2' %}
+            <div class="row" id="nurse_bureautab2">
+{#   %%%%%%%%%%%%%%%##!!          #}
+            <!--LEFT PANEL START-->
+            <div class="table-responsive table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+
+                    <th>Sr No</th>
+                    <th>Package Name</th>
+                    <th>Package Price</th>
+                    <th>Package Description</th>
+                    <th>Action</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% if  package_list %}
+                    {% for k,v in package_list.items %}
+                        <form target="{% url 'nurse_bureau-listing-edit' nurse_bureau_obj.id %}?tab=2" method = "post">
+                        <input type="hidden" class="form-control" name="edit" value = "edit">
+                        <input type="hidden" class="form-control" name="package_id" value = "{{ k }}">
+                            <tr>
+
+
+                            <td>{{ forloop.counter }}</td>
+                            <td><input type="text" class="form-control" name="package_name2" placeholder="Package Name" value = "{{ v.package_name | capfirst }}" disabled></td>
+                            <td><input type="text" class="form-control" name="package_price" placeholder="Package Price" value = "{{ v.package_price | capfirst }}"disabled></td>
+                            <td><textarea rows="2" class="form-control" name="package_description" placeholder="Package Description"disabled>{{ v.package_description | capfirst }}</textarea></td>
+                            <td>
+
+
+                            </td>
+
+                        </tr>
+                        </form>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7"><b>No Packages Found</b></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+        </div>
+
+
+
+         {#  *********************************DISPLAY EXISTNG***********END*************            #}
+
+            <div class="row" id = "labtab2">
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'nurse_bureau-listing-edit' nurse_bureau_obj.id %}?tab=2">
+                {% csrf_token %}
+                <div class="col-md-6">
+
+
+
+                    <div class="col-md-12">
+
+                              <div class="row m_0" style="background: rgba(0,0,0,0.1);">
+
+                              <div class="col-md-10" id="sss">
+                                <label style="color: white;size:32px!important;">&nbsp;&nbsp;&nbsp; Add Packages</label><div class="clearfix"></div>
+                              <div id="app">
+
+
+                              <div class="form-group col-md-6">
+                              <label>Package Name</label>
+                              <input type="text"  class="form-control" name="package_name" placeholder = "Package Name"></textarea>
+                              </div>
+
+
+                              <div class="form-group col-md-6">
+                              <label>Package Price</label>
+                              <input type="text" class="form-control" name="package_price" placeholder = "Package Price"></textarea>
+                              </div>
+
+                              <div class="form-group col-md-6">
+                              <label>Package Description</label>
+                              <textarea rows="2" class="form-control" name="package_description" placeholder = "Package Description"></textarea>
+                              </div>
+
+                              <div class="clearfix"></div>
+                              </div>
+                              </div>
+                              <div class="col-md-2">
+                                  <label>&nbsp;</label>
+                                  <div class="form-group p_t_10">
+                                    <label style="display:None;">Add-Rem</label>
+                                    <button type="button" id="btnn2"><i class="fa fa-minus-square"></i></button>
+                                    <button type="button" id="btnn1"><i class="fa fa-plus-square"></i></button>
+                                  </div>
+                              </div>
+                              </div>
+                     </div>
+
+
+
+
+
+
+                    <!--<div class="clearfix col-md-12 text-right p_t_10">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>-->
+
+                </div>
+                <!--RIGHT PANEL END-->
+            </form>
+        </div>
+{#   %%%%%%%%%%%%%%%##!!          #}
+                </div>
+                <!--RIGHT PANEL END-->
+
+{#        </div>#}
+
+        {% endif %}
+{#</div>#}
+
+    <!--Right End-->
+    <script>
+        var clone_indexa = $("#wrap1").length;
+        var clone_indexb = $("#wrap2").length;
+        var clone_indexc = $("#wrap3").length;
+        var clone_indexd = $("#wrap4").length;
+
+
+        $("#btn1").click(function () {
+            $("#wrap1").append('<div id = "in1"  class="form-group col-md-12"><input type="text" name="investigations" class="form-control" placeholder="Investigations" ></div>');
+            clone_indexa++;
+
+        });
+        $("#btn2").click(function () {
+            if (clone_indexa > 1) {
+                $("#in1").remove();
+
+                clone_indexa--;
+
+            }
+        });
+
+        $("#btn3").click(function () {
+            $("#wrap2").append('<div id = "in2"  class="form-group col-md-12"><input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests" ></div>');
+            clone_indexb++;
+        });
+        $("#btn4").click(function () {
+            if (clone_indexb > 1) {
+                $("#in2").remove();
+                clone_indexb--;
+            }
+        });
+
+        $("#btn5").click(function () {
+            $("#wrap3").append('<div id = "in3"  class="form-group col-md-12"><input type="text" name="diabetes_evaluation" class="form-control" placeholder="Diabetes Evaluation" ></div>');
+            clone_indexc++;
+        });
+        $("#btn6").click(function () {
+            if (clone_indexc > 1) {
+                $("#in3").remove();
+                clone_indexc--;
+            }
+        });
+
+        $("#btn7").click(function () {
+            $("#wrap4").append('<div id = "in4" class="form-group col-md-12"><input type="text" name="Consultations" class="form-control" placeholder="Consultations" ></div>');
+            clone_indexd++;
+        });
+        $("#btn8").click(function () {
+            if (clone_indexd > 1) {
+                $("#in4").remove('');
+                clone_indexd--;
+            }
+        });
+
+    </script>
+
+
+
+    <script>
+
+    function refreshURL(url) {
+                    window.location = url
+                }
+
+
+     $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    function readURL(input) {
+
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      $('#blah').attr('src', e.target.result);
+
+      $('#blah').hide();
+      $('#blah').fadeIn(650);
+
+    };
+
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#imgInp").change(function() {
+  readURL(this);
+});
+var clone_index = $("#app").length;
+
+$("#btnn1").click(function(){
+        $("#sss").append('<div id="app"><div class="form-group col-md-6"><label>Package Name</label><input type="text"  class="form-control" name="package_name" placeholder = "Package Name"></textarea></div><div class="form-group col-md-6"><label>Package Price</label><input type="text" class="form-control" name="package_price" placeholder = "Package Price"></textarea></div><div class="form-group col-md-6"><label>Package Description</label><textarea rows="2" class="form-control" name="package_description" placeholder = "Package Description"></textarea></div><div class="clearfix"></div></div>');
+    clone_index++;
+    });
+     $("#btnn2").click(function(){
+         if(clone_index>1){
+        $("#app").remove();
+             clone_index--;
+             }
+    });
+
+    var clone_indextwo = $("#insert").length;
+
+$("#btn1new").click(function(){
+        $("#appnew").append('<div id = "insert" class="form-group col-md-6"><textarea class="form-control" placeholder = "Doctor on Board" name="lab_doctors_on_board"></textarea> </div> </div>');
+    clone_indextwo++;
+    });
+     $("#btn2new").click(function(){
+         if(clone_indextwo>1){
+        $("#insert").remove();
+             clone_indextwo--;
+             }
+    });
+
+
+
+
+
+
+
+{##}
+{#var clone_indextab4bb = $("#in2").length;#}
+{##}
+{#$("#bbtn3").click(function(){#}
+{#        $("#wrapnew32").append('<div id="in2" class="form-group col-md-12"><input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests"></div>');#}
+{#    clone_indextab4bb++;#}
+{#    });#}
+{#     $("#bbtn3").click(function(){#}
+{#         if(clone_indextab4bb>1){#}
+{#        $("#in2").remove();#}
+{#             clone_indextab4bb--;#}
+{#             }#}
+{#    });#}
+
+
+    $(function(){
+  $('.js-popup-link').click(function(e){
+    e.preventDefault()
+    $('#popup').dialog({modal: true}).dialog('open').load(this.href)
+  })
+})
+
+
+    </script>
+
+    <script>
+    $(document).ready(function () {
+            $("#state").chosen().change(function () {
+                var state = $('#state').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (state > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_city/',
+                        data: {action: "get_filter", state_id: state},
+                        beforeSend: function () {
+                            var text = 'Getting City  of ' + state + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.city_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.city_list.length != 0) {
+                                $("#city option").remove();
+                                $("#city").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select City--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#city").append(select);
+                                $("#city").val(key_sel);
+                                $("#city").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.city_list.length; i++) {
+                                    var option = '<option value=' + obj.city_list[i].id + '>' + obj.city_list[i].name + '</option>';
+                                    $("#city").append(option);
+                                    $("#city").trigger("chosen:updated")
+
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select State...")
+                }
+
+
+            });
+
+            $("#city").chosen().change(function () {
+                var city = $('#city').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (city > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_location/',
+                        data: {action: "get_filter", city_id: city},
+                        beforeSend: function () {
+                            var text = 'Getting Location of ' + city + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.location_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.location_list.length != 0) {
+                                $("#location option").remove();
+                                $("#location").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select Location--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#location").append(select);
+                                $("#location").val(key_sel);
+                                $("#location").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.location_list.length; i++) {
+                                    var option = '<option value=' + obj.location_list[i].id + '>' + obj.location_list[i].name + '</option>';
+                                    $("#location").append(option);
+                                    $("#location").trigger("chosen:updated")
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select City...")
+                }
+            });
+
+        });
+
+    </script>
+
+
+
+
+{% endblock user_management %}

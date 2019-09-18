@@ -1,0 +1,1573 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+{% endif %}
+
+
+    <div style="padding-bottom:50px;"><button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button></div>
+
+
+    <!--COLLAPSE START-->
+         {% if lab.stage_id != 5 %}
+
+            <div id="markAsComplate" class="collapse">
+                <div class="thumbnail p_10">
+                    <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% if request.user|can_view_caller_pathlab %}{% url 'mark-caller-complete-lab' %}{% elif request.user|can_view_review_pathlab %}{% url 'mark-reverse-lab-to-caller'  %}{% elif request.user|can_view_publisher %}{% url 'mark-reverse-lab-to-caller'  %} {% endif %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ lab.id }}" name="lab_id">
+                                {% if request.user|can_view_review_pathlab %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {# Form portion to move lab data from publisher user to caller user#}
+                                {% if request.user|can_view_publisher %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if request.user|can_view_caller_pathlab %}
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            {% for b in reviewer_user_data %}
+                                                <option value="" disabled>Select Reviewer User</option>
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <select class="form-control" name="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Complete</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_review_pathlab %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+
+                        {% if request.user|can_view_review_pathlab %}
+                            <div class="col-md-12">
+                                <form action = "{% url 'mark-reviewer-complete-lab' %}" method = "post">
+                                <input type="hidden" value="{{ lab.id }}" name="lab_id" id="lab_id">
+                                <div class="col-md-4">
+                                    <select class="form-control" name="publisher_name" id="publisher_name">
+                                        <option value="" disabled>Select Publisher User</option>
+                                        {% for b in publisher_user_data %}
+
+                                            <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                              <div class="col-md-4">
+                                        <select class="form-control" name="validator_name" id="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                <div class="col-md-4">
+                                    <button type = "submit"  value = "submit" class="btn btn-info" >Move to Next
+                                        Stage
+                                    </button>
+                                </div>
+                              </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# NEW Form  to move lab data from publisher user to review user#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-reverse-lab-to-reviewer' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ lab.id }}" name="lab_id">
+
+
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in reviewer_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>
+                                    </div>
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+
+
+                {# NEW Form  to PUBLISH  lab data from and move lab to stage 4 (PUBLISHED)#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-complete-publisher-lab-stage-four' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ lab.id }}" name="lab_id">
+
+
+                                <button type = "submit"  value = "submit" class="btn btn-info" >Publish To Live
+                                    </button>
+
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+         {% endif %}
+            </div>
+        {% endif %}
+        <!--COLLAPSE END-->
+
+
+
+
+
+
+
+
+                <ul class="nav nav-tabs">
+                    <li class="{% if tab == '1' %}active{% endif %}"><a href="#labtab1"
+                                                                        onclick="refreshURL('{% url 'lab-listing-edit' lab.id %}?tab=1')"
+                                                                        data-toggle="tab">Lab Details</a></li>
+                    <li class="{% if tab == '2' %}active{% endif %}"><a href="#labtab2"
+                                                                        onclick="refreshURL('{% url 'lab-listing-edit' lab.id %}?tab=2')"
+                                                                        data-toggle="tab">Lab Tests</a></li>
+                    <li class="{% if tab == '3' %}active{% endif %}"><a href="#labtab3"
+                                                                        onclick="refreshURL('{% url 'lab-listing-edit' lab.id %}?tab=3')"
+                                                                        data-toggle="tab">Manage Branches</a></li>
+                    <li class="{% if tab == '4' %}active{% endif %}"><a href="#labtab4"
+                                                                        onclick="refreshURL('{% url 'lab-listing-edit' lab.id %}?tab=4')"
+                                                                        data-toggle="tab">Package Association</a></li>
+
+                    <li class="{% if tab == '5' %}active{% endif %}"><a href="#labtab5"
+                                                                        onclick="refreshURL('{% url 'lab-listing-edit' lab.id %}?tab=5')"
+                                                                        data-toggle="tab">Verified Fields</a></li>
+                </ul>
+
+
+
+
+        <div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+        <div class="well well-sm text_logo font_weight_600"><i class="fa fa-flask fa-fw"></i> Edit Lab
+{#            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info btn-sm pull-right"#}
+{#                       style="margin-top: -5px;">Go Back</a>#}
+
+        <a href="{% if user_is_publisher %}{% url  'publisher-lab-listing'  %}{% elif request.user.is_superuser%} {% url 'lab-assignment' %} {% else %}{% url  'lab-listing' %}{% endif %}" class="btn btn-info btn-sm pull-right">Go Back</a>
+
+
+
+        </div>
+        {% if tab == '1' %}
+            <div class="row" id="labtab1">
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'lab-listing-edit' lab.id %}?tab=1">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" value="{{ lab.name }}" class="form-control" name="lab_name"
+                               placeholder="Lab Name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea rows="2" class="form-control" placeholder="Address"
+                                  name="address">{{ lab.address }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pincode</label><span style = "color:red;">&nbsp;&nbsp;*max 10 characters</span>
+                    <td  >
+                    <input type ="text" style="width:150px!important;" class="form-control" placeholder="Pincode" name="apincode" value = {{lab.pincode }}></textarea>
+                    </td>
+                    </div>
+
+                     {# -------NOV 21---NISHANK--------START---  #}
+
+                       <div class="form-group">
+                        <label>Lab Type</label>
+                        <select id="lab_type" class="chosen-select" name="lab_type">
+                            <option value="" disabled>--Select Type--</option>
+                            {% for type in lab_type_obj %}
+                                {% if type.id == lab.lab_type_id %}
+                                    <option value="{{ type.id }}" selected>{{ type.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ type.id }}">{{ type.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+
+                        <div class="form-group">
+                        <label>Lab Accredition Body</label>
+                        <select id="lab_body" class="chosen-select" name="lab_body" multiple>
+                            <option value="" disabled>--Select Body--</option>
+                            {% for body in lab_accreditation_body %}
+                                {% if body.id in  acrredition_list %}
+                                    <option value="{{ body.id }}" selected>{{ body.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ body.id }}">{{ body.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+
+
+                        <div class="form-group">
+                        <label>Lab Services</label>
+                        <select id="lab_services" class="chosen-select" name="lab_services" multiple>
+                            <option value="" disabled>--Select Services--</option>
+                            {% for service in lab_services %}
+                                {% if service.id in  service_list %}
+                                    <option value="{{ service.id }}" selected>{{ service.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ service.id }}">{{ service.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+
+                        <div class="form-group">
+                        <label>Lab Departments</label>
+                        <select id="lab_departments" class="chosen-select" name="lab_departments" multiple>
+                            <option value="" disabled>--Select Departments--</option>
+                            {% for department in lab_departments %}
+                                {% if department.id in  department_list %}
+                                    <option value="{{ department.id }}" selected>{{ department.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ department.id }}">{{ department.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+
+
+
+
+                     {# -------NOV 21---NISHANK--------End--- #}
+
+                    <div class="form-group">
+                        <label>Country</label>
+                        <select id="country_id" class="chosen-select" name="country_id">
+                            <option value="">--Select Country--</option>
+                            {% for country in country_obj %}
+                                {% if lab.country_id == country.id %}
+                                    <option value="{{ country.id }}" selected>{{ country.name | capfirst }}</option>
+                                {% else %}
+                                    <option value="{{ country.id }}">{{ country.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <select id="state_id" class="chosen-select" name="state_id">
+                            <option value="">--Select State--</option>
+                            {% for state in state_obj %}
+                                {% if lab.state_id == state.id %}
+                                    <option value="{{ state.id }}" selected>{{ state.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ state.id }}">{{ state.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <select id="city_id" class="chosen-select" name="city_id">
+                            {% for cityc in city %}
+                                {% if lab.city_id == cityc.id %}
+                                    <option value="{{ lab.city.id }}" selected>{{ lab.city.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ cityc.id }}" >{{ cityc.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <select id="locality_id" class="chosen-select" name="locality_id">
+                            {% for loc in locality %}
+                            {% if lab.locality_id == loc.id %}
+                             <option value="{{ lab.locality.id }}" selected>{{ lab.locality.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {# -------Locality to from 25nNov Nishank start ----------------- #}
+                        <div class="form-group" style="border: 2px white">
+                        <h3>Area Covered</h3>
+
+                        <label>FROM</label>
+                        <select id="location-2" class="chosen-select" name="locality_idfrom">
+                            <option value ='msg'>----Select Locality---</option>
+                            {% for loc in locality %}
+                            {% if lab.lab_locality_coverage_from_id == loc.id %}
+                             <option value="{{ lab.lab_locality_coverage_from.id }}" selected>{{ lab.lab_locality_coverage_from.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+
+
+                        <label>TO</label>
+                        <select id="location-3" class="chosen-select" name="locality_idto">
+                            <option value ='msg'>----Select Locality---</option>
+                            {% for loc in locality %}
+                            {% if lab.lab_locality_coverage_to_id == loc.id %}
+                             <option value="{{ lab.lab_locality_coverage_to.id }}" selected>{{ lab.lab_locality_coverage_to.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+
+                        </div>
+                    {# -------Locality to from 25nNov Nishank start ----------------- #}
+
+
+                    <div class="form-group" style="border: 2px white">
+                        <div class="checkbox m_tb_10">
+
+                                            <input style="height: 30px;" type="checkbox" class="form-control"
+                                                       name="is_emergency"
+                                                       {% if lab.is_emergency %}value="1" checked {% else %}value="0"
+                                                {% endif %}
+                                                onclick="$(this).attr('value', this.checked ? 1 : 0)">Emergency Services Available</label>
+
+                           </div>
+                           </div>
+
+
+
+{#                    <div class="form-group">#}
+{#                        <label>Rate</label>#}
+{#                        <input type="text" value="{{ lab.rate }}" class="form-control" placeholder="Rate" name="rate">#}
+{#                    </div>#}
+                </div>
+                <!--LEFT PANEL END-->
+
+                <!--RIGHT PANEL START-->
+                <div class="col-md-6">
+{#                    <div class="form-group">#}
+{#                        <label>Pathology Doctor Name</label>#}
+{#                        <input type="text" class="form-control" value="{{ lab.pathology_doctor_name }}"#}
+{#                               name="pathology_doctor_name" placeholder="Doctor Name">#}
+{#                    </div>#}
+
+                    <div class="form-group">
+                        <label>Telephone</label>
+                        <input type="text" class="form-control" placeholder="Telephone" value="{{ lab.telephone }}"
+                               name="telephone">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        <input type="text" class="form-control" placeholder="Mobile" value="{{ lab.lab_mobile }}" name="lab_mobile" >
+                    </div>
+
+
+
+
+                    <div class="row">
+                          <div class="form-group col-md-6">
+                              <label>DID</label>
+                              <input type="text" maxlength="11" class="form-control" value="{{ lab.did }}" placeholder="DID no" name="did">
+                          </div>
+
+                          <div class="form-group col-md-6">
+                              <label>Extension</label>
+                              <input type="text" maxlength="4" class="form-control" value="{{ lab.extension }}" placeholder="Extension" name="extension">
+                          </div>
+                    </div>
+
+
+
+
+
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" class="form-control" placeholder="Email" value="{{ lab.pathology_email }}"
+                               name="email">
+                    </div>
+                    <div class="form-group">
+                        <label>Lab Collection Timings</label>
+                        <input type="text" class="form-control" placeholder="Lab Collection Timings" name="lab_collection_timing"
+                               value="{{ lab.lab_collection_timing }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ratings</label>
+                        <input type="text" class="form-control" placeholder="Ratings" name="ratings"
+                               value="{{ lab.ratings }}">
+                    </div>
+
+                    {# -----Added-----22Nov start -------Nishank---------- #}
+
+                    <div class="form-group">
+                        <label>Lab Authorised Person Name</label>
+                        {% if lab.lab_authorised_person_name %}
+                        <input type="text" class="form-control" value = "{{ lab.lab_authorised_person_name }}" name="lab_authorised_person_name">
+                        {% else %}
+                        <input type="text" class="form-control" placeholder="Lab Authorised Person Name" name="lab_authorised_person_name">
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label>Lab Authorised Person Designation</label>
+                        {% if lab.lab_authorised_person_designation %}
+                        <input type="text" class="form-control" value = "{{ lab.lab_authorised_person_designation }}" name="lab_authorised_person_designation">
+                        {% else %}
+                        <input type="text" class="form-control" placeholder="Lab Authorised Person Designation" name="lab_authorised_person_designation">
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>Lab Authorised Person Contact No</label>
+                        {% if lab.lab_authorised_person_contact_no %}
+                        <input type="text" class="form-control" value = "{{ lab.lab_authorised_person_contact_no }}" name="lab_authorised_person_contact_no">
+                        {% else %}
+                        <input type="text" class="form-control" placeholder="Lab Authorised Person Contact No" name="lab_authorised_person_contact_no">
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>Lab Authorised Person Emailid</label>
+                        {% if lab.lab_authorised_person_emailid %}
+                         <input type="text" class="form-control" value = "{{ lab.lab_authorised_person_emailid }}" name="lab_authorised_person_contact_emailid">
+                        {% else %}
+                        <input type="text" class="form-control" placeholder="Lab Authorised Person Emailid" name="lab_authorised_person_contact_emailid">
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>Lab Website</label>
+                        {% if lab.lab_website %}
+                        <input type="text" class="form-control"  value = "{{ lab.lab_website }}" name="lab_website">
+                        {% else %}
+                        <input type="text" class="form-control" placeholder="Lab Website" name="lab_website">
+                        {% endif %}
+                    </div>
+
+
+                    {# -----Added-----22Nov start -----Nishank------------ #}
+
+
+
+{#                    <div class="form-group">#}
+{#                        <label>Home Sample Collection: &nbsp; &nbsp; &nbsp; </label>#}
+{#                        {% if lab.home_sample_collection %}#}
+{#                        <label class="radio-inline" style="padding-top: 0;">#}
+{#                             <input type="radio" id="home_sample_collection" value="yes" checked#}
+{#                                   name="home_sample_collection"> Yes#}
+{#                        </label>#}
+{#                           <label class="radio-inline" style="padding-top: 0;">#}
+{#                            <input type="radio" id="home_sample_collection" value="no"#}
+{#                                   name="home_sample_collection">No#}
+{#                        </label>#}
+{#                        {% else %}#}
+{#                        <label class="radio-inline" style="padding-top: 0;">#}
+{#                             <input type="radio" id="home_sample_collection" value="yes"#}
+{#                                   name="home_sample_collection"> Yes#}
+{#                        </label>#}
+{#                           <label class="radio-inline" style="padding-top: 0;">#}
+{#                            <input type="radio" id="home_sample_collection" value="no"#}
+{#                                   name="home_sample_collection" checked>No#}
+{#                        </label>#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                    <div class="form-group">#}
+{#                        {% if lab.e_reporting_dispatch %}#}
+{#                        <label>E- Reporting & Dispatch: &nbsp; &nbsp; &nbsp; </label>#}
+{#                        <label class="radio-inline" style="padding-top: 0;">#}
+{#                            <input type="radio" value="yes"#}
+{#                                   name="e_reporting_dispatch" checked> Yes#}
+{#                        </label>#}
+{#                        <label class="radio-inline" style="padding-top: 0;">#}
+{#                            <input type="radio" value="no"#}
+{#                                   name="e_reporting_dispatch">No#}
+{#                        </label>#}
+{#                        {% else %}#}
+{#                         <label>E- Reporting & Dispatch: &nbsp; &nbsp; &nbsp; </label>#}
+{#                        <label class="radio-inline" style="padding-top: 0;">#}
+{#                            <input type="radio" value="yes"#}
+{#                                   name="e_reporting_dispatch"> Yes#}
+{#                        </label>#}
+{#                        <label class="radio-inline" style="padding-top: 0;">#}
+{#                            <input type="radio" value="no"#}
+{#                                   name="e_reporting_dispatch" checked>No#}
+{#                        </label>#}
+{#                        {% endif %}#}
+{#                    </div>#}
+
+                         {# -------------Dcotor Attached 19 Nov---Nishank----------- #}
+
+                            <div class="row m_0" style="background: rgba(0,0,0,0.1);">
+
+                              <div class="col-md-10" id="sssnew">
+                                <label style="color: white;size:32px!important;">Pathology Doctor Name(s) </label><div class="clearfix"></div>
+                                  {% if doctors_on_board %}
+                                      {% for i in doctors_on_board %}
+                                      <div id="appnew">
+                                            <div class="form-group col-md-6">
+                                                <textarea  type="text" class="form-control" name="lab_doctors_on_board">{{ i }}</textarea>
+                                            </div>
+
+                                      </div>
+                                      {% endfor %}
+                                  {% else %}
+                                       <div id="appnew">
+                                            <div id = "insert" class="form-group col-md-6">
+                                                <textarea type="text" class="form-control" placeholder ="Doctor on Board" name="lab_doctors_on_board"></textarea>
+                                            </div>
+
+                                      </div>
+                                  {% endif %}
+                              </div>
+                              <div class="col-md-2">
+                                  <label>&nbsp;</label>
+                                  <div class="form-group p_t_10">
+
+                                    <button type="button" id="btn2new"><i class="fa fa-minus-square"></i></button>
+                                    <button type="button" id="btn1new"><i class="fa fa-plus-square"></i></button>
+                                  </div>
+                              </div>
+                              </div>
+
+
+                         {# ----------------------Doctor Attached end--------------- #}
+
+
+{#                        {% endif %}#}
+
+                    </div>
+                    <div class="clearfix col-md-12 text-right">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                </div>
+                <!--RIGHT PANEL END-->
+            </form>
+        </div>
+        {% elif tab == '2' %}
+
+
+         {#  *********************************DISPLAY EXISTNG***********START*************            #}
+
+
+            <div class="table-responsive table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+
+                    <th>Sr No</th>
+                    <th>Test Name</th>
+                    <th>Test Price</th>
+                    <th>Action</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% if  tests %}
+                    {% for k,v in tests.items %}
+                        <form target="{% url 'lab-listing-edit' lab.id %}?tab=2" method = "post">
+                        <input type="hidden" class="form-control" name="edit" value = "edit">
+                        <input type="hidden" class="form-control" name="test_name2" value = "{{ k }}">
+                            <tr>
+
+
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ k | capfirst }}</td>
+                            <td><input type="text" class="form-control" name="test_price" placeholder="Doctor Name" value = {{ v | capfirst }}></td>
+
+                            <td>
+                                <a class="btn btn-danger btn-sm p_0" href="{% url 'lab-listing-edit' lab.id %}?tab=2&delete=delete&test_name={{ k }}"><i class="fa fa-trash-o text-danger fa-fw text_333"></i></a>
+{#                                <a class="text_white" href="{% url 'lab-listing-edit' lab.id %}?tab=2&edit=edit&test_name2={{k}}&test_price={{v}}"><i#}
+{#                                   class="fa fa-edit"></i></a>#}
+
+                               <button type="submit" class="btn btn-info">Update</button>
+
+                            </td>
+
+
+
+
+
+
+                        </tr>
+                        </form>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7"><b>No Tests Found</b></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+        </div>
+
+
+
+         {#  *********************************DISPLAY EXISTNG***********END*************            #}
+
+            <div class="row" id = "labtab2">
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'lab-listing-edit' lab.id %}?tab=2">
+                {% csrf_token %}
+                <div class="col-md-6">
+
+
+
+                    <div class="col-md-12">
+
+                              <div class="row m_0" style="background: rgba(0,0,0,0.1);">
+
+                              <div class="col-md-10" id="sss">
+                                <label style="color: white;size:32px!important;">&nbsp;&nbsp;&nbsp; Add Lab tests</label><div class="clearfix"></div>
+                              <div id="app">
+
+                              <div class="form-group col-md-6">
+
+{#                              <textarea type="text" class="form-control" name="test_name" placeholder="Test Name"></textarea>#}
+
+                                  <label>Lab Test Name</label>
+                                    <select id="test_name" class="chosen-select" name="test_name" >
+                                        <option value="" disabled>--Select Test--</option>
+                                        {% for test in lab_tests_all %}
+                                            <option value="{{ test.name }}">{{ test.name | capfirst}}</option>
+                                        {% endfor %}
+                                    </select>
+
+
+                              </div>
+
+                              <div class="form-group col-md-6">
+                              <label>Lab Test Price</label>
+                              <textarea rows="1" class="form-control" name="test_price" placeholder = "Test Price"></textarea>
+                              </div>
+                              <div class="clearfix"></div>
+                              </div>
+                              </div>
+                              <div class="col-md-2">
+                                  <label>&nbsp;</label>
+                                  <div class="form-group p_t_10">
+                                    <label style="display:None;">Add-Rem</label>
+                                    <button type="button" id="btnn2"><i class="fa fa-minus-square"></i></button>
+                                    <button type="button" id="btnn1"><i class="fa fa-plus-square"></i></button>
+                                  </div>
+                              </div>
+                              </div>
+                     </div>
+
+
+
+
+
+
+                    <div class="clearfix col-md-12 text-right p_t_10">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                </div>
+                <!--RIGHT PANEL END-->
+            </form>
+        </div>
+
+
+
+                       {# -------------by Nishnak --Branches--------------#}
+         {% elif tab == '3' %}
+               <div class ='row'>
+               <div class="col-md-12">
+                <div class="tab-pane fade  {% if tab == '3' %}in active{% endif %}" id="labtab3">
+
+
+                    {%  if branch_obj %}
+
+                           <div class="table_modify_for_all" style="overflow-y: hidden;">
+                           <table class="table table-bordered" style="width: 2000px;">
+                        <style>
+                        .table_modify_for_all .table > thead > tr > th{width:200px;}
+                        .chosen-container.chosen-with-drop .chosen-drop{position: relative;}
+                        </style>
+                                <thead>
+                                <tr>
+                                    <th style="width:50px;">S No.</th>
+                                    <th>Lab Name</th>
+                                    <th >Branch Country</th>
+                                    <th >Branch State</th>
+                                    <th >Branch City</th>
+                                    <th >Branch Locality</th>
+                                    <th >Branch Type</th>
+                                    <th >Branch Address</th>
+                                    <th >Branch Pincode</th>
+                                    <th >Branch Telephone 1</th>
+                                    <th >Branch Mobile</th>
+                                    <th style="width:90px;">Branch Schedule</th>
+                                    <th style="width:50px;">Delete Branch</th>
+                                    <th style="width:70px;">Update Branch</th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                              {% for kkk,vvv  in branch_obj.items %}
+
+
+
+                                        <tr>
+                                            <form action  = "{% url 'lab-listing-edit' lab.id %}?tab=3&update=true500&branchid={{ kkk }}" method = 'post'>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ lab.name | capfirst}}</td>
+
+
+
+                                            <td  ><select  style = "width:150px!important;"  class="chosen-select form-control" name="acountry_id" >
+{#
+{#                                                    <option  value="">--Select Country--</option>#}
+                                                    {% for countryone in country %}
+                                                        {% if vvv.country_name == countryone.name %}
+                                                            <option value="{{ countryone.name }}" selected>{{countryone.name }}</option>
+                                                        {% else %}
+                                                        <option  value="{{countryone.name}}">{{countryone.name }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                </select></td>
+
+
+
+                                            <td  ><select  class="chosen-select form-control" name="astate_id" >
+{#
+{#                                                    <option value="">--Select State--</option>#}
+                                                    {% for stateone in state %}
+                                                        {% if vvv.state_name == stateone.name %}
+                                                            <option value="{{ stateone.name }}" selected>{{stateone.name }}</option>
+                                                        {% else %}
+                                                        <option value="{{stateone.name}}">{{stateone.name }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                </select></td>
+
+                                            <td  ><select  class="chosen-select form-control" name="acity_id" >
+{#
+{#                                                    <option value="">--Select State--</option>#}
+                                                    {% for ci in city %}
+                                                        {% if vvv.city_name|title == ci.name %}
+                                                            <option value="{{ci.name }}" selected>{{ci.name }}</option>
+                                                        {% else %}
+                                                        <option value="{{ci.name}}">{{ci.name }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                </select></td>
+
+                                            <td  ><select  class="chosen-select form-control" name="alocality_id" >
+{#
+{#                                                    <option value="">--Select State--</option>#}
+                                                    {% for lo in locality %}
+
+                                                        {% if vvv.locality_name|title == lo.name %}
+
+                                                            <option value="{{lo.name }}" selected>{{lo.name }}</option>
+                                                        {% else %}
+                                                        <option value="{{lo.name}}">{{lo.name }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                </select></td>
+
+                                            <td  ><select  class="chosen-select form-control" name="lab_type" >
+{#
+{#                                                    <option value="">--Select State--</option>#}
+                                                    {% for l in lab_type_obj %}
+                                                        {{ vvv.lab_type }}
+                                                        {% if vvv.type_name == l.name %}
+                                                            <option value="{{l.name }}" selected>{{l.name }}</option>
+                                                        {% else %}
+                                                        <option value="{{l.name}}">{{l.name }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                </select></td>
+
+
+
+
+                                            <td  >
+                                                 <textarea style="width:150px!important;" class="form-control" placeholder="Address" name="aaddress" >{{ vvv.address }}</textarea>
+
+                                            </td>
+
+                                            <td  >
+                                                 <textarea style="width:150px!important;" class="form-control" placeholder="Pincode" name="apincode"  >{{ vvv.pincode }}</textarea>
+                                            </td>
+
+
+                                            <td  >
+                                               <textarea class="form-control" placeholder="Telephone 1" name="atelephone1" >{{ vvv.telephone1 }}</textarea>
+                                            </td>
+
+{#                                            <td style = "width:180px!important;" >#}
+{#                                                 <input type ="text" class="form-control" placeholder="Telephone 2" name="atelephone2" value = {{ vvv.telephone2 }}></textarea>#}
+{#                                            </td>#}
+{##}
+{#                                            <td style = "width:180px!important;" >#}
+{#                                                <input type ="text" class="form-control" placeholder="Telephone 3" name="atelephone3" value = {{ vvv.telephone3 }}></textarea>#}
+{#                                            </td>#}
+                                            <td >
+                                                <textarea class="form-control" placeholder="Mobile" name="amobile" >{{ vvv.mobile }}</textarea>
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-default btn-sm p_0" href="{% url 'time-schedule-lab-branch' lab.id kkk %}"><i class="fa fa-clock-o fa-fw text_333"></i></a>
+                                            </td>
+                                            <td >
+                                                <a class="btn btn-danger btn-sm p_0" href="{% url 'lab-listing-edit' lab.id %}?tab=3&delete=delete&branchid={{ kkk }}"><i class="fa fa-trash-o text-danger fa-fw text_333"></i></a>
+                                            </td>
+                                            <td><button type="submit" class="btn btn-success">Update</button></td>
+                                        </form>
+                                        </tr>
+
+                           {% endfor %}
+
+                       {% else %}
+                            <tr style = "color:blue !important;"><td >No Existing Branch Found in the system</td></tr>
+                     {% endif %}
+                    </tbody>
+
+                </table>
+                </div>
+
+                </div>
+               </div>
+               </div>
+
+                   <div class = 'row'>
+                   <div class="col-md-6">
+                   <form action="{% url 'lab-listing-edit' lab.id %}?tab=3" method="post">
+
+                   <!--<input type="hidden" class="form-control" value=" {# {{ organisation_id }} #}" name="organisation_hidden">-->
+
+                       <div class="form-group">
+                        <label>Address</label>
+                        <textarea rows="2" class="form-control" placeholder="Address" name="aaddress"></textarea>
+                    </div>
+
+                   <div class="form-group">
+                        <label>Telephone 1</label>
+                        <textarea rows="1" class="form-control" placeholder="Telephone 1" name="atelephone1"></textarea>
+                    </div>
+
+{#                   <div class="form-group">#}
+{#                        <label>Telephone 2</label>#}
+{#                        <textarea rows="1" class="form-control" placeholder="Telephone 2" name="atelephone2"></textarea>#}
+{#                   </div>#}
+
+{#                   <div class="form-group">#}
+{#                        <label>Telephone 3</label>#}
+{#                        <textarea rows="1" class="form-control" placeholder="Telephone 3" name="atelephone3"></textarea>#}
+{#                   </div>#}
+
+                   <div class="form-group">
+                        <label>Mobile</label>
+                        <textarea rows="1" class="form-control" placeholder="Mobile" name="amobile"></textarea>
+                   </div>
+
+
+
+                   <div class="form-group">
+                    <label>Country*</label>
+                    <select class="chosen-select form-control" name="acountry_id" required="true"
+{#                            {% if request.user.is_staff %}DISABLED{% endif %}>#}
+                        <option value="">--Select Country--</option>
+                        {% for countryone in country %}
+                            {% if a.country_id == countryone.id %}
+                                <option value="{{ countryone.name }}" selected>{{ countryone.name }}</option>
+                            {% else %}
+                                <option value="{{ countryone.name }}">{{ countryone.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                   </div>
+
+
+
+                <div class="form-group">
+                    <label>State*</label>
+                    <select class="chosen-select form-control" name="astate_id" required="true"
+{#                            {% if request.user.is_staff %}DISABLED{% endif %}>#}
+                        <option value="">--Select State--</option>
+                        {% for stateone in state %}
+                            {% if a.state_id == stateone.id %}
+                                <option value="{{ stateone.name }}" selected>{{ stateone.name }}</option>
+                            {% else %}
+                                <option value="{{ stateone.name }}">{{ stateone.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>City*</label>
+                    <select class="chosen-select form-control" name="acity_id"
+{#                            {% if request.user.is_staff %}DISABLED{% endif %}#} required="true">
+                        <option value="">--Select City--</option>
+                        {% for cityone in city %}
+                            {% if a.city_id == cityone.id %}
+                                <option value="{{ cityone.name }}" selected>{{ cityone.name }}</option>
+                            {% else %}
+                                <option value="{{ cityone.name }}">{{ cityone.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Location*</label>
+                    <select class="chosen-select form-control" name="alocality_id" id="alocality_id" required="true"
+{#                            {% if request.user.is_staff %}DISABLED{% endif %}>#}
+                        <option value="">--Select Location--</option>
+                        {% for localityone in locality %}
+                            {% if a.locality_id == localityone.id %}
+                                <option value="{{ localityone.name }}"
+                                        selected>{{ localityone.name }}</option>
+                            {% else %}
+                                <option value="{{ localityone.name }}">{{ localityone.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+               <div class="form-group">
+                    <label>Pincode</label>
+                    <textarea rows="1" class="form-control" placeholder="Pincode" name=apincode></textarea>
+               </div>
+
+               <div class="form-group">
+                        <label>Lab Branch Type</label>
+                        <select id="lab_type" class="chosen-select" name="lab_type">
+                            <option value="" disabled>--Select Type--</option>
+                            {% for type in lab_type_obj %}
+{#                                {% for key,value  in branch_obj.items %}#}
+{#                                    {% if value.type_id == type.id %}#}
+{#                                    <option value="{{ type.id }}" selected>{{ type.name | capfirst}}</option>#}
+{#                                    {% else %}#}
+                                    <option value="{{ type.name }}">{{ type.name | capfirst}}</option>
+{#                                    {% endif %}#}
+{#                                {% endfor %}#}
+                            {% endfor %}
+                        </select>
+               </div>
+
+
+                 <div class="form-group">
+                 <button type="submit" class="btn btn-success" >Save</button>
+              </div>
+                   </div>
+                  </div>
+
+
+
+                {#------------- End------Branches--------------- #}
+
+{# -----------Begin Packages------------ #}
+
+{% elif tab == '4'%}
+
+
+               {% if plan_list %}
+
+                <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                    <th>Sr No</th>
+                    <th>Lab Plan Name</th>
+                    <th>Plan Price</th>
+                    <th>Provider ID</th>
+                    <th>Action</th>
+
+
+                </tr>
+                </thead>
+                <tbody>
+
+                    {% for key,value in plan_list.items %}
+                        <tr>
+                        <td>{{ forloop.counter}}</td>
+                        <td>{{ value.plan_name | capfirst }}</td>
+                        <td>{{ value.plan_price }}</td>
+                        <td>{{ value.provider_id  }}</td>
+                        <td>
+                        <a class="btn btn-danger btn-sm p_0" href="{% url 'lab-listing-edit' lab.id %}?tab=4&delete=delete&planid={{ key }}"><i class="fa fa-trash-o text-danger fa-fw text_333"></i></a>
+                        </td>
+
+
+                    {% endfor %}
+                    </tbody>
+                 {% else %}
+                   <p>No  Packages Found</p>
+                 {% endif %}
+                </table>
+                {% comment %}{% if plan_list %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if plan_list.has_previous %}
+                                <li class="prev"><a href="?page={{ plan_list.previous_page_number }}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ plan_list.number }} of {{ plan_list.paginator.num_pages }}</a></li>
+                            {% if plan_list.has_next %}
+                                <li class="next"><a href="?page={{ plan_list.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}{% endcomment %}
+            </div>
+
+
+
+
+
+
+
+
+
+
+    <div class="m_tb_10">
+        <div class="m_tb_10">
+            <h4 class="font_weight_600">Add New Plan <span class="pull-right"><a
+                    href="{{ back_to_url }}" class="btn btn-info btn-sm">Go Back</a></span></h4>
+
+        </div>
+        <form role="form" action="#" method="post" enctype="multipart/form-data">
+            <div class="row">
+                {% csrf_token %}
+                <div class="col-md-12">
+                    <div class="form-group col-md-6">
+                        <label>Package Name</label>
+                        <input type="text" name="package_name" class="form-control">
+                    </div>
+
+
+                         <div class="form-group col-md-6">
+                        <label>package Rates</label>
+                        <input type="text" class="form-control" name="package_rates">
+                             </div>
+                    </div>
+                </div>
+            <div class="row">
+                <div class="col-md-12">
+                     <div class="form-group col-md-6">
+                        <label>Provider Name </label>
+                        <select class="form-control" name="provider_name">
+                          <option value="" disabled>----Select Provider---</option>
+                        {% for i in provider_list %}
+                            <option value="{{ i.id }}">{{ i.owner_name | capfirst}}</option>
+                            {% endfor %}
+                            </select>
+
+
+                    </div>
+                    </div>
+            </div>
+<div class="clearfix"></div>
+<p>&nbsp;</p>
+                <div class="col-md-12 m_t_20">
+
+
+                    <div class="row m_0" style="background: rgba(0,0,0,0.1);">
+
+                        <div class="col-md-10" id="sss">
+                            <label>Package details:</label>
+                            <div class="clearfix"></div>
+                          <div id="app">
+                                <div id="wrap1">
+                                    <div id="in1" class="form-group col-md-12">
+
+                                        <input type="text" name="investigations" class="form-control" placeholder="Investigations"
+                                               >
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>&nbsp;</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn2"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn1"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                <div id="wrap2">
+                                    <div id="in2" class="form-group col-md-12">
+
+                                        <input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests"
+                                               >
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label>&nbsp;</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn4"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn3"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                <div id="wrap3">
+                                    <div id="in3" class="form-group col-md-12">
+
+                                        <input type="text" name="diabetes_evaluation" class="form-control" placeholder="Diabetes Evaluation"
+                                               >
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>&nbsp;</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn6"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn5"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                <div id="wrap4">
+                                    <div id="in4" class="form-group col-md-12">
+
+                                        <input type="text"  name="consultations" class="form-control" placeholder="Consultations"
+                                               >
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>&nbsp;</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn8"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn7"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+
+                                {#      <div class="form-group col-md-6">#}
+                                {##}
+                                {#  <textarea class="form-control" name="bullet_body"></textarea>#}
+                                {#  </div>#}
+                            </div>
+                        </div>
+                        {#  <div class="col-md-2">#}
+                        {#  <label>&nbsp;</label>#}
+                        {#      <div class="form-group p_t_10">#}
+                        {##}
+                        {#                            <button type="button" id="btn2"><i class="fa fa-minus-square"></i></button>#}
+                        {#                            <button type="button" id="btn1"><i class="fa fa-plus-square"></i></button>#}
+                        {#                        </div>#}
+                        {#  </div>#}
+                    </div>
+                </div>
+
+
+                <div class="col-md-12">
+                    <div class="form-group col-md-12">
+                        <label>Package Description</label>
+                        <textarea class="form-control" name="package_description"></textarea>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Type</label>
+                        <select class="form-control" name="type"></select>
+                    </div>
+
+
+                    <div class="form-group col-md-6">
+                        <label>Instructions</label>
+                        <textarea class="form-control" name="instructions"></textarea>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Validity</label>
+                        <input type="text" name="validity" class="form-control">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Timings</label>
+                        <input type="text" name="timings" class="form-control">
+                    </div>
+
+                    <p class="text-right">
+                        <button class="btn btn-info btn-sm" type="submit">Submit</button>
+                    </p>
+
+                </div>
+        </form>
+
+    </div>
+
+
+
+{# -----------End Packages------------- #}
+
+
+
+{% elif tab == '5'%}
+<!-- Begin VERIFIED FIELDS-->
+
+<label style="margin-top: 20px;color: whitesmoke;">Please Select Telephonically Verified Fields</label>
+        <div class="table table_modify_for_all p_tb_10">
+                        <form method="post" action="{% url 'lab-listing-edit' lab.id %}?tab=5">
+                            <select name="vfields" class="form-control chosen-select" multiple>
+
+                                {% for iii in full_list %}
+                                    {% if iii in verified_list %}
+                                        <option value={{ iii }} selected>{{ iii }}</option>
+                                    {% else %}
+                                        <option value={{ iii }}>{{ iii }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+
+
+                        <button type="submit" class="btn btn-info m_tb_10">Save</button>
+                        </form>
+        </div>
+
+<!-- End VERIFIED FIELDS -->
+{% endif %}
+
+
+</div>
+
+    <!--Right End-->
+    <script>
+        var clone_indexa = $("#wrap1").length;
+        var clone_indexb = $("#wrap2").length;
+        var clone_indexc = $("#wrap3").length;
+        var clone_indexd = $("#wrap4").length;
+
+
+        $("#btn1").click(function () {
+            $("#wrap1").append('<div id = "in1"  class="form-group col-md-12"><input type="text" name="investigations" class="form-control" placeholder="Investigations" ></div>');
+            clone_indexa++;
+
+        });
+        $("#btn2").click(function () {
+            if (clone_indexa > 1) {
+                $("#in1").remove();
+
+                clone_indexa--;
+
+            }
+        });
+
+        $("#btn3").click(function () {
+            $("#wrap2").append('<div id = "in2"  class="form-group col-md-12"><input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests" ></div>');
+            clone_indexb++;
+        });
+        $("#btn4").click(function () {
+            if (clone_indexb > 1) {
+                $("#in2").remove();
+                clone_indexb--;
+            }
+        });
+
+        $("#btn5").click(function () {
+            $("#wrap3").append('<div id = "in3"  class="form-group col-md-12"><input type="text" name="diabetes_evaluation" class="form-control" placeholder="Diabetes Evaluation" ></div>');
+            clone_indexc++;
+        });
+        $("#btn6").click(function () {
+            if (clone_indexc > 1) {
+                $("#in3").remove();
+                clone_indexc--;
+            }
+        });
+
+        $("#btn7").click(function () {
+            $("#wrap4").append('<div id = "in4" class="form-group col-md-12"><input type="text" name="Consultations" class="form-control" placeholder="Consultations" ></div>');
+            clone_indexd++;
+        });
+        $("#btn8").click(function () {
+            if (clone_indexd > 1) {
+                $("#in4").remove('');
+                clone_indexd--;
+            }
+        });
+
+    </script>
+
+
+
+    <script>
+
+    function refreshURL(url) {
+                    window.location = url
+                }
+
+
+     $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    function readURL(input) {
+
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      $('#blah').attr('src', e.target.result);
+
+      $('#blah').hide();
+      $('#blah').fadeIn(650);
+
+    };
+
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#imgInp").change(function() {
+  readURL(this);
+});
+var clone_index = $("#app").length;
+
+$("#btnn1").click(function(){
+        $("#sss").append('<div id="app"><div class="form-group col-md-6"><label>Lab Test</label><select  class="chosen-select" name="test_name" ><option value="" disabled>--Select Test--</option>{% for test in lab_tests_all %}<option value="{{ test.name }}">{{ test.name | capfirst}}</option>{% endfor %}</select></div><div class="form-group col-md-6"><label>Lab Test Price</label><textarea class="form-control" rows="1" name="test_price" placeholder = "Test Price"></textarea></div><div class="clearfix"></div></div>');
+    clone_index++;
+    });
+     $("#btnn2").click(function(){
+         if(clone_index>1){
+        $("#app").remove();
+             clone_index--;
+             }
+    });
+
+    var clone_indextwo = $("#insert").length;
+
+$("#btn1new").click(function(){
+        $("#appnew").append('<div id = "insert" class="form-group col-md-6"><textarea class="form-control" placeholder = "Doctor on Board" name="lab_doctors_on_board"></textarea> </div> </div>');
+    clone_indextwo++;
+    });
+     $("#btn2new").click(function(){
+         if(clone_indextwo>1){
+        $("#insert").remove();
+             clone_indextwo--;
+             }
+    });
+
+
+
+
+
+
+
+{##}
+{#var clone_indextab4bb = $("#in2").length;#}
+{##}
+{#$("#bbtn3").click(function(){#}
+{#        $("#wrapnew32").append('<div id="in2" class="form-group col-md-12"><input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests"></div>');#}
+{#    clone_indextab4bb++;#}
+{#    });#}
+{#     $("#bbtn3").click(function(){#}
+{#         if(clone_indextab4bb>1){#}
+{#        $("#in2").remove();#}
+{#             clone_indextab4bb--;#}
+{#             }#}
+{#    });#}
+
+
+    $(function(){
+  $('.js-popup-link').click(function(e){
+    e.preventDefault()
+    $('#popup').dialog({modal: true}).dialog('open').load(this.href)
+  })
+})
+
+
+    </script>
+
+    <script>
+    $(document).ready(function () {
+            $("#state").chosen().change(function () {
+                var state = $('#state').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (state > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_city/',
+                        data: {action: "get_filter", state_id: state},
+                        beforeSend: function () {
+                            var text = 'Getting City  of ' + state + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.city_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.city_list.length != 0) {
+                                $("#city option").remove();
+                                $("#city").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select City--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#city").append(select);
+                                $("#city").val(key_sel);
+                                $("#city").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.city_list.length; i++) {
+                                    var option = '<option value=' + obj.city_list[i].id + '>' + obj.city_list[i].name + '</option>';
+                                    $("#city").append(option);
+                                    $("#city").trigger("chosen:updated")
+
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select State...")
+                }
+
+
+            });
+
+            $("#city").chosen().change(function () {
+                var city = $('#city').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (city > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_location/',
+                        data: {action: "get_filter", city_id: city},
+                        beforeSend: function () {
+                            var text = 'Getting Location of ' + city + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.location_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.location_list.length != 0) {
+                                $("#location option").remove();
+                                $("#location").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select Location--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#location").append(select);
+                                $("#location").val(key_sel);
+                                $("#location").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.location_list.length; i++) {
+                                    var option = '<option value=' + obj.location_list[i].id + '>' + obj.location_list[i].name + '</option>';
+                                    $("#location").append(option);
+                                    $("#location").trigger("chosen:updated")
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select City...")
+                }
+            });
+
+        });
+
+    </script>
+
+
+
+
+{% endblock user_management %}

@@ -1,0 +1,201 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+        {% block table %}
+
+          {# Filter added 16 Nov #}
+          {# -----start---------------- #}
+
+           <div class="row">
+            <div class="col-md-6 m_b_10">
+                <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#filters"><i
+                        class="fa fa-filter fa-fw"></i> FIlter By Category
+                </button>
+            </div>
+        <p class="col-md-6 text-right"><a href="{% url 'service_offered_add' %}" class="btn btn-info"><i class="fa fa-user fa-fw"></i> Add New Service</a>
+
+           </p>
+            <div class="collapse col-md-4" id="filters">
+                <div class="p_30 thumbnail">
+
+                    <div role="row m_0">
+
+                            <div class="form-group thumbnail">
+                                <label>Select Category</label>
+                                <select class="form-control" id="category_data_id">
+                                    <option value="" disabled>Select Category</option>
+                                    {% for f in category_obj %}
+                                        {% if f.delete == False %}
+
+                                            <option value="{{ f.id }}">{{ f.name | capfirst }}</option>
+
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <p class="m_t_5">
+                                    <button type="button" class="btn btn-info"
+                                            onclick="ServiceOfferedByCategory($('#category_data_id').val())">Go
+                                    </button>
+                                </p>
+                            </div>
+
+
+
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+          {# -----end-------------------#}
+
+
+            </div>
+
+            <div class="row">
+            {% if request.user|can_view_admin %}
+                <div class="row m_0 m_b_10">
+                    <div class="col-sm-4">
+                        <div class="input-group">
+                            <input type="text" placeholder="Search | Service Offered" class="form-control" id="search"
+                                   autofocus="autofocus">
+                            <span class="input-group-btn"> <button class="btn btn-default"
+                                                                   onclick="SearchServiceOffered()"> Search</button></span>
+                        </div>
+                    </div>
+
+            {% endif %}
+             <div class="col-md-4 text-right" style="width: 350px;" >
+                <button class="btn btn-success" type="button" onclick="PublishForMaster('publish','service_offered')">Publish</button>
+                <button class="btn btn-danger" type="button" onclick="PublishForMaster('un-publish','service_offered')">Un publish</button>
+                <button class="btn btn-warning" type="button" onclick="PublishForMaster('publish','service_offered')">Re publish</button>
+            </div>   </div>
+            </div>
+
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr><th><input id="checkAll" type="checkbox"/></th>
+                        <th>Sr No</th>
+                        <th>Service Name</th>
+                        <th>Category</th>
+                        <th>Approve</th><th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in service_offered_obj %}
+
+                        <tr><td><input type="checkbox" value="{{ i.id }}"></td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.name | capfirst }}</td>
+                            <td>{{ i.category.name }}</td>
+                            <td>{{ i.approve }}</td>
+                            <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+
+                            <td><a class="text_white" href="{% url 'service_offered_edit' i.id %}"><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.delete == False %}<a href="{% url 'any-master-object-deactivate' object_id=i.id object_type=7 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'any-master-object-activate' object_id=i.id object_type=7 %}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}</td>
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                {% if service_offered_obj %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if service_offered_obj.has_previous %}
+                                <li class="prev"><a href="?page={{ service_offered_obj.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if search_data_two %}&search_data_two={{search_data_two}}{% endif %}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ service_offered_obj.number }} of {{ service_offered_obj.paginator.num_pages }}</a></li>
+                            {% if service_offered_obj.has_next %}
+                                <li class="next"><a href="?page={{ service_offered_obj.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if search_data_two %}&search_data_two={{search_data_two}}{% endif %}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        {% endblock %}
+
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchServiceOffered({{ request.user.id }})
+            }
+        }
+
+    </script>
+    <script>
+
+        $("#checkAll").change(function () {
+        $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+
+        function PublishForMaster(action,type){
+               var checkedValues = $('input:checkbox:checked').map(function () {
+                   return this.value;
+               }).get();
+
+               var formDATA = {};
+               checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+
+               if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+                   alert("Please select value....");
+                   return false;
+               }
+               formDATA.checkedValues = checkedValues;
+               formDATA.action = action;
+               formDATA.type = type;
+               if (formDATA.checkedValues != '') {
+                   $.ajax({
+                       type: 'POST', url: Domain + '{% url 'publish_unpublish_any_master_two' %}', data: formDATA, beforeSend: function () {
+                           var text = 'Please wait....';
+                           ajaxindicatorstart(text);
+                       },
+                       success: function (resData) {
+                           ajaxindicatorstop();
+                           resData = JSON.parse(resData);
+                           if (resData.Redirect == true) {
+                               alert(resData.Message);
+                               window.location = resData.RedirectUrl;
+                           }
+                           else {
+
+                               alert(resData.Message);
+                               window.location.reload(true);
+                           }
+                       },
+                       error: function(data){
+                           alert('Something Bad Happened');
+                           location.reload();
+                       }
+                   });
+               }
+               else
+               {
+                   alert("Please select Doctors.")
+               }
+
+        }
+    </script>
+
+{% endblock %}

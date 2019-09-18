@@ -1,0 +1,109 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+        <div class="row m_0">
+            <h4 class="font_weight_600 text_white m_t_0 cursor_pointers" data-toggle="collapse"
+                data-target="#select_filterss"><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion <span
+                    class="caret"></span></h4>
+            <div class="collapse" id="select_filterss">
+
+            </div>
+            <div class="col-sm-4 p_l_0">
+                <div class="input-group m_b_10">
+                    <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                    <span class="input-group-btn"> <button class="btn btn-default"
+                                                           onclick="SearchDisease({{ request.user.id }})"> Search</button></span>
+                </div>
+            </div>
+            {% if request.user|can_view_caller %}
+            <div class="col-sm-8"><p class="pull-right"><a class="btn btn-info" href="{% url 'add_disease' %}"><i
+                    class="fa fa-flask fa-fw"></i> Add New Disease</a></p></div>
+            {% endif  %}
+        <input type="hidden" value="disease" id="xx" name ="yy">
+        {% include 'publisher/markascomplete.html' %}
+        </div>
+        <br>
+        {% block table %}
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                    <th><input id="checkAll" type="checkbox"/></th>
+                    <th>Sr No</th>
+                    <th>Topic title</th>
+                    <th>Tag String</th>
+                    <th>free_text</th>
+                    <th>Current User</th>
+                    <th>Stage</th>
+                     <th>Created At</th>
+                     <th>Updated At</th>
+                    <th class="col-md-1">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if disease %}
+                    {% for i in disease %}
+                        <tr>
+                        <td><input type="checkbox" value="{{ i.id }}"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ i.topic_title | capfirst }}</td>
+                        <td>{{ i.tag_string | capfirst }}</td>
+                        <td>{{ i.free_text | capfirst }}</td>
+                        <td>{{ i.current_user.username | capfirst }}</td>
+                        <td>{{ i.stage.stage_name | capfirst }}</td>
+                        <td>{{ i.createdAt }}</td>
+                        <td>{{ i.updatedAt }}</td>
+                        {% if i.stage_id != 5 %}
+                         <td>
+                             <a class="text_white" href="{% url 'disease-listing-edit' i.id %}"><i
+                                    class="fa fa-edit fa-fw "></i></a>
+                             <span class="p_lr_10"></span>
+                             <a class="btn btn-danger btn-sm p_0"
+                               href="{% url 'delete_disease' i.id %}"><i
+                                    class="fa fa-trash-o text-danger fa-fw text_white"></i></a>
+                        </td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                    {% endfor %}
+                    </tbody>
+                 {% endif %}
+                </table>
+                {% if disease %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if disease.has_previous %}
+                                <li class="prev"><a href="?page={{ disease.previous_page_number }}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ disease.number }} of {{ disease.paginator.num_pages }}</a></li>
+                            {% if disease.has_next %}
+                                <li class="next"><a href="?page={{ disease.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        {% endblock %}
+    </div>
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchDisease({{ request.user.id }})
+            }
+        }
+    </script>
+{% endblock %}

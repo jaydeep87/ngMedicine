@@ -1,0 +1,146 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert" xmlns="http://www.w3.org/1999/html">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <div class="m_tb_10">
+{#        <ul class="nav nav-tabs">#}
+{#            <li class="{% if tab == '1' %}active{% endif %}"><a href="#datewisenotification"#}
+{#                                                                onclick=""#}
+{#                                                                data-toggle="tab">Date wise listing</a></li>#}
+{#        </ul>#}
+                <div class="row" style=" margin-bottom: 10px;">
+
+
+                    <!--<div class="col-md-2" >
+                              <a href="{% url 'livedoctor_delete_older_than_fifteen_days' %}" class="btn btn-danger m_t_30 p_lr_30" style="padding-right:24px;margin-left:0%!important;margin-bottom:16%!important;margin-top: 5px!important;" >Delete Notices Older than 15 Days</a>
+                    </div>-->
+
+                    <div class="col-md-2" >
+                           {% if back_button == 'yes' %}
+                            <!--<div style="width: 250%!important; margin-left:120%!important;height: 150%!important;margin-top: 19px!important; "><a href="{% url 'live_doc_notification' %}" class="svg" style="display: inline-block!important;"><img src="{% static 'images/black-button-home.svg' %}" width="45px" height="45px" style="position: relative;display:inline-block;"/></a><span style="color: #8c8c8c; font-weight: bold; margin-left: 5px;">Back To All Notifications</span></div> -->
+                            <div style="width: 35%!important; margin-left:220%!important;height: 150%!important;margin-top: 5px!important;">
+                                <a href="{% url 'live_doc_schedule_delete_notification' %}" style="display: block!important; z-index: 99999" >
+                                        <image src="{% static 'images/black-button-home.png' %}"  width="45px" height="45px" style="position: relative;margin-left: 528px; display: block!important;z-index: 90;" />
+                                </a>
+
+
+                                <!-- <span style="color: #8c8c8c; font-weight: bold; margin-left: 5px;">Back To All Notifications</span> -->
+                            </div>
+                         {% endif %}
+                    </div>
+                </div>
+
+                <div class="row" style="border: #8a6d3b 1px solid; margin-bottom: 10px;">
+                    <!--<form action="{% url 'live_doctor_schedule_notification_bydate' %}" method="post">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                            <label>From Date</label>
+                            <input type="text" value="" class="form-control"  name="from_date" placeholder="From Date" id="startDatepicker"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                            <label>To Date</label>
+                            <input type="text" value="" class="form-control"  name="to_date" placeholder="To Date" id="endDatepicker"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" value="" class="form-control"  name="doc_name" placeholder="Doctor Name" id="doc_name"></div>
+                        </div>
+
+                        <div class="col-md-4">
+                          <button type="submit" class="btn btn-success m_t_30 p_lr_30" style="margin-top: -10px!important;margin-bottom: 12px!important;" >Go</button>
+                        </div>
+                    </form>-->
+
+                        <div class="col-md-2">
+
+                        </div>
+
+
+                </div>
+
+
+
+
+
+
+                <div class="table-responsive table_modify_for_all">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                        <th>Sr No</th>
+                        <th>Notice Date-Time</th>
+                        <th>Doctor ID</th>
+                        <th>Dr Name</th>
+                        <th>City</th>
+                        <th>Locality</th>
+                        <th>Category</th>
+                        <th>CC Sponsored Rank</th>
+                        <th>CLC Sponsored Rank</th>
+                        <th>Current User</th>
+                        <th>Stage</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if live_doc_schedule_notifications %}
+                            {% for i in live_doc_schedule_notifications %}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{i.notification_creation_date|datetimeFormattwo}}</td>
+                                    <td>{{i.livedoctor_id}}</td>
+                                    <td>{{i.livedoctor.firstName}} &nbsp; {{i.livedoctor.lastName}}</td>
+                                    <td>{{i.clinic.city.name}}</td>
+                                    <td>{{i.clinic.locality.name}}</td>
+                                    <td>{{i.category}}</td>
+                                    <td>{{ i.spon_cc_key_label }}</td>
+                                    <td>{{ i.spon_clc_key_label }}</td>
+                                    <td>{{ i.livedoctorCurrentUser}}</td>
+                                    <td>{{ i.livedoctorStage}}</td>
+                                </tr>
+                                <tr>
+
+                                    <td colspan="6">{% if i.expiry_date_cc != None and i.days_left_cc != None %}The CC RANK Expiry date is after  {{ i.days_left_cc }} days on {{ i.expiry_date_cc }}{% endif %}</td>
+                                    <td colspan="5">{% if i.expiry_date_clc != None and i.days_left_clc != None %}The CLC RANK Expiry date is  after  {{ i.days_left_clc }} days  on {{ i.expiry_date_clc }}{% endif %}</td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        {% else %}
+                            <tr><td colspan="9">No Notifications Found for Live Doctors For Provided Date Range And / Or Doctor Name</td></tr>
+                        {% endif %}
+                    </table>
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if live_doc_schedule_notifications.has_previous %}
+                                <li class="prev"><a href="?page={{ live_doc_schedule_notifications.previous_page_number }}{% if from_date %}&from_date={{ from_date }}{% endif %}{% if to_date %}&to_date={{ to_date }}{% endif %}{% if doc_name %}&doc_name={{ doc_name }}{% endif %}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ live_doc_schedule_notifications.number }} of {{ live_doc_schedule_notifications.paginator.num_pages }}</a></li>
+                            {% if live_doc_schedule_notifications.has_next %}
+                                <li class="next"><a href="?page={{ live_doc_schedule_notifications.next_page_number }}{% if from_date %}&from_date={{ from_date }}{% endif %}{% if to_date %}&to_date={{ to_date }}{% endif %}{% if doc_name %}&doc_name={{ doc_name }}{% endif %}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+    </div>
+
+<script type="text/javascript" >
+    $(document).ready(function () {
+        $('#datePicker,#startDatepicker, #endDatepicker')
+                .datepicker({
+                    format: 'yyyy/mm/dd'
+                })
+                .on('changeDate', function (e) {
+                    // Revalidate the date field
+                    $('#eventForm').formValidation('revalidateField', 'date');
+         });
+
+    });
+</script>
+{% endblock %}

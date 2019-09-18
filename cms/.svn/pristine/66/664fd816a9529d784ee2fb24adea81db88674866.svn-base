@@ -1,0 +1,105 @@
+<div class="table-responsive table_modify_for_all" style="margin-top: 50px!important;">
+             {% if send_list %}
+             <div>
+             <div class="row" id = 'OcVAls'style="border-top: 3px dotted red!important;border-left: dotted red 3px!important; border-bottom: 3px dotted red!important;border-left: dotted red 3px!important; margin-bottom: 4%; padding: 2%;overflow: hidden!important; width: 100%!important;">
+             <form method="post" action="#">
+                 {{ csrf_token }}
+                 <input type="hidden" value="{{ occupied_values_obj.type}}" name = "type" id = "type">
+                 <input type="hidden" value="{{ occupied_values_obj.key}}" name = "key" id= "key">
+
+                     <!--<div class="col-md-6">
+                         <div class="form-group">
+                             <label>{{ occupied_values_obj.type }} Subscribed Occupied Ranks</label>
+                             <input type="text" class="form-control" id="occupied_values_subs" name="occupied_values_subs" value="{{ occupied_values_obj.occupied_values_subs }}" >
+                         </div>
+                     </div>-->
+                     <div class="col-md-6">
+                         <div class="form-group">
+                            <label>{{ occupied_values_obj.type }} Sponsored Occupied Ranks</label>
+                            <input type="text" class="form-control" id="occupied_values_spons" name="occupied_values_spons" value="{{ occupied_values_obj.occupied_values_spons }}">
+                         </div>
+                     </div>
+                     <div class="clearfix col-md-12">
+                         <div class="form-group">
+                           <button type="button" class="btn btn-success" onclick="UpdateDoctorOccupiedRanks()">Update Occupied Ranks
+                           </button>
+                         </div>
+                     </div>
+
+             </form>
+             </div>
+             </div>
+
+
+                <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th style="width:10%!important;"><input id="checkAll" type="checkbox"/></th>
+                    <th style="width:10%!important;">Serial No</th>
+                    <th style="width:10%!important;;">Name</th>
+                    <th style="width:10%!important;;">City</th>
+                    <th style="width:10%!important;;">With User</th>
+                    <th style="width:10%!important;;">Stage</th>
+                    {% if Locality_selected == False %}<th style="width:10%!important;">Sponsored CC</th>{% endif %}
+                    {% if Locality_selected == True %}<th style="width:10%!important;">Sponsored CLC</th>{% endif %}
+                    <th style="width:10%!important;" >Start Date</th>
+                    <th style="width:10%!important;" >End Date</th>
+{#                    {% if Locality_selected == False %}<th style="width:10%!important;">Subscribed CC</th>{% endif %}#}
+{#                    {% if Locality_selected == True %}<th style="width:10%!important;">Subscribed CLC</th>{% endif %}#}
+{#                    {% if Locality_selected == False %}<th style="width:10%!important;">Trial CC</th>{% endif %}#}
+{#                    {% if Locality_selected == True %}<th style="width:10%!important;">Trial CLC</th>{% endif %} #}
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for i in send_list %}
+                    <tr>
+                    <td style="width:10%!important;;"><input type="checkbox" value="{{ i.2 }}"></td>
+                    <td style="width:10%!important;">{{ forloop.counter }}</td>
+                    <td style="width:10%!important;color: black!important;" >{{ i.0.name}}</td>
+                    <td style="width:10%!important;color: black!important;">{{ i.1.city.name }}</td>
+                    <td style="width:10%!important;color: black!important;">{{ i.0.current_user.username }}</td>
+                    <td style="width:10%!important;color: black!important;">{{ i.0.stage.stage_name }}</td>
+                    {% if Locality_selected == False %}<td style="width:10%!important;" class="form-group" style="color: black;"><input type="text" style="color: black!important;" name = "Spon_CC_RANK" maxlength="4" size="4" {% if i.3.0 != 'None' %}value="{{ i.3.0 }}"{% endif %} ></td>{% endif %}
+                    {% if Locality_selected == True %}<td style="width:10%!important;color: black!important;" class="form-group" style="color: black;"><input type="text" style="color: black!important;"  name = "Spon_CLC_RANK" maxlength="4" size="4" {% if i.3.0 != 'None' %}value="{{ i.3.0 }}"{% endif %}></td>{% endif %}
+                    {% if Locality_selected == False %}
+                    <td style="width:10%!important;color: black!important;" class="form-group" style="color: black;"><input type="text" style="color: black!important;"  id = "StartDate" name = "SponCCStartDate" maxlength="10" size="10" value="{{ i.5 }}"></td>
+                    <td style="width:10%!important;color: black!important;" class="form-group" style="color: black;"><input type="text" style="color: black!important;"  id = "EndDate"  name = "SponCCEndDate" maxlength="10" size="10"  value="{{ i.6 }}"></td>
+                    {% elif Locality_selected == True %}
+                    <td style="width:10%!important;color: black!important;" class="form-group" style="color: black;"><input type="text" style="color: black!important;"  id = "StartDate" name = "SponCLCStartDate" maxlength="10" size="10"  value="{{ i.5 }}"></td>
+                    <td style="width:10%!important;color: black!important;" class="form-group" style="color: black;"><input type="text" style="color: black!important;"  id = "EndDate"  name = "SponCLCEndDate" maxlength="10" size="10"  value="{{ i.6 }}"></td>
+                    {% endif %}
+
+
+                    {#                    {% if Locality_selected == False %}<td style="width:10%!important;;" class="form-group" style="color: black;"><input type="text" style="color: black!important;"  name = "Subs_CC_RANK" maxlength="3" size="3" {% if i.3.1 != 'None' %}value="{{ i.3.1 }}"{% endif %}></td>{% endif %}#}
+{#                    {% if Locality_selected == True %}<td style="width:10%!important;color: black!important;" class="form-group" style="color: black;"><input type="text" style="color: black!important;"  name = "Subs_CLC_RANK" maxlength="3" size="3" {% if i.3.1 != 'None' %}value="{{ i.3.1 }}"{% endif %}></td>{% endif %}#}
+{#                    {% if Locality_selected == False %}<td style="width:10%!important;;" class="form-group" style="color: black;"><input type="text"  style="color: black!important;" name = "Trial_CC_RANK" maxlength="3" size="3" {% if i.3.2 != 'None' %}value="{{ i.3.2 }}"{% endif %}></td>{% endif %}#}
+{#                    {% if Locality_selected == True %}<td style="width:10%!important;color: black!important;" class="form-group" style="color: black;"><input type="text" style="color: black!important;"  name = "Trial_CLC_RANK" maxlength="3" size="3" {% if i.3.2 != 'None' %}value="{{ i.3.2 }}"{% endif %}></td>{% endif %}#}
+
+                {% endfor %}
+                </tr>
+                </tbody>
+
+               </table>
+                 <div class="col-md-6 text-right" style="width: 350px;">
+                    <button class="btn btn-success" type="button" onclick="UpdateDoctorRank({% if Locality_selected == False %}'CC'{% elif Locality_selected == True %}'CLC'{% endif %})">Update</button>
+                 </div>
+             {% else %}
+             <div class="table-responsive table_modify_for_all" style="margin-top: 50px!important;">
+             No Live Doctors Found
+                 <div>
+             {% endif %}
+
+<script>
+    $("#checkAll").change(function () {
+       $("input:checkbox").prop('checked', $(this).prop("checked"));
+   });
+
+$( function() {
+    $( "#StartDate,#EndDate").datepicker({format: 'dd/mm/yyyy'});
+  } );
+</script>
+
+</div>
+
+

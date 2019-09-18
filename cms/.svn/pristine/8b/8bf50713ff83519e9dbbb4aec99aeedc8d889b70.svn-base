@@ -1,0 +1,33 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'bloodbank-by-users' %}">
+
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Blood Bank by Users</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'bloodbank-by-stages' %}">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Blood Bank  by Stages</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'bloodbank-assignment' %}">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Blood Bank Assignment </h3>
+</a>
+</div>
+
+
+</div>
+
+</div>
+{% endblock %}

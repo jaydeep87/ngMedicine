@@ -1,0 +1,39 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'doctor-by-users' %}">
+
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Doctor by Users</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'doctor-by-stages' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Doctors by Stages</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'doctor-assignment' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Assigment </h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href=" {% url 'doctor-mark-for-search-results' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Manage Sponsored Ranks</h3>
+</a>
+</div>
+
+</div>
+
+</div>
+{% endblock %}

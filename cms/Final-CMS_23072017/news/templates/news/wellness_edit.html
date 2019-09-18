@@ -1,0 +1,366 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block js %}
+ <script type="text/javascript" src="{% static 'js/chosen.jquery.min.js' %}"></script>
+{#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+<script>
+tinymce.init({
+  selector: "textarea",  // change this value according to your html
+  plugins: "textcolor advlist autolink lists link image charmap print image imagetools preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template paste textcolor colorpicker textpattern",
+  automatic_uploads: true,
+  images_upload_url:"/tinymice/image-upload/",
+  toolbar: "forecolor backcolor textcolor advlist autolink lists link image imagetools charmap print preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template paste textcolor textpattern bullist numlist outdent indent | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+  height : 750,
+});
+</script>
+{% endblock %}
+{% block user_management %}
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+        <div class="m_tb_10">
+            <div class="m_tb_10">
+{#                <button class="btn btn-warning" data-target="#markAsComplate" data-toggle="collapse"#}
+{#                        type="button"><i#}
+{#                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button>#}
+                <div class="clearfix"></div>
+                <div id="markAsComplate" class="collapse in">
+                    <div class="thumbnail p_10">
+                        <form role="form" action="
+
+
+                                {% if request.user|can_view_news %}{% url 'set-mark-caller-wellness' %}{% elif request.user|can_view_review_news %}{% url 'set-mark-reviewer-wellness' %}{% endif %}"
+                              method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="news_id" value="{{ wellness_news.id }}">
+                            {% if request.user|can_view_news or request.user|can_view_admin   %}
+                                <div class="row m_0">
+
+                                    <div class="form-group col-md-6">
+
+
+                                        <select class="form-control" name="news_reviewer_id">
+                                            <option value="" selected>Select Reviewer User</option>
+                                            {% for b in news_reviewer %}
+
+                                                <option value="{{ b.id }}">{{ b.username }}</option>
+                                            {% endfor %}</select>
+
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+
+
+                                        <button type="submit" class="btn btn-info">Go Next Stage</button>
+
+                                    </div>
+
+
+                                </div>
+                            {% endif %}
+                            {% if request.user|can_view_review_news %}
+                                <div class="row m_0">
+                                    <div class="form-group col-md-6">
+
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+
+                                        <select class="form-control" name="news_caller">
+                                            <option value="" selected>Select Caller User</option>
+                                            {% for b in news_caller %}
+
+                                                <option value="{{ b.id }}">{{ b.username }}</option>
+                                            {% endfor %}
+                                        </select>
+
+
+
+
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+
+
+                                        <button type="submit" class="btn btn-info">Go Previous Stage</button>
+
+                                    </div>
+
+                                </div>
+
+                            {% endif %}
+
+                        </form>
+                        {% if request.user|can_view_review_news %}
+                            <form method="post" action="{% url 'set-mark-publisher-wellness' %}">
+                                {% csrf_token %}
+                                <div class="row m_0">
+                                    <input type="hidden" name="news_id" value="{{ wellness_news.id }}">
+                                    <div class="form-group col-md-6">
+
+
+                                        <select class="form-control" name="publisher_user">
+                                            <option value="" selected>Select Publisher User</option>
+                                            {% for b in publisher_data %}
+
+                                                <option value="{{ b.id }}">{{ b.username }}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+
+
+                                        <button type="submit" class="btn btn-info">Go Next Stage</button>
+
+                                    </div>
+
+                                </div>
+                            </form>
+                        {% endif %}
+
+
+
+                 {% if request.user|can_view_publisher %}
+                    <form method="post" action="{% url 'set-mark-reviewer-wellness' %}">
+                    {% csrf_token %}
+                    <div class="row m_0">
+                    <input type="hidden" name="news_id" value="{{ wellness_news.id }}">
+                        <div class="form-group col-md-6">
+
+                            <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                            <select class="form-control" name="news_caller">
+                                   <option value="" selected>Select Caller User</option>
+                                  {% for b in news_caller %}
+
+                                                <option value="{{ b.id }}">{{ b.username }}</option>
+                                  {% endfor %}
+                            </select>
+
+                        </div>
+
+                        <div class="form-group col-md-6">
+
+
+                            <button type="submit" class="btn btn-info">Go To Previous Stage </button>
+
+                        </div>
+
+                    </div>
+                    </form>
+
+                    <form method="post" action="{% url 'set-mark-caller-wellness' %}">
+                    {% csrf_token %}
+                    <div class="row m_0">
+                    <input type="hidden" name="news_id" value="{{ wellness_news.id }}">
+                        <div class="form-group col-md-6">
+
+                            <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+
+                            <select class="form-control" name="news_reviewer_id">
+                                   <option value="" selected>Select Reviewer User</option>
+                                  {% for b in news_reviewer %}
+
+                                                <option value="{{ b.id }}">{{ b.username }}</option>
+                                  {% endfor %}
+                            </select>
+
+                        </div>
+
+                        <div class="form-group col-md-6">
+
+
+                            <button type="submit" class="btn btn-info">Go To Previous Stage </button>
+
+                        </div>
+
+                    </div>
+                    </form>
+
+                    <form method="post" action="{% url 'publish-to-live' %}">
+                    {% csrf_token %}
+                    <div class="row m_0">
+                    <input type="hidden" name="news_id" value="{{ wellness_news.id }}">
+
+
+                        <div class="form-group col-md-6">
+
+
+                            <button type="submit" class="btn btn-info">Publish To Live </button>
+
+                        </div>
+
+                    </div>
+                    </form>
+                {% endif %}
+
+
+
+
+
+
+
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+            </div>
+            <div class="m_tb_10">
+
+
+{#                    <a href="{% if request.user.is_superuser %}{% url 'get-assign-wellness-feed' %}{% else %}{% url 'wellness-listing' %}{% endif %}"#}
+{#                                                                                           class="btn btn-info btn-sm">Go Back</a>#}
+                    <a href="{% if user_is_publisher %}{% url  'get-publish-wellness-feed'  %}{% elif request.user.is_superuser%} {% url 'get-assign-wellness-feed' %} {% else %}{% url  'wellness-listing' %}{% endif %}" class="btn btn-info btn-sm pull-right">Go Back</a>
+
+
+                </span></h4>
+
+            </div>
+            <form role="form" action="{% url 'edit-wellness-news' wellness_news.id %}" method="post"
+                  enctype="multipart/form-data">
+                <div class="row">
+                    {% csrf_token %}
+                    <div class="col-md-12">
+
+                    <div class="form-group">
+                        <label style="color:black;">Topic Title</label>
+                        <input type="text"  class="form-control" name="topic_title" value= "{{ wellness_news.topic_title }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;" >Small Description</label>
+                        <input type="text"  class="form-control" name="small_description" value = "{{ wellness_news.small_description }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;" >Publish Date (dd-mm-yyyy)</label>
+                        <input type="text"  class="form-control MyDatePicker" name="publish_date" value= "{{ pub_date }}">
+                    </div>
+
+                     <div class="form-group">
+                        <label style="color:black;">Page Title</label>
+                        <input type="text"  class="form-control"  value= "{{ wellness_news.page_title }}" name="page_title">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Keywords</label>
+                        <input type="text"  class="form-control" value= "{{ wellness_news.page_keywords }}" name="page_keywords">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Description</label>
+                        <input type="text"  class="form-control" value= "{{ wellness_news.page_description }}" name="page_description">
+                    </div>
+
+{#                    <div class="form-group">#}
+{#                        <label  style="color:black;">Doctor's Category</label>#}
+{#                        <input type="text"  class="form-control" name="doctors_category" value= "{{ wellness_news.doctors_category }}">#}
+{#                    </div>#}
+
+                    <div class="form-group">
+                         <label>Category</label>
+                            <select id="doccategory" class="chosen-select" name="category"  multiple>
+                                    <option value="">--Select Doctor's Categories--</option>
+                                    {% if category_obj %}
+                                        {% for u in category_obj %}
+                                            {% if u.id|slugify in current_cats %}
+                                                <option value="{{ u.id }}" selected >{{ u.name }}</option>
+                                            {% else %}
+                                                <option value="{{ u.id }}">{{ u.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                            </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label  style="color:black;">Tag String</label>
+                        <input type="text"  class="form-control" name="tag_string" value= "{{ wellness_news.tag_string }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Related Topics</label>
+                        <select id="related_topics" class="chosen-select" name="related_topics" multiple>
+                            <option value="" style="color: #761c19;" disabled>----------------------------SELECT ARTICLES----------------------</option>
+                            {% for article in wellness_news_articles %}
+                                {% if article.id|slugify in current_article_list %}
+                                 <option style="word-break:break-all!important;" value="{{ article.id }}" selected>{{ article.topic_title| capfirst}}</option>
+                                {% else %}
+                                <option value="{{ article.id }}" >{{ article.topic_title | capfirst}}</option>
+                                {% endif %}
+                                <option value=""  style="color: #761c19;" disabled>--------------------------------------------------------------------</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label  style="color:black;">Converted HTML</label>
+                        <textarea rows="4" cols="50" id="textarea" name = "newsfeed_html_refined">{{wellness_news.newsfeed_html_refined}}</textarea>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="clearfix col-md-12 text-right">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                  </div>
+                </div>
+            </form>
+        </div>
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        function readURL(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah').attr('src', e.target.result);
+
+                    $('#blah').hide();
+                    $('#blah').fadeIn(650);
+
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#imgInp").change(function () {
+            readURL(this);
+        });
+        var clone_index = $("#app").length;
+
+        $("#btn1").click(function () {
+            $("#sss").append('<div id="app"><div class="form-group col-md-6"><textarea class="form-control" name="bullet_header"></textarea> </div> <div class="form-group col-md-6"><textarea class="form-control" name="bullet_body"></textarea> </div></div></div>');
+            clone_index++;
+        });
+        $("#btn2").click(function () {
+            if (clone_index > 1) {
+                $("#app").remove();
+                clone_index--;
+            }
+        });
+
+    </script>
+
+{% endblock %}

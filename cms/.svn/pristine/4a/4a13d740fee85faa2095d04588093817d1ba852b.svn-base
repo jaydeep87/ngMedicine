@@ -1,0 +1,132 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <h1 class="font_size_18 p_l_15">Plans</h1>
+                <form action="{% url 'plannew-add' %}" method="post">
+                    <div class="col-md-4 form-group">
+                        <label class="font_size_14">City</label>
+                        <select id="" class="form-control" name="city" required>
+                            <option value="">Select city</option>
+                            {% for i in city_obj %}
+                            <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="font_size_14">Provider Name</label>
+                        <select id="" class="form-control" name="provider" required>
+                            <option value="">Select Provider</option>
+                            {% for i in provider_name %}
+                            <option value="{{ i.id }}">{{ i.owner_name }}&nbsp;||&nbsp;{{ i.c_city }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-4 form-group">
+                        <label class="font_size_14">Select Category</label>
+                        <select id="plancatnew" name="plancat" class="form-control" required>
+                            <option value="">Select Category</option>
+                            {% for i in category %}
+                            <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="font_size_14">Sub Category</label>
+                        <select id="plansubcatnew" name="plansubcat" class="form-control" required>
+                            <option value="">Select Sub Category</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-8 form-group">
+                        <label class="font_size_14">Plan Name</label>
+                       <input type="text" name="planname" placeholder="Plan Name" class="form-control" required>
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label class="font_size_14">Plan Duration</label>
+                        <select class="form-control" id="dur" name="duration">
+                            <option value="">Select Duration</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 form-group">
+                       <label class="font_size_14">Min. no. of Employees</label>
+                       <select class="form-control" id="emp" name="no_of_emp">
+                            <option value="">Select No. of Emp.</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-2 form-group">
+                        <label class="font_size_14">Plan for Gender</label>
+                        <select id="" class="form-control" name="gender" required>
+                            <option>Select Gender</option>
+                            <option>Both</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-md-offset-2 form-group">
+                        <label class="font_size_14">Age Group</label>
+                        <select class="form-control" id="f_age" name="from_age">
+                            <option value="">Select Age</option>
+                        </select>
+                        <span style="display:inline-block; float:right; margin-top:-30px; margin-right:-22px">To </span>
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label>&nbsp;</label>
+                        <select class="form-control" id="t_age" name="to_age">
+                            <option value="">Select Age</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                     <div class="col-md-12 form-group">
+                        <label class="font_size_14">Short Description</label>
+                        <textarea rows="2" name="short_desc" class="form-control"></textarea>
+                    </div>
+                     <div class="col-md-12 form-group">
+                        <label class="font_size_14">Description</label>
+                        <textarea rows="4" name="desc" class="form-control"></textarea>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <label class="font_size_14">Instruction</label>
+                        <textarea rows="2" name="instructions" class="form-control"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-info">Submit</button>
+                </form>
+                <div class="clearfix"></div>
+            </div>
+       	</div>
+
+    <script>
+    $(function(){
+    var $select = $("#f_age");
+    for (i=1;i<=100;i++){
+        $select.append($('<option></option>').val(i).html(i))
+        }
+    });
+    $(function(){
+    var $select = $("#t_age");
+    for (i=1;i<=100;i++){
+        $select.append($('<option></option>').val(i).html(i))
+        }
+    });
+    $(function(){
+    var $select = $("#emp");
+    for (i=1;i<=100;i++){
+        $select.append($('<option></option>').val(i).html(i))
+        }
+    })
+    $(function(){
+    var $select = $("#dur");
+    for (i=1;i<=365;i++){
+        $select.append($('<option></option>').val(i).html(i))
+        }
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,311 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+<div class="p_10" style="background: rgba(0,0,0,0.3);">
+
+        <div style="padding-bottom:0;" class="border_5_light_white p_t_10">
+            <div class="row m_0">
+             <input type="hidden" value="doctor" id="type_of"/>
+                <div class="col-sm-4">
+                    <div class="form-group"><select class="form-control" id="stage">
+                        <option>----Select Stage---</option>
+                        {% for c in stage_data %}
+                            <option value="{{ c.id }}">{{ c.stage_name }}</option>
+                        {% endfor %}
+                    </select></div>
+
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group"><select class="form-control" id="telecaller" name="users_data">
+                        <option>---Select Users---</option>
+                    </select></div>
+                </div>
+                <div class="col-sm-4 text-right">
+                    <button class="btn btn-info" type="button" onclick="AssignLiveOrganisation()">Assign</button>
+                </div>
+            </div>
+        </div>
+
+
+    <h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion</h4>
+        <form role="form" method="get" action="{% url 'live-organisation-assignment' %}">
+            <button type="submit" class="btn btn-info btn-sm">Apply</button>
+            <a href="{% url 'live-organisation-assignment' %}" class="btn btn-warning btn-sm">Reset</a>
+   {% if organisation_data_obj %}
+                <div class="text-right"  style="margin-top: -61px">
+                    <ul class="pagination">
+                        {% if organisation_data_obj.has_previous %}
+                            <li class="prev"><a onclick="add_pagination('{{ organisation_data_obj.previous_page_number }}')" href="javascript:void(0)">Prev</a>
+                            </li>
+                        {% endif %}
+                        <li><a>Page {{ organisation_data_obj.number }}
+                            of {{ organisation_data_obj.paginator.num_pages }}</a></li>
+                        {% if organisation_data_obj.has_next %}
+                            <li class="next"><a onclick="add_pagination('{{ organisation_data_obj.next_page_number }}')" href="javascript:void(0)">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="row m_tb_10">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="live_organisation_filter" name="x">
+                        <select class="chosen-select" name="state_id">
+
+                            <option value="">--Select State--</option>
+                            {% for stateone in state_data_obj %}
+                                {% if state_filter == stateone.id %}
+                                    <option value="{{ stateone.id }}" selected>{{ stateone.name }}</option>
+                                {% else %}
+                                    <option value="{{ stateone.id }}">{{ stateone.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select class="chosen-select" name="city_id">
+
+                            <option value="">---Select City ---</option>
+                            {% for cityone in city_obj %}
+                                {% if city_filter == cityone.id %}
+                                    <option value="{{ cityone.id }}" selected>{{ cityone.name }}</option>
+                                {% else %}
+                                    <option value="{{ cityone.id }}">{{ cityone.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select class="chosen-select" name="locality_id">
+
+                            <option value="">--Select Location---</option>
+                            {% for localityone in locality_obj %}
+                                {% if locality_filter == localityone.id %}
+                                    <option value="{{ localityone.id }}"
+                                            selected>{{ localityone.name }}</option>
+                                {% else %}
+                                    <option value="{{ localityone.id }}">{{ localityone.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select id="stage_da" class="chosen-select" name="stage_da">
+                            {% if not stage_filter %}
+                                <option value="">--Select Stage--</option>
+                            {% endif %}
+                            {% if stage_data %}
+                                {% for s in stage_data %}
+                                    <option value="{{ s.id }}"
+                                            {% if stage_filter == s.id %}selected{% endif %}>{{ s.stage_name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select id="user_da" class="chosen-select" name="user_da">
+                            {% if not user_filter %}
+                                <option value="">--Select User--</option>
+                            {% endif %}
+                            {% if user_data %}
+                                {% for t in user_data %}
+                                    <option value="{{ t.id }}"
+                                            {% if user_filter == t.id %}selected{% endif %}>{{ t.username|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+
+        <div class="input-group">
+            <input type="text" placeholder="Search |" class="form-control" id="livesearch" autofocus="autofocus">
+                    <span class="input-group-btn"> <button class="btn btn-default"
+                                                           onclick="SearchWholeLiveOrganisation()"> Search
+                    </button></span>
+        </div>
+
+    <div style="overflow:auto; height:400px; padding: 5px 20px;">
+        <div class="table-responsive table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+                    <th><input id="checkAll" type="checkbox"/></th>
+                    <th>Sr. No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>City</th>
+                    <th>Locality</th>
+                    <th>Current User</th>
+                    <th>Stage</th>
+                    <th>Duplicates</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if organisation_data_obj %}
+                    {% for d in organisation_data_obj %}
+                        <tr>
+                            <td><input type="checkbox" value="{{ d.id }}"></td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ d.name }}</td>
+                            <td>{% if d.is_hospital %}Hospital{% elif d.is_clinic %}Clinic{% endif %}</td>
+                            <td>{{ d.city.name }}</td>
+                            <td>{{ d.locality.name }}</td>
+                            <td>{{ d.current_user.username }}</td>
+                            <td>{{ d.stage.stage_name }}</td>
+                            <td><a href="{% url 'view_duplicates_organisation' d.id %}" ><img src="/static/images/images/notes_warning.png" alt="Smiley face" height="20" width="20"></a></td>
+                            <td>{{ d.createdAt }}</td>
+                            <td>{{ d.updatedAt }}</td>
+                            <td>
+{#                                <a class="btn btn-default btn-sm p_1" href="{% url 'live-organisation-listing-edit' d.id %}"><i#}
+{#                                    class="fa fa-pencil-square-o fa-fw"></i></a> | <a href="#}
+{#                                    {% if d.is_disable %}{% url 'activate-live-organisation' d.id %}{% else %}{% url 'deactivate_live_organisation' d.id %}{% endif %}"#}
+{#                                                                                      class="btn btn-primary btn-sm p_1">#}
+{#                                {% if d.is_disable %}Enable {% else %}Disable {% endif %}</a>#}
+{#                                {% if i.finalise == False   %}#}
+{#                                    <a class="btn btn-success btn-sm p_1"  href="{% url 'finalise_live_organisation' d.id %}">Finalise</a>#}
+{#                                {% else %}#}
+{#                                    <a class="btn btn-success btn-sm p_1"  href="{% url 'finalise_live_organisation' d.id %}" disabled>Finalise</a>#}
+{#                                {% endif %}#}
+                                    <a class="btn btn-default btn-sm p_1" href="{% url 'live-organisation-listing-edit' d.id %}"><i
+                                         class="fa fa-pencil-square-o fa-fw"></i></a> | <a href="
+                                    {% if d.is_disable %}{% url 'activate-live-organisation' d.id %}{% else %}{% url 'deactivate_live_organisation' d.id %}{% endif %}"
+                                                      class="btn btn-primary btn-sm p_1">
+                                    {% if d.is_disable %}Enable {% else %}Disable {% endif %}</a>|
+                                    {% if d.finalise == False   %}
+                                        <a class="btn btn-success btn-sm p_1"  href="{% url 'finalise_live_organisation' d.id %}">Finalise</a>
+                                    {% else %}
+                                        <a class="btn btn-success btn-sm p_1" disabled>Finalise</a>
+                                    {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="9"><b>No Any Organisation Record Added Till Now...</b></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+{# START #disabled on 25 APR 2017 TO DISPLAY ALL RECORDS SINCE NEW Pune records arte to come#}
+            {% if organisation_data_obj %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if organisation_data_obj.has_previous %}
+                            <li class="prev"><a href="?page={{ organisation_data_obj.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&x={{filter_name}}&state_id={{state_data}}&city_id={{city_data}}&locality_id={{locality_data}}&stage_da={{stage_id_data}}&user_da={{user_id_data}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ organisation_data_obj.number }} of {{ organisation_data_obj.paginator.num_pages }}</a></li>
+                        {% if organisation_data_obj.has_next %}
+                            <li class="next"><a href="?page={{organisation_data_obj.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&x={{filter_name}}&state_id={{state_data}}&city_id={{city_data}}&locality_id={{locality_data}}&stage_da={{stage_id_data}}&user_da={{user_id_data}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+{# END #disabled on 25 APR 2017 TO DISPLAY ALL RECORDS SINCE NEW Pune records arte to come#}
+
+
+        </div>
+    </div>
+    </div>
+    <!--Right End-->
+    <script>
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+        var $rows = $('#table tr');
+        $('#search').keyup(function () {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function () {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+        $(document).ready(function () {
+            $("#state_value").chosen().change(function () {
+                var zone = $('#zone').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                $.ajax({
+                    type: 'post',
+                    url: DOMAIN + '/doctor/zone_location/',
+                    data: {action: "get_filter", zone_id: zone},
+                    beforeSend: function () {
+                        var text = 'getting zone location  of ' + zone + ' . please wait..';
+                        ajaxindicatorstart(text);
+                    },
+                    success: function (data) {
+                        ajaxindicatorstop();
+                        // alert(data);
+
+                        {#                 console.log(JSON.parse(data));#}
+                        var obj = JSON.parse(data);
+                        {#                 var len_obj = Object.keys(obj).length;#}
+                        //console.log(len_obj);
+                        //alert(len);
+                        if (obj.length != 0) {
+                            $("#zone_location option").remove();
+                            $("#zone_location").trigger("chosen:updated");
+                            var key_sel = '';
+                            var value_sel = 'Select Zone Location';
+                            var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                            $("#zone_location").append(select);
+                            $("#zone_location").val(key_sel);
+                            $("#zone_location").trigger("chosen:updated");
+                            for (var i = 0; i < obj.length; i++) {
+                                var option = '<option value=' + obj[i].id + '>' + obj[i].name + '</option>';
+                                $("#zone_location").append(option);
+                                $("#zone_location").trigger("chosen:updated")
+
+                            }
+
+                        }
+                    },
+                    error: function (jqXHR, ex) {
+                    }
+                });
+            });
+            {#         $("#zone_location").chosen().change(function () {#}
+            {#             alert($("#zone_location").val())#}
+            {#         })#}
+
+        });
+
+    </script>
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("livesearch");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchWholeLiveOrganisation()
+            }
+        }
+    </script>
+
+{% endblock %}

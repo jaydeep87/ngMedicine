@@ -1,0 +1,32 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'symptoms-by-users' %} ">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>symptoms by Users</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'symptoms-by-stages' %} ">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>symptoms by Stages</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'symptoms-assignment' %}">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>symptoms Assignment </h3>
+</a>
+</div>
+
+
+</div>
+
+</div>
+{% endblock %}

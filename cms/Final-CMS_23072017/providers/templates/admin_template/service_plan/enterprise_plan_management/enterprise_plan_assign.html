@@ -1,0 +1,172 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!--Right Start-->
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+
+        <div style="padding-bottom:0;" class="border_5_light_white p_t_10">
+            <div class="row m_0">
+            <input type="hidden" value="plan" id="type_of"/>
+                <div class="col-sm-4">
+                    <div class="form-group"><select class="form-control" id="stage">
+                        <option>----Select Stage---</option>
+                        {% for c in stage_data %}
+                            <option value="{{ c.id }}">{{ c.stage_name | capfirst }}</option>
+
+                        {% endfor %}
+                    </select></div>
+
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group"><select class="form-control" id="telecaller" name="users_data">
+                        <option>---Select Users---</option>
+                    </select></div>
+                </div>
+                <div class="col-sm-4 text-right">
+                    <button class="btn btn-info" type="button" onclick="AssignEnterprisePlan()">Assign</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!--<h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion</h4>
+        <form role="form" method="get" action="{% url 'disease-assignment' %}">
+            <button type="submit" class="btn btn-info btn-sm">Apply</button>
+            <a href="{% url 'disease-assignment' %}" class="btn btn-warning btn-sm">Reset</a>
+
+
+            <div class="row m_tb_10">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="filter" name="x">
+                        <select id="state" class="chosen-select" name="state">
+                            <option value="">--Select State--</option>
+                            {% comment %}{% for stateone in state_data_obj %}
+                                {% if state_filter == stateone.id %}
+                                    <option value="{{ stateone.id }}" selected>{{ stateone.name }}</option>
+                                {% else %}
+                                    <option value="{{ stateone.id }}">{{ stateone.name }}</option>
+                                {% endif %}
+                            {% endfor %}{% endcomment %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select class="chosen-select" name="city" id="city">
+                            <option value="">--Select City--</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select class="chosen-select" name="location" id="location">
+                            <option value="">--Select Location--</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>-->
+        <div class="input-group">
+            <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                    <span class="input-group-btn"> <button class="btn btn-default"
+                                                           onclick="SearchEnterpriseplanAssign()"> Search
+                    </button></span>
+        </div>
+
+        <div class="table-responsive table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+                    <th><input id="checkAll" type="checkbox"/></th>
+                    <th>Sr No</th>
+                    <th>Plan Name</th>
+                    <th>Free Text</th>
+                    <th>Current User</th>
+                    <th>Stage</th>
+                    <th>Provider Name</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if enterprise_plan_all_data %}
+                    {% for i in enterprise_plan_all_data %}
+                        <tr>
+                        <td><input type="checkbox" value="{{ i.id }}"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ i.plan_name | capfirst }}</td>
+                        <td>{{ i.free_text | capfirst }}</td>
+                        <td>{{ i.current_user.username | capfirst }}</td>
+                        <td>{{ i.stage.stage_name| capfirst }}</td>
+                        <td>{{ i.provider.owner_name| capfirst }}</td>
+                        <td>{{ i.createdAt }}</td>
+                        <td>{{ i.updatedAt }}</td>
+                        <td>
+                            <a class="text_white" href="{% url 'enterprise-service-plan-edit' i.id %} "><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">{% if request.user|can_view_admin %}|</span>{% if i.activation_status == True %}<a href="{% url 'any-master-object-deactivate' object_id=i.id object_type=16 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'any-master-object-activate' object_id=i.id object_type=16 %}  " class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}{% endif %}
+                        </td>
+                        </td>
+                    {% endfor %}
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7"><b>No Enterprise Plan Record Added Till Now...</b></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+            {% if enterprise_plan_all_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if enterprise_plan_all_data.has_previous %}
+                            <li class="prev"><a href="?page={{ enterprise_plan_all_data.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ enterprise_plan_all_data.number }} of {{ enterprise_plan_all_data.paginator.num_pages }}</a></li>
+                        {% if enterprise_plan_all_data.has_next %}
+                            <li class="next"><a href="?page={{enterprise_plan_all_data.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <!--Right End-->
+    <script>
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+        var $rows = $('#table tr');
+        $('#search').keyup(function () {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function () {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+
+
+    </script>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchEnterpriseplanAssign()
+            }
+        }
+    </script>
+{% endblock %}

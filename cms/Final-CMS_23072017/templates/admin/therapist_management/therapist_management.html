@@ -1,0 +1,33 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'therapist-by-users' %}">
+
+<figure><img src="{% static 'images/therapist-microscope.png' %}"></figure>
+<h3>Therapist by Users</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'therapist-by-stages' %}">
+<figure><img src="{% static 'images/therapist-microscope.png' %}"></figure>
+<h3>Therapist by Stages</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'therapist-assignment' %}">
+<figure><img src="{% static 'images/therapist-microscope.png' %}"></figure>
+<h3>Therapist Assignment</h3>
+</a>
+</div>
+
+
+</div>
+
+</div>
+{% endblock %}

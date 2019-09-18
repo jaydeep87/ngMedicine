@@ -1,0 +1,33 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'ambulance-by-users' %}">
+
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Ambulance by Users</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'ambulance-by-stages' %}">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Ambulance  by Stages</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'ambulance-assignment' %}">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Ambulance Assignment </h3>
+</a>
+</div>
+
+
+</div>
+
+</div>
+{% endblock %}

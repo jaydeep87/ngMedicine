@@ -1,0 +1,245 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+
+     {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% for i in global_data_edit %}
+    <div class="m_tb_10">
+<div class="m_tb_10">
+<button class="btn btn-warning" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button>
+<div class="clearfix"></div>
+ <div id="markAsComplate" class="collapse m_tb_10">
+                <div class="thumbnail p_10">
+                <form role="form" action="
+
+        {% if request.user|can_view_news %}{% url 'set-mark-caller-global' %}{% elif request.user|can_view_review_news %}{% url 'set-mark-reviewer-global' %}{% endif %}"
+                                  method="post">
+                {% csrf_token %}
+                <input type="hidden" name="news_id" value="{{ i.id }}">
+                    {% if request.user|can_view_news %}
+                    <div class="row m_0">
+
+                        <div class="form-group col-md-6">
+
+
+                            <select class="form-control" name="news_reviewer_id">
+                            <option value="" selected>Select Reviewer User</option>
+                                {% for b in news_reviewer %}
+
+                                                <option value="{{ b.id }}">{{ b.username }}</option>
+                                            {% endfor %}</select>
+
+                        </div>
+
+                        <div class="form-group col-md-6">
+
+
+                            <button type="submit" class="btn btn-info">Forward For Review </button>
+
+                        </div>
+
+
+                    </div>
+{% endif %}
+                {% if request.user|can_view_review_news %}
+                    <div class="row m_0">
+                        <div class="form-group col-md-6">
+
+
+                            <select class="form-control" name="news_caller">
+                                   <option value="" selected>Select Caller User</option>
+                                  {% for b in news_caller %}
+
+                                                <option value="{{ b.id }}">{{ b.username }}</option>
+                                            {% endfor %}
+                            </select>
+
+                        </div>
+
+                        <div class="form-group col-md-6">
+
+
+                            <button type="submit" class="btn btn-info">Go Previous Stage</button>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+                    </form>
+                {% if request.user|can_view_review_news %}
+                    <form method="post" action="{% url 'set-mark-publisher-global' %}">
+                    {% csrf_token %}
+                    <div class="row m_0">
+                    <input type="hidden" name="news_id" value="{{ i.id }}">
+                        <div class="form-group col-md-6">
+
+
+                            <select class="form-control" name="publisher_user">
+                                   <option value="" selected>Select Publisher User</option>
+                                  {% for b in publisher_data %}
+
+                                                <option value="{{ b.id }}">{{ b.username }}</option>
+                                            {% endfor %}
+                            </select>
+
+                        </div>
+
+                        <div class="form-group col-md-6">
+
+
+                            <button type="submit" class="btn btn-info">Go Next Stage</button>
+
+                        </div>
+
+                    </div>
+                    </form>
+                {% endif %}
+                </div>
+
+            </div>
+{% if i.free_text %}
+ <div class="row m_t_10">
+                        <div class="form-group col-md-12">
+
+
+                            <textarea class="form-control">{{ i.free_text }}</textarea>
+
+                        </div>
+
+
+                    </div>
+{% endif %}
+<h4 class="font_weight_600">{{ i.news_header }}<span class="pull-right"><a href="{% if request.user.is_superuser %} {% url 'get-assign-global-feed' %} {% else %}{% url 'global-listing' %}{% endif %}" class="btn btn-info btn-sm">Go Back</a></span></h4>
+
+</div>
+  <form role="form" action="{% url 'edit-save-global-news' i.id %}" method="post" enctype="multipart/form-data">
+  <div class="row">
+      {% csrf_token %}
+  <div class="col-md-6">
+  <div class="form-group">
+  <label>News Header</label>
+  <input type="text" name="news_header" class="form-control" value="{{ i.news_header }}" readonly>
+  </div>
+
+  <div class="form-group">
+  <label>Tag String</label>
+  <input type="text" class="form-control" name="tag_string" value="{{ i.tag_string }}">
+  </div>
+
+  <div class="form-group">
+  <label>Small Description</label>
+  <textarea class="form-control" name="small_description">{{ i.small_desc }}</textarea>
+  </div>
+  </div>
+
+  <div class="col-md-6">
+
+  <div class="form-group">
+  <label>Image:</label>
+  <input type="file" name=image_data id="imgInp" accept="image/*" value="{{ i.image }}">
+  </div>
+<label>Image Preview:</label>
+  <div class="form-group" id='img_contain'>
+
+      <img id="blah" align='middle' src="{{ i.image.url }}" alt="your image" title=''/>
+  </div>
+
+  </div>
+
+  <div class="col-md-12">
+      <div class="form-group">
+      <label>Article Intro:</label>
+          <input type="text" class="form-control" name="article_intro" value="{{ i.article_intro }}">
+          </div>
+
+  <div class="row m_0" style="background: rgba(0,0,0,0.1);">
+
+      <div class="col-md-10" id="sss">
+<label>Article:</label><div class="clearfix"></div>
+          {% for j in article_data %}
+          <div id="app">
+  <div class="form-group col-md-6">
+
+  <textarea type="text" class="form-control" name="bullet_header">{{ j.bullet_header }}</textarea>
+  </div>
+      <div class="form-group col-md-6">
+
+  <textarea class="form-control" name="bullet_body">{{ j.bullet_body }}</textarea>
+  </div>
+              </div>
+              {% endfor %}
+          </div>
+  <div class="col-md-2">
+  <label>&nbsp;</label>
+      <div class="form-group p_t_10">
+
+                            <button type="button" id="btn2"><i class="fa fa-minus-square"></i></button>
+                            <button type="button" id="btn1"><i class="fa fa-plus-square"></i></button>
+                        </div>
+  </div>
+  </div>
+  </div>
+
+
+
+  <div class="col-md-12">
+  <div class="form-group">
+  <label>Article Conclusion:</label>
+  <textarea class="form-control" name="conclusion">{{ i.article_conclusion }}</textarea>
+  </div>
+      {% if not request.user.is_superuser %}
+  <p class="text-right"><button class="btn btn-info btn-sm" type="submit">Update</button></p>
+      {% endif %}
+  </div>
+  </div>
+  </form>
+</div>
+  {% endfor %}
+    <script>
+     $('#alert').fadeIn().delay(5000).fadeOut('slow');
+    function readURL(input) {
+
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      $('#blah').attr('src', e.target.result);
+
+      $('#blah').hide();
+      $('#blah').fadeIn(650);
+
+    };
+
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#imgInp").change(function() {
+  readURL(this);
+});
+var clone_index = $("#app").length;
+
+$("#btn1").click(function(){
+        $("#sss").append('<div id="app"><div class="form-group col-md-6"><textarea class="form-control" name="bullet_header"></textarea> </div> <div class="form-group col-md-6"><textarea class="form-control" name="bullet_body"></textarea> </div></div></div>');
+    clone_index++;
+    });
+     $("#btn2").click(function(){
+         if(clone_index>1){
+        $("#app").remove();
+             clone_index--;
+             }
+    });
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+        {% block table %}
+
+
+
+           </p>
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+
+                        <th>Register Date</th>
+                        <th>Last Login Date</th>
+                        <th></th>
+
+
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                        <form method="post" action="{% url 'show_activity_list' %}" >
+                        <tr>
+                            <td><div class="form-group">
+                                    <input type="text"  class="form-control MyDatePicker" name="register_date">
+                                </div></td>
+                            <td><div class="form-group">
+                                    <input type="text"  class="form-control MyDatePicker" name="Login_date">
+                                </div></td></td>
+                            <td>
+                               <button type="SUBMIT" class = "btn btn-info" >View List</button>
+                            </td>
+
+
+                        </tr>
+                        </form>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        {% endblock %}
+    </div>
+
+
+     <script>
+        $(function () {
+            $(".MyDatePicker").datepicker();
+        });
+     </script>
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchLab({{ request.user.id }})
+            }
+        }
+    </script>
+
+{% endblock %}

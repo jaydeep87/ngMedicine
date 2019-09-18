@@ -1,0 +1,116 @@
+   <div class="table-responsive table_modify_for_all p_tb_10">
+      <table class="table table-bordered m_b_0">
+         <thead class="bg_ededed">
+            <tr>
+               <th><input id="checkAll" type="checkbox"/></th>
+               <th>Sr. No.</th>
+               <th>Drug Name</th>
+                    <th>Drug Generic Name</th>
+                    <th>free_text</th>
+                    <th>Stage</th>
+                    <th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+                    <th>Action</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for i in drug %}
+            <tr>
+               <td><input type="checkbox" value="{{ i.id }}"></td>
+               <td>{{ forloop.counter }}</td>
+               <td>{{ i.name | capfirst }}</td>
+                        <td>{{ i.generic_name | capfirst }}</td>
+                        <td>{{ i.free_text | capfirst }}</td>
+                        <td>{{ i.stage.stage_name | capfirst }}</td>
+                        <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                        {% if i.stage_id != 5 %}<td><a class="text_white" href="{% url 'drug-listing-edit' i.id %}"><i
+                                    class="fa fa-edit"></i></a></td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+            </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+      {% if drug %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if drug.has_previous %}
+            <li class="prev"><a href="?page={{ drug.previous_page_number }}">Prev</a> </li>
+            {% endif %}
+            <li><a href="">Page {{ drug.number }} of {{ drug.paginator.num_pages }}</a> </li>
+            {% if drug.has_next %}
+            <li class="next"><a href="?page={{ drug.next_page_number }}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+<script>
+   $("#checkAll").change(function () {
+       $("input:checkbox").prop('checked', $(this).prop("checked"));
+   });
+   var $rows = $('#table tr');
+   $('#search').keyup(function () {
+       var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+       $rows.show().filter(function () {
+           var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+           return !~text.indexOf(val);
+       }).hide();
+   });
+   $('#alert').fadeIn().delay(2000).fadeOut('slow');
+   /**
+    * publisher
+     * @constructor
+    */
+   function PublishForPublisher(type,data_type){
+       var checkedValues = $('input:checkbox:checked').map(function () {
+           return this.value;
+       }).get();
+       var formDATA = {};
+       checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+       if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+           alert("Please select value....");
+           return false;
+       }
+       formDATA.checkedValues = checkedValues;
+       formDATA.type = type;
+       formDATA.data_type = data_type;
+       if (formDATA.checkedValues != '') {
+           $.ajax({
+               type: 'POST', url: Domain + '{% url 'data-publish' %}', data: formDATA, beforeSend: function () {
+                   var text = 'Please wait....';
+                   ajaxindicatorstart(text);
+               },
+               success: function (resData) {
+                   ajaxindicatorstop();
+                   resData = JSON.parse(resData);
+                   if (resData.Redirect == true) {
+                       alert(resData.Message);
+                       window.location = resData.RedirectUrl;
+                   }
+                   else {
+
+                       alert(resData.Message);
+                       window.location.reload(true);
+                   }
+               },
+               error: function(data){
+                   alert('Something Bad Happened');
+                   location.reload();
+               }
+           });
+       }
+       else
+       {
+           alert("Please select drugs.")
+       }
+
+   }
+
+
+</script>
+
+
+   </div>

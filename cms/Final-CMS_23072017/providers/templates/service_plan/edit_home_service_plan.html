@@ -1,0 +1,546 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+    <div style="padding-bottom:50px;"><button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button></div>
+
+
+    <!--COLLAPSE START-->
+         {% if package_obj.stage_id != 5 %}
+
+            <div id="markAsComplate" class="collapse">
+                <div class="thumbnail p_10">
+                    <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% if request.user|is_service_caller %}{% url 'mark-caller-complete-home-plan' %}{% elif request.user|is_service_reviewer%}{% url 'mark-reverse-home-plan-to-caller'  %}{% elif request.user|can_view_publisher %}{% url 'mark-reverse-home-plan-to-caller'  %} {% endif %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ package_obj.id }}" name="home-plan-id">
+                                {% if request.user|is_service_reviewer%}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {# Form portion to move home-plan data from publisher user to caller user#}
+                                {% if request.user|can_view_publisher %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if request.user|is_service_caller %}
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            {% for b in reviewer_user_data %}
+                                                <option value="" disabled>Select Reviewer User</option>
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <select class="form-control" name="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Complete</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|is_service_reviewer%}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+
+                        {% if request.user|is_service_reviewer%}
+                            <div class="col-md-12">
+                                <form action = "{% url 'mark-reviewer-complete-home-plan' %}" method = "post">
+                                <input type="hidden" value="{{ package_obj.id }}" name="home-plan-id" id="home_plan_id">
+                                <div class="col-md-4">
+                                    <select class="form-control" name="publisher_name" id="publisher_name">
+                                        <option value="" disabled>Select Publisher User</option>
+                                        {% for b in publisher_user_data %}
+
+                                            <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                              <div class="col-md-4">
+                                        <select class="form-control" name="validator_name" id="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                <div class="col-md-4">
+                                    <button type = "submit"  value = "submit" class="btn btn-info" >Move to Next
+                                        Stage
+                                    </button>
+                                </div>
+                              </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# NEW Form  to move home-plan data from publisher user to review user#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-reverse-home-plan-to-reviewer' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ package_obj.id }}" name="home-plan-id">
+
+
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in reviewer_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>
+                                    </div>
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+
+
+                {# NEW Form  to PUBLISH  home-plan data from and move home-plan to stage 4 (PUBLISHED)#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-complete-publisher-home-plan-stage-four' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ package_obj.id }}" name="home-plan-id">
+
+
+                                <button type = "submit"  value = "submit" class="btn btn-info" >Publish To Live
+                                    </button>
+
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+         {% endif %}
+            </div>
+        {% endif %}
+        <!--COLLAPSE END-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="m_tb_10">
+        <div class="m_tb_10">
+            <h4 class="font_weight_600">Edit Home Service Plan <span class="pull-right">
+
+{#                <a href="{% url 'home-service-plan-listing' %}" class="btn btn-info btn-sm">Go Back</a>#}
+                <a href="{% if user_is_publisher %}{% url  'publisher-homeplan-listing'  %}{% elif request.user.is_superuser%} {% url 'home-plan-assignment' %} {% else %}{% url  'home-service-plan-listing' %}{% endif %}" class="btn btn-info btn-sm pull-right">Go Back</a>
+
+
+            </span></h4>
+
+        </div>
+        <form role="form" action="{% url 'home-service-plan-edit' package_obj.id %}" method="post" enctype="multipart/form-data">
+            <div class="row">
+                {% csrf_token %}
+                <div class="col-md-12">
+                    <div class="form-group col-md-4">
+                        <label>Package Name</label>
+                        <input type="text" name="package_name" {% if package_obj %} value = "{{ package_obj.plan_name }}" {% endif %}class="form-control">
+                    </div>
+
+
+                         <div class="form-group col-md-4">
+                        <label>package Rates</label>
+                        <input type="text" class="form-control" name="package_rates" {% if package_obj %} value = {{ package_obj.plan_price }} {% endif %}>
+                             </div>
+
+                        <div class="form-group">
+                        <label>CaResidense Plan Type</label>
+                        <select id="caresidense_plans" class="chosen-select" name="caresidense_plans" multiple>
+                            <option value="">--Select CaResidense Plan--</option>
+                            {% for plan in caresidense_plan_types %}
+                                {% if plan.id|slugify in caresidense_current_plans %}
+                                <option value="{{ plan.id }}" selected>{{ plan.name | capfirst}}</option>
+                                {% else %}
+                                <option value="{{ plan.id }}">{{ plan.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+
+                <div class="form-group col-md-4">
+                        <label>Provider Name </label>
+                        <select class="form-control" name="provider_name">
+                          <option value="" disabled>----Select Provider---</option>
+
+                            {% for i in provider_list %}
+                                {% if i.id == current_provider.id %}
+                                <option value="{{ i.id }}" selected>Selected >{{ i.owner_name | capfirst}}</option>
+                                {% else %}
+                                <option value="{{ i.id }}">{{ i.owner_name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                            </select>
+
+
+                </div>
+
+
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-12">
+
+
+                    <div class="row m_0" style="background: rgba(0,0,0,0.1);">
+
+                        <div class="col-md-10" id="sss">
+                            <label>Package details:</label>
+                            <div class="clearfix"></div>
+                            <div id="app">
+                                {% if investigation_list %}
+
+
+                                <div id="wrap1">
+                                    {% for key,value in investigation_list.items %}
+                                    <div id="in1" class="form-group col-md-12">
+
+                                       <input type="text" name="investigations" class="form-control" value ="{{ value }}"
+                                               >
+
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                                {% else %}
+                                <div id="wrap1">
+                                    <div id="in1" class="form-group col-md-12">
+
+                                        <input type="text" name="investigations" class="form-control" placeholder="Investigations"
+                                               >
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="col-md-2">
+                                    <label style="display: block;">Investigations</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn2"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn1"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                {% if others_list %}
+
+
+                                <div id="wrap2">
+                                     {% for key,value in  others_list.items %}
+                                    <div id="in2" class="form-group col-md-12">
+
+                                        <input type="text" name="others" class="form-control" value = "{{ value }}"
+                                               >
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                                {% else %}
+                                <div id="wrap2">
+                                    <div id="in2" class="form-group col-md-12">
+
+                                        <input type="text" name="others" class="form-control" placeholder="Others"
+                                               >
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="col-md-2">
+                                   <label style="display: block;"> Others</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn4"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn3"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                {% if imaging_list %}
+
+
+                                <div id="wrap3">
+                                    {% for key,value in  imaging_list.items %}
+                                    <div id="in3" class="form-group col-md-12">
+
+                                        <input type="text" name="imaging" class="form-control" value = "{{ value }}"
+                                               >
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                                {% else %}
+                                <div id="wrap3">
+                                    <div id="in3" class="form-group col-md-12">
+
+                                        <input type="text" name="imaging" class="form-control" placeholder="Imaging"
+                                               >
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="col-md-2">
+                                    <label style="display: block;">Imaging</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn6"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn5"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                 {% if consultation_list %}
+
+
+                                <div id="wrap4">
+                                     {% for key,value in  consultation_list.items %}
+                                    <div id="in4" class="form-group col-md-12">
+
+                                        <input type="text"  name="consultations" class="form-control" value ="{{ value }}"
+                                               >
+                                    </div>
+                                   {% endfor %}
+                                </div>
+
+                                {% else %}
+                                <div id="wrap4">
+                                    <div id="in4" class="form-group col-md-12">
+
+                                        <input type="text"  name="consultations" class="form-control"  placeholder="Consultations"
+                                               >
+                                    </div>
+                                </div>
+
+                                {% endif %}
+                                <div class="col-md-2">
+                                    <label  style="display: block;">Consultations&nbsp;</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn8"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn7"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+
+                                {#      <div class="form-group col-md-6">#}
+                                {##}
+                                {#  <textarea class="form-control" name="bullet_body"></textarea>#}
+                                {#  </div>#}
+                            </div>
+                        </div>
+                        {#  <div class="col-md-2">#}
+                        {#  <label>&nbsp;</label>#}
+                        {#      <div class="form-group p_t_10">#}
+                        {##}
+                        {#                            <button type="button" id="btn2"><i class="fa fa-minus-square"></i></button>#}
+                        {#                            <button type="button" id="btn1"><i class="fa fa-plus-square"></i></button>#}
+                        {#                        </div>#}
+                        {#  </div>#}
+                    </div>
+                </div>
+
+
+                <div class="col-md-12">
+                    <div class="form-group col-md-12">
+                        <label>Package Description</label>
+                        <textarea class="form-control" name="package_description" >{% if package_obj %}{{ package_obj.package_description }} {% endif %}</textarea>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Type</label>
+                        <input type="text" name="type" class="form-control" {% if package_obj %} value = "{{ package_obj.type }}" {% endif %}>
+                    </div>
+
+
+                    <div class="form-group col-md-6">
+                        <label>Instructions</label>
+                        <textarea class="form-control" name="instructions">{% if package_obj %} {{ package_obj.instructions }} {% endif %}</textarea>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Validity</label>
+                        <input type="text" name="validity" class="form-control"{% if package_obj %} value = "{{ package_obj.plan_validity }}" {% endif %}>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Timings</label>
+                        <input type="text" name="timings" class="form-control"{% if package_obj %} value = "{{ package_obj.timings }}" {% endif %}>
+                    </div>
+
+                    <p class="text-right">
+                        <button class="btn btn-info btn-sm" type="submit">Submit</button>
+                    </p>
+
+                </div>
+        </form>
+    </div>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        function readURL(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah').attr('src', e.target.result);
+
+                    $('#blah').hide();
+                    $('#blah').fadeIn(650);
+
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#imgInp").change(function () {
+            readURL(this);
+        });
+        var clone_indexa = $("#wrap1").length;
+        var clone_indexb = $("#wrap2").length;
+        var clone_indexc = $("#wrap3").length;
+        var clone_indexd = $("#wrap4").length;
+
+
+        $("#btn1").click(function () {
+            $("#wrap1").append('<div id = "in1"  class="form-group col-md-12"><input type="text" name="investigations" class="form-control" placeholder="Investigations" ></div>');
+            clone_indexa++;
+
+        });
+        $("#btn2").click(function () {
+            if (clone_indexa > 1) {
+                $("#in1").remove();
+
+                clone_indexa--;
+
+            }
+        });
+
+        $("#btn3").click(function () {
+            $("#wrap2").append('<div id = "in2"  class="form-group col-md-12"><input type="text" name="others" class="form-control" placeholder="Others" ></div>');
+            clone_indexb++;
+        });
+        $("#btn4").click(function () {
+            if (clone_indexb > 1) {
+                $("#in2").remove();
+                clone_indexb--;
+            }
+        });
+
+        $("#btn5").click(function () {
+            $("#wrap3").append('<div id = "in3"  class="form-group col-md-12"><input type="text" name="imaging" class="form-control" placeholder="Imaging" ></div>');
+            clone_indexc++;
+        });
+        $("#btn6").click(function () {
+            if (clone_indexc > 1) {
+                $("#in3").remove();
+                clone_indexc--;
+            }
+        });
+
+        $("#btn7").click(function () {
+            $("#wrap4").append('<div id = "in4" class="form-group col-md-12"><input type="text" name="consultations" class="form-control" placeholder="Consultations" ></div>');
+            clone_indexd++;
+        });
+        $("#btn8").click(function () {
+            if (clone_indexd > 1) {
+                $("#in4").remove('');
+                clone_indexd--;
+            }
+        });
+
+
+    </script>
+{% endblock %}
+

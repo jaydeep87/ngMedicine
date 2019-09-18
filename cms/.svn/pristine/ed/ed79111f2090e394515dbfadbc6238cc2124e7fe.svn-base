@@ -1,0 +1,264 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="m_tb_10">
+        <div class="m_tb_10">
+            <h4 class="font_weight_600">Add New Enterprise Service Plan <span class="pull-right"><a
+                    href="{% url 'enterprise-service-plan-listing' %}" class="btn btn-info btn-sm">Go Back</a></span></h4>
+
+        </div>
+        <form role="form" action="{% url 'enterprise-service-plan-add' %}" method="post" enctype="multipart/form-data">
+            <div class="row">
+                {% csrf_token %}
+                <div class="col-md-12">
+                    <div class="form-group col-md-6">
+                        <label>Package Name</label>
+                        <input type="text" name="package_name" class="form-control">
+                    </div>
+
+
+                         <div class="form-group col-md-6">
+                        <label>package Rates</label>
+                        <input type="text" class="form-control" name="package_rates">
+                             </div>
+
+
+                        <div class="form-group">
+                        <label>Healthoholic Plan Type</label>
+                        <select id="healthoholic_plans" class="chosen-select" name="healthoholic_plans" multiple>
+                            <option value="">--Select Healthoholic Plan--</option>
+                            {% for plan in healthoholic_plan_types %}
+                                <option value="{{ plan.id }}">{{ plan.name | capfirst}}</option>
+                            {% endfor %}
+                        </select>
+                        </div>
+
+
+                    </div>
+                </div>
+            <div class="row">
+                <div class="col-md-12">
+                     <div class="form-group col-md-6">
+                        <label>Provider Name </label>
+                        <select class="form-control" name="provider_name">
+                          <option value="" disabled>----Select Provider---</option>
+                        {% for i in provider_list %}
+                            <option value="{{ i.id }}">{{ i.owner_name | capfirst}}</option>
+                            {% endfor %}
+                            </select>
+
+
+                    </div>
+                    </div>
+            </div>
+
+
+                <div class="col-md-12">
+
+
+                    <div class="row m_0" style="background: rgba(0,0,0,0.1);">
+
+                        <div class="col-md-10" id="sss">
+                            <label>Package details:</label>
+                            <div class="clearfix"></div>
+                            <div id="app">
+                                <div id="wrap1">
+                                    <div id="in1" class="form-group col-md-12">
+
+                                        <input type="text" class="form-control" placeholder="Investigations"
+                                               name="investigations">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label style="display: block;">Investigations</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn2"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn1"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                <div id="wrap2">
+                                    <div id="in2" class="form-group col-md-12">
+
+                                        <input type="text" class="form-control" placeholder="Others"
+                                               name="others">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label style="display: block;"> Others</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn4"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn3"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                <div id="wrap3">
+                                    <div id="in3" class="form-group col-md-12">
+
+                                        <input type="text" class="form-control" placeholder="Imaging"
+                                               name="imaging">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label style="display: block;">Imaging</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn6"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn5"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+                                <div id="wrap4">
+                                    <div id="in4" class="form-group col-md-12">
+
+                                        <input type="text" class="form-control" placeholder="Consultations"
+                                               name="Consultations">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label  style="display: block;">Consultations&nbsp;</label>
+                                    <div class="form-group p_t_10">
+
+                                        <button type="button" id="btn8"><i class="fa fa-minus-square"></i></button>
+                                        <button type="button" id="btn7"><i class="fa fa-plus-square"></i></button>
+                                    </div>
+                                </div>
+
+                                {#      <div class="form-group col-md-6">#}
+                                {##}
+                                {#  <textarea class="form-control" name="bullet_body"></textarea>#}
+                                {#  </div>#}
+                            </div>
+                        </div>
+                        {#  <div class="col-md-2">#}
+                        {#  <label>&nbsp;</label>#}
+                        {#      <div class="form-group p_t_10">#}
+                        {##}
+                        {#                            <button type="button" id="btn2"><i class="fa fa-minus-square"></i></button>#}
+                        {#                            <button type="button" id="btn1"><i class="fa fa-plus-square"></i></button>#}
+                        {#                        </div>#}
+                        {#  </div>#}
+                    </div>
+                </div>
+
+
+                <div class="col-md-12">
+                    <div class="form-group col-md-12">
+                        <label>Package Description</label>
+                        <textarea class="form-control" name="package_description"></textarea>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Type</label>
+                        <select class="form-control" name="type"></select>
+                        <input type="text" name="type" class="form-control">
+                    </div>
+
+
+                    <div class="form-group col-md-6">
+                        <label>Instructions</label>
+                        <textarea class="form-control" name="instructions"></textarea>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Validity</label>
+                        <input type="text" name="validity" class="form-control">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Timings</label>
+                        <input type="text" name="timings" class="form-control">
+                    </div>
+
+                    <p class="text-right">
+                        <button class="btn btn-info btn-sm" type="submit">Submit</button>
+                    </p>
+
+                </div>
+        </form>
+    </div>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        function readURL(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah').attr('src', e.target.result);
+
+                    $('#blah').hide();
+                    $('#blah').fadeIn(650);
+
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#imgInp").change(function () {
+            readURL(this);
+        });
+        var clone_indexa = $("#wrap1").length;
+        var clone_indexb = $("#wrap2").length;
+        var clone_indexc = $("#wrap3").length;
+        var clone_indexd = $("#wrap4").length;
+
+
+        $("#btn1").click(function () {
+            $("#wrap1").append('<div id = "in1" class="form-group col-md-12"><input type="text" class="form-control" placeholder="Investigations" name="investigations"></div>');
+            clone_indexa++;
+
+        });
+        $("#btn2").click(function () {
+            if (clone_indexa > 1) {
+                $("#in1").remove();
+
+                clone_indexa--;
+
+            }
+        });
+
+        $("#btn3").click(function () {
+            $("#wrap2").append('<div id = "in2" class="form-group col-md-12"><input type="text" class="form-control" placeholder="Others" name="others"></div>');
+            clone_indexb++;
+        });
+        $("#btn4").click(function () {
+            if (clone_indexb > 1) {
+                $("#in2").remove();
+                clone_indexb--;
+            }
+        });
+
+        $("#btn5").click(function () {
+            $("#wrap3").append('<div id = "in3" class="form-group col-md-12"><input type="text" class="form-control" placeholder="Imaging" name="imaging"></div>');
+            clone_indexc++;
+        });
+        $("#btn6").click(function () {
+            if (clone_indexc > 1) {
+                $("#in3").remove();
+                clone_indexc--;
+            }
+        });
+
+ $("#btn7").click(function () {
+            $("#wrap4").append('<div id = "in4" class="form-group col-md-12"><input type="text" name="consultations" class="form-control" placeholder="Consultations" ></div>');
+            clone_indexd++;
+        });
+        $("#btn8").click(function () {
+            if (clone_indexd > 1) {
+                $("#in4").remove('');
+                clone_indexd--;
+            }
+        });
+
+
+    </script>
+{% endblock %}

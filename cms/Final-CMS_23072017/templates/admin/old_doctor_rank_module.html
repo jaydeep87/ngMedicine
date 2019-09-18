@@ -1,0 +1,39 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'doctor_sponsored_ranks_report' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Doctor Sponsored Report</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'doc_schedule_stopdate_notification' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Doctors Stop Date Notification</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'doctor_sponsored_ranks_deleted_schedules' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Manage Sponsored Ranks For Doctor Deleted Schedules </h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href=" {% url 'doctor-mark-for-search-results' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Doctor Manage Sponsored Ranks</h3>
+</a>
+</div>
+
+</div>
+
+</div>
+{% endblock %}

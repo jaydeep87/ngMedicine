@@ -1,0 +1,23 @@
+[
+  {
+    "model": "providers.plancategory",
+    "pk": 1,
+    "fields": {
+      "name": "Basic"
+    }
+  },
+  {
+    "model": "providers.plancategory",
+    "pk": 2,
+    "fields": {
+      "stage_name": "Basic Plus"
+    }
+  },
+  {
+    "model": "providers.plancategory",
+    "pk": 3,
+    "fields": {
+      "stage_name": "Premium"
+    }
+  }
+]

@@ -1,0 +1,57 @@
+<div class="table-responsive table_modify_for_all p_tb_10">
+      <table class="table table-bordered m_b_0">
+         <thead class="bg_ededed">
+            <tr>
+               <th><input id="checkAll" type="checkbox"/></th>
+               <th>Sr. No.</th>
+               <th>Lab Name</th>
+               <th>City</th>
+               <th>Location</th>
+               <th>Stage</th>
+               <th>Current User</th>
+               <th>Free Text</th><th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+               <th>Action</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% if lab %}
+            {% for i in lab %}
+            <tr>
+               <td><input type="checkbox" value="{{ i.id }}"></td>
+               <td>{{ forloop.counter }}</td>
+               <td>{{ i.name | capfirst }}</td>
+               <td>{{ i.city.name | capfirst }}</td>
+               <td>{{ i.locality.name | capfirst }}</td>
+
+                <td>{{ i.stage.stage_name | capfirst }}</td>
+
+                <td>{{ i.current_user.username | capfirst }}</td>
+                <td>{{ i.free_text | capfirst }}</td>
+                <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                <td>{% if i.stage_id != 5 %}<a class="btn btn-default btn-sm p_0" href="{% url 'time-schedule-lab' i.id %}"><i class="fa fa-clock-o fa-fw text_333"></i></a>
+                    <a class="text_white" href="{% url 'lab-listing-edit' i.id %}?tab=1"><i
+                        class="fa fa-edit"></i></a>{% endif %}</td>
+                {% endfor %}
+                {% else %}
+                <div class="table-responsive table_modify_for_all p_tb_10">No Labs Found</div>
+                {% endif %}
+            </tr>
+
+         </tbody>
+      </table>
+      {% if lab %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if lab.has_previous %}
+            <li class="prev"><a href="?page={{ lab.previous_page_number }}{% if search_name %}&search_name={{ search_name }}{% endif %}">Prev</a> </li>
+            {% endif %}
+            <li><a href="">Page {{ lab.number }} of {{ lab.paginator.num_pages }}</a> </li>
+            {% if lab.has_next %}
+            <li class="next"><a href="?page={{ lab.next_page_number }}{% if search_name %}&search_name={{ search_name }}{% endif %}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+   </div>

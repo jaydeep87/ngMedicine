@@ -1,0 +1,236 @@
+<div class="table-responsive table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+                    <th></th><!--<input id="checkAll" type="checkbox"/></th> -->
+                    <th>Sr. No.</th>
+                    <th>Doctor ID</th>
+                    <th>Name</th>
+                    <th>City</th>
+                    <th>Locality</th>
+                    <th>Category</th>
+                    <th>CC Key</th>
+                    <th>CC Sponsored Rank</th>
+                    <th>CLC Key</th>
+                    <th>CLC Sponsored Rank</th>
+                    <th>Current User</th>
+                    <th>Stage</th>
+                    <th hidden>Notice ID</th>
+
+
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for d in del_sch_mainlist %}
+                    <tr>
+                        <td><input type="checkbox" value="{{ d.doctor.id }}" name="remove_ranks_chkbox"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td><input style="width:100%!important;color: black!important;" type="text" value="{{ d.doctor.id }}" name="doctor_id"disabled ></td>
+                        <td>{{ d.doctorName | capfirst}}</td>
+                        <td>{{ d.clinic.city.name | capfirst}}</td>
+                        <td>{{ d.clinic.locality.name | capfirst}}</td>
+                        <td>{{ d.doctor.category.name | capfirst}}</td>
+                        <td ><label>{{ d.spon_cc_key_label }}</label><input style="width:100%!important;color: black!important;" type="text" value="{{ d.spon_cc_key }}" name="Spon_CC_KEY" disabled ></td>
+                        <td ><input style="width:60%!important;color: black!important;" type="text" {%  if d.spon_cc_rank == None %}value=""{% else %}value="{{ d.spon_cc_rank }}" {% endif %} name="Spon_CC_RANK_list"></td>
+                        <td ><label>{{ d.spon_clc_key_label }}</label><input style="width:100%!important;color: black!important;" type="text" value="{{ d.spon_clc_key }}" spon_cc_keyname="Spon_CLC_KEY" disabled></td>
+                        <td ><input style="width:60%!important;color: black!important;" type="text" {%  if d.spon_clc_rank == None %}value="" {% else %}value="{{ d.spon_clc_rank }}" {% endif %} name="Spon_CLC_RANK_list"></td>
+                        <td>{{ d.doctor.current_user.username | capfirst}}</td>
+                        <td>{{ d.doctor.stage.stage_name | capfirst}}</td>
+                        <td hidden><input style="width:100%!important;color: black!important;" type="text" value="{{ d.id }}" name="notice_id"disabled ></td>
+                     </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+             <button class="btn btn-success" type="button" onclick="ResetDoctorSponsoredRank()">Update</button>
+
+         <!--   {#  {% if doctor_data_obj %}#}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {# {% if doctor_data_obj.has_previous %} #}
+                            <li class="prev"><a onclick="add_pagination('{# {{ doctor_data_obj.previous_page_number }} #}')" href="javascript:void(0)">Prev</a></li>
+                        {# {% endif %} #}
+                        <li><a>Page {# {{ doctor_data_obj.number }} #} of {# {{ doctor_data_obj.paginator.num_pages }} #}</a></li>
+                        {# {% if doctor_data_obj.has_next %} #}
+                            <li class="next"><a onclick="add_pagination('{# {{ doctor_data_obj.next_page_number }} #}')" href="javascript:void(0)">Next</a></li>
+                        {# {% endif %} #}
+                    </ul>
+                </div>
+            {#  {% endif %}#}  -->
+
+
+            {% if del_sch_mainlist %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if del_sch_mainlist.has_previous %}
+                            <li class="prev"><a href="?page={{ del_sch_mainlist.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&?x={{filter_name}}&city={{city_data}}&city_location={{city_location_data}}&category={{category_data}}&x={{filter_name}}&stage_da={{stage_id_data}}&x={{filter_name}}&user_da={{user_id_data }}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ del_sch_mainlist.number }} of {{ del_sch_mainlist.paginator.num_pages }}</a></li>
+                        {% if del_sch_mainlist.has_next %}
+                            <li class="next"><a href="?page={{del_sch_mainlist.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&?x={{filter_name}}&city={{city_data}}&city_location={{city_location_data}}&category={{category_data}}&x={{filter_name}}&stage_da={{stage_id_data}}&x={{filter_name}}&user_da={{user_id_data }}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+
+
+        </div>
+<script>
+    function SearchDeletedSchedulesDoctor() {
+    var formDATA = {};
+    formDATA.q = $("#search").val();
+
+    $.ajax({
+        type: 'POST',
+        url: Domain + '/search/doctor/deleted-schedules-with-sponsored-ranks/',
+        data: {formDATA: formDATA, csrfmiddlewaretoken: '{{ csrf_token }}'},
+        success: function (data) {
+            $('div.table-responsive').replaceWith(data);
+        },
+        error: function (data) {
+            alert("Check your Internet connection")
+        }
+
+    });
+
+}
+
+
+function  ResetDoctorSponsoredRank(){
+    var checkedValues = $('input:checkbox:checked').map(function () {
+        return this.value;
+    }).get();
+    var formDATA = {};
+
+    Doctor_id_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Doctor_id_list.push($(this).parent().parent().children().eq(2).find("input").val());
+
+            });
+
+    for(i=0;i<=Doctor_id_list.length;i++){
+        if (Doctor_id_list[i]==""){Doctor_id_list[i]="NoValue"}
+    }
+    Doctor_id_list = (Doctor_id_list).toString().toLowerCase();
+    formDATA.Doctor_id_list = Doctor_id_list;
+
+
+    Spon_CC_KEY_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Spon_CC_KEY_list.push($(this).parent().parent().children().eq(7).find("input").val());
+
+            });
+
+   for(i=0;i<=Spon_CC_KEY_list.length;i++){
+        if (Spon_CC_KEY_list[i]==""){Spon_CC_KEY_list[i]="NoValue"}
+    }
+    Spon_CC_KEY_list = (Spon_CC_KEY_list).toString().toLowerCase();
+    formDATA.Spon_CC_KEY_list = Spon_CC_KEY_list;
+
+
+
+    Spon_CC_RANK_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Spon_CC_RANK_list.push($(this).parent().parent().children().eq(8).find("input").val());
+
+            });
+    for(i=0;i<=Spon_CC_RANK_list.length;i++){
+        if (Spon_CC_RANK_list[i]==""){Spon_CC_RANK_list[i]="NoValue"}
+    }
+    Spon_CC_RANK_list = (Spon_CC_RANK_list).toString().toLowerCase();
+    formDATA.Spon_CC_RANK_list = Spon_CC_RANK_list;
+
+
+    Spon_CLC_KEY_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Spon_CLC_KEY_list.push($(this).parent().parent().children().eq(9).find("input").val());
+
+            });
+    for(i=0;i<=Spon_CLC_KEY_list.length;i++){
+        if (Spon_CLC_KEY_list[i]==""){Spon_CLC_KEY_list[i]="NoValue"}
+    }
+    Spon_CLC_KEY_list = (Spon_CLC_KEY_list).toString().toLowerCase();
+    formDATA.Spon_CLC_KEY_list = Spon_CLC_KEY_list;
+
+
+    Spon_CLC_RANK_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Spon_CLC_RANK_list.push($(this).parent().parent().children().eq(10).find("input").val());
+            });
+    for(i=0;i<=Spon_CLC_RANK_list.length;i++){
+        if (Spon_CLC_RANK_list[i]==""){Spon_CLC_RANK_list[i]="NoValue"}
+    }
+    Spon_CLC_RANK_list = (Spon_CLC_RANK_list).toString().toLowerCase();
+    formDATA.Spon_CLC_RANK_list = Spon_CLC_RANK_list;
+
+
+    Notice_id_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Notice_id_list.push($(this).parent().parent().children().eq(13).find("input").val());
+            });
+    for(i=0;i<=Notice_id_list.length;i++){
+        if (Notice_id_list[i]==""){Notice_id_list[i]="NoValue"}
+    }
+    Notice_id_list = (Notice_id_list).toString().toLowerCase();
+    formDATA.Notice_id_list = Notice_id_list;
+
+
+    checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+
+    if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+        alert("Please select value....");
+        return false;
+    }
+
+    formDATA.checkedValues = checkedValues;
+
+    if (formDATA.checkedValues != '') {
+        $.ajax({
+            type: 'POST',
+            url: Domain + '{% url 'reset_doctor_sponsranks_deleted_schedules' %}',
+            data:{formDATA: formDATA, csrfmiddlewaretoken: '{{ csrf_token }}'},
+            beforeSend: function () {
+                var text = 'Please wait....';
+                ajaxindicatorstart(text);
+            },
+            success: function (resData) {
+                ajaxindicatorstop();
+                resData = JSON.parse(resData);
+                if (resData.Redirect == true) {
+                    alert(resData.Message);
+                    window.location = resData.RedirectUrl;
+                }
+                else {
+
+                    alert(resData.Message);
+                    alert('Please click "Reset" button to refresh the values');
+                    //window.location.reload(true);
+                }
+            },
+            error: function(data){
+                alert(JSON.stringify(data));
+                //console.log(JSON.stringify(data));
+                //location.reload();
+            }
+        });
+    }
+    else
+    {
+        alert("Please Check Rows.")
+    }
+
+}
+
+    </script>

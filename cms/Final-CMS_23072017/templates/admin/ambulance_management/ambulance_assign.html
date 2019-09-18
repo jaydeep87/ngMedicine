@@ -1,0 +1,322 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!--Right Start-->
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+
+        <div style="padding-bottom:0;" class="border_5_light_white p_t_10">
+            <div class="row m_0">
+            <input type="hidden" value="ambulance" id="type_of"/>
+                <div class="col-sm-4">
+                    <div class="form-group"><select class="form-control" id="stage">
+                        <option>----Select Stage---</option>
+                        {% for c in stage_data %}
+                            <option value="{{ c.id }}">{{ c.stage_name | capfirst }}</option>
+
+                        {% endfor %}
+                    </select></div>
+
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group"><select class="form-control" id="telecaller" name="users_data">
+                        <option>---Select Users---</option>
+                    </select></div>
+                </div>
+                <div class="col-sm-4 text-right">
+                    <button class="btn btn-info" type="button" onclick="AssignAmbulance()">Assign</button>
+                </div>
+            </div>
+        </div>
+
+
+        <h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion</h4>
+        <form role="form" method="get" action="{% url 'ambulance-assignment' %}">
+            <button type="submit" class="btn btn-info btn-sm">Apply</button>
+            <a href="{% url 'ambulance-assignment' %}" class="btn btn-warning btn-sm">Reset</a>
+
+
+            <div class="row m_tb_10">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="ambulance_filter" name="x">
+                        <select id="state_id" class="chosen-select" name="state_id">
+                            <option value="">--Select State--</option>
+                            {% for stateone in state_data_obj %}
+                                {% if state_filter == stateone.id %}
+                                    <option value="{{ stateone.id }}" selected>{{ stateone.name }}</option>
+                                {% else %}
+                                    <option value="{{ stateone.id }}">{{ stateone.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select class="chosen-select" name="city_id" id="city_id">
+                            <option value="">--Select City--</option>
+                            {% for city in city_obj %}
+                                {% if city_filter == city.id %}
+                                    <option value="{{ city.id }}" selected>{{ city.name }}</option>
+                                {% else %}
+                                    <option value="{{ city.id }}">{{ city.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select class="chosen-select" name="locality_id" id="locality_id">
+                            <option value="">--Select Location--</option>
+                            {% for localityone in locality_obj %}
+                                {% if locality_filter == localityone.id %}
+                                 <option value="{{ localityone.id }}" selected>{{ localityone.name }}</option>
+                                {% else %}
+                                    <option value="{{ localityone.id }}">{{ localityone.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select id="stage_da" class="chosen-select" name="stage_da">
+                            {% if not stage_filter %}
+                                <option value="">--Select Stage--</option>
+                            {% endif %}
+                            {% if stage_data %}
+                                {% for s in stage_data %}
+                                    <option value="{{ s.id }}"
+                                            {% if stage_filter == s.id %}selected{% endif %}>{{ s.stage_name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select id="user_da" class="chosen-select" name="user_da">
+                            {% if not user_filter %}
+                                <option value="">--Select User--</option>
+                            {% endif %}
+                            {% if user_data %}
+                                {% for t in user_data %}
+                                    <option value="{{ t.id }}"
+                                            {% if user_filter == t.id %}selected{% endif %}>{{ t.username|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </form>
+        <div class="input-group">
+            <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                    <span class="input-group-btn"> <button class="btn btn-default"
+                                                           onclick="SearchAmbulanceAssignnew()"> Search
+                    </button></span>
+        </div>
+
+        <div class="table-responsive table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+                    <th><input id="checkAll" type="checkbox"/></th>
+                    <th>Sr No</th>
+                    <th>Ambulance Name</th>
+                    <th>City</th>
+                    <th>Location</th>
+                    <th>Current User</th>
+                    <th>Stage</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if  ambulance %}
+                    {% for b in ambulance %}
+                        <tr>
+                            <td><input type="checkbox" value="{{ b.id }}"></td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ b.name | capfirst }}</td>
+                            <td>{{ b.city.name | capfirst }}</td>
+                            <td>{{ b.locality.name | capfirst }}</td>
+                            <td>{{ b.current_user.username | capfirst }}</td>
+                            <td>{{ b.stage.stage_name | capfirst }}</td>
+                            <td>{{ b.createdAt }}</td>
+                            <td>{{ b.updatedAt }}</td>
+                            <td><a class="btn btn-default btn-sm p_0" href="{% url 'ambulance-listing-edit' b.id %}"><i
+                              class="fa fa-pencil-square-o fa-fw"></i></a> | <a href="{% if b.is_disable %}{% url 'any-master-object-activate' b.id  19%}{% else %}{% url 'any-master-object-deactivate' b.id 19 %}{% endif %}"
+                                                                                      class="btn btn-default btn-sm">
+                                {% if b.is_disable %}Enable {% else %}Disable {% endif %}</a></td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7"><b>No Ambulance Record Found...</b></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+            {% if ambulance %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if ambulance.has_previous %}
+                            <li class="prev"><a href="?page={{ ambulance.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&x={{filter_name}}&state_id={{state_data}}&city_id={{city_data}}&locality_id={{locality_data}}&user_da={{current_user_id}}&stage_da={{stage_id}}  {% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ ambulance.number }} of {{ ambulance.paginator.num_pages }}</a></li>
+                        {% if ambulance.has_next %}
+                            <li class="next"><a href="?page={{ambulance.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&x={{filter_name}}&state_id={{state_data}}&city_id={{city_data}}&locality_id={{locality_data}}&user_da={{current_user_id}}&stage_da={{stage_id}}  {% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+             {% endif %}
+
+
+        </div>
+    </div>
+    <!--Right End-->
+    <script>
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+        var $rows = $('#table tr');
+        $('#search').keyup(function () {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function () {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+        $(document).ready(function () {
+            $("#state").chosen().change(function () {
+                var state = $('#state').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (state > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_city/',
+                        data: {action: "get_filter", state_id: state},
+                        beforeSend: function () {
+                            var text = 'Getting City  of ' + state + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.city_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.city_list.length != 0) {
+                                $("#city option").remove();
+                                $("#city").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select City--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#city").append(select);
+                                $("#city").val(key_sel);
+                                $("#city").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.city_list.length; i++) {
+                                    var option = '<option value=' + obj.city_list[i].id + '>' + obj.city_list[i].name + '</option>';
+                                    $("#city").append(option);
+                                    $("#city").trigger("chosen:updated")
+
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select State...")
+                }
+
+
+            });
+
+            $("#city").chosen().change(function () {
+                var city = $('#city').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (city > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_location/',
+                        data: {action: "get_filter", city_id: city},
+                        beforeSend: function () {
+                            var text = 'Getting Location of ' + city + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.location_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.location_list.length != 0) {
+                                $("#location option").remove();
+                                $("#location").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select Location--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#location").append(select);
+                                $("#location").val(key_sel);
+                                $("#location").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.location_list.length; i++) {
+                                    var option = '<option value=' + obj.location_list[i].id + '>' + obj.location_list[i].name + '</option>';
+                                    $("#location").append(option);
+                                    $("#location").trigger("chosen:updated")
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select City...")
+                }
+            });
+
+        });
+
+    </script>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchAmbulanceAssignnew()
+            }
+        }
+    </script>
+{% endblock %}

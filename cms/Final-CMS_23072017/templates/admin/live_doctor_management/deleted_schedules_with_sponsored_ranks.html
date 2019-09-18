@@ -1,0 +1,97 @@
+{% load template_tag %}
+
+        <div class="table-responsive table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+                    <th></th><!--<input id="checkAll" type="checkbox"/></th> -->
+                    <th>Sr. No.</th>
+                    <th>Doctor ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>City</th>
+                    <th>Locality</th>
+                    <th>Category</th>
+                    <th>CC Key</th>
+                    <th>CC Sponsored Rank</th>
+                    <th>CLC Key</th>
+                    <th>CLC Sponsored Rank</th>
+                    <th>Current User</th>
+                    <th>Stage</th>
+
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for d in del_sch_mainlist %}
+                    <tr>
+                        <td><input type="checkbox" value="{{ d.0.id }}" name="remove_ranks_chkbox"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td><input style="width:100%!important;color: black!important;" type="text" value="{{ d.0.id }}" name="doctor_id"disabled ></td>
+                        <td>{{ d.0.firstName | capfirst}}</td>
+                        <td>{{ d.0.lastName | capfirst}}</td>
+                        <td>{{ d.2.city.name | capfirst}}</td>
+                        <td>{{ d.2.locality.name | capfirst}}</td>
+                        <td>{{ d.1 | capfirst}}</td>
+                        <td ><label>{{ d.8 }}</label><input style="width:100%!important;color: black!important;" type="text" value="{{ d.5 }}" name="Spon_CC_KEY" disabled ></td>
+                        <td ><input style="width:60%!important;color: black!important;" type="text" {%  if d.3 == None %} value=""{% else %}value="{{ d.3 }}" {% endif %} name="Spon_CC_RANK_list"></td>
+                        <td ><label>{{ d.9 }}</label><input style="width:100%!important;color: black!important;" type="text" value="{{ d.6 }}" name="Spon_CLC_KEY" disabled></td>
+                        <td ><input style="width:60%!important;color: black!important;" type="text" {%  if d.4 == None %}value=""{% else %}value="{{ d.4 }}" {% endif %} name="Spon_CLC_RANK_list"></td>
+                        <td>{{ d.0.current_user.username | capfirst}}</td>
+                        <td>{{ d.0.stage.stage_name | capfirst}}</td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button class="btn btn-success" type="button" onclick="ResetLiveDoctorSponsoredRank()">Update</button>
+         <!--   {#  {% if doctor_data_obj %}#}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {# {% if doctor_data_obj.has_previous %} #}
+                            <li class="prev"><a onclick="add_pagination('{# {{ doctor_data_obj.previous_page_number }} #}')" href="javascript:void(0)">Prev</a></li>
+                        {# {% endif %} #}
+                        <li><a>Page {# {{ doctor_data_obj.number }} #} of {# {{ doctor_data_obj.paginator.num_pages }} #}</a></li>
+                        {# {% if doctor_data_obj.has_next %} #}
+                            <li class="next"><a onclick="add_pagination('{# {{ doctor_data_obj.next_page_number }} #}')" href="javascript:void(0)">Next</a></li>
+                        {# {% endif %} #}
+                    </ul>
+                </div>
+            {#  {% endif %}#}  -->
+
+
+            {% if del_sch_mainlist %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if del_sch_mainlist.has_previous %}
+                            <li class="prev"><a href="?page={{ del_sch_mainlist.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&?x={{filter_name}}&city={{city_data}}&city_location={{city_location_data}}&category={{category_data}}&x={{filter_name}}&stage_da={{stage_id_data}}&x={{filter_name}}&user_da={{user_id_data }}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ del_sch_mainlist.number }} of {{ del_sch_mainlist.paginator.num_pages }}</a></li>
+                        {% if del_sch_mainlist.has_next %}
+                            <li class="next"><a href="?page={{del_sch_mainlist.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&?x={{filter_name}}&city={{city_data}}&city_location={{city_location_data}}&category={{category_data}}&x={{filter_name}}&stage_da={{stage_id_data}}&x={{filter_name}}&user_da={{user_id_data }}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+
+
+
+
+<script>
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+        var $rows = $('#table tr');
+        $('#search').keyup(function () {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function () {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+
+
+</script>
+
+ </div>

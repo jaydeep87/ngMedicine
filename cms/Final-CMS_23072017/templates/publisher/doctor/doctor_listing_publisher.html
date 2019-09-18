@@ -1,0 +1,330 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+   id="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+<!--Right Start-->
+<div class="p_10" style="background: rgba(0,0,0,0.3);">
+   <div style="padding-bottom:0;" class="border_5_light_white p_t_10">
+      <div class="row m_0">
+         <div class="col-md-6">
+            <div class="row">
+               <div class="col-md-10">
+                  <div class="form-group">
+                     <select class="form-control" id="stage_data">
+                        <option value="">----Select Stage---</option>
+                        {% for c in stage_data %}
+                        <option value="{{ c.id }}">{{ c.stage_name }}</option>
+                        {% endfor %}
+                     </select>
+                  </div>
+               </div>
+               <div class="col-md-2"><button type="button" class="btn btn-info" onclick="SearchDoctorByPublisher($('#stage_data').val())">GO</button></div>
+            </div>
+         </div>
+
+         <div class="col-md-6" style="width: 80px;" >
+                <a href="{% url 'doctor_error_logs' %}"><img   src="/static/images/images/notes_warning.png" alt="Smiley face" height="42" width="42"></a>
+         </div>
+
+         <div class="col-md-6 text-right" style="width: 350px;" >
+            <button class="btn btn-success" type="button" onclick="PublishForPublisher('publish','doctor')">Publish</button>
+            <button class="btn btn-danger" type="button" onclick="PublishForPublisher('un-publish','doctor')">Un publish</button>
+            <button class="btn btn-warning" type="button" onclick="PublishForPublisher('publish','doctor')">Re publish</button>
+         </div>
+      </div>
+   </div>
+
+    <h4 class="font_weight_600 text_white m_t_0" ><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion</h4>
+
+        <form role="form" method="get" action="{% url 'publisher-doctor-listing' %}">
+            <button type="submit" class="btn btn-info btn-sm">Apply</button>
+            <a href="{% url 'publisher-doctor-listing' %}" class="btn btn-warning btn-sm">Reset</a>
+
+{#          {% if doctor_data_obj %}#}
+{#              <div class="text-right"  style="margin-top: -61px">#}
+{#                    <ul class="pagination">#}
+{#                        {% if doctor_data_obj.has_previous %}#}
+{#                            <li class="prev"><a onclick="add_pagination('{{ doctor_data_obj.previous_page_number }}')" href="javascript:void(0)">Prev</a></li>#}
+{#                        {% endif %}#}
+{#                        <li><a>Page {{ doctor_data_obj.number }} of {{ doctor_data_obj.paginator.num_pages }}</a></li>#}
+{#                        {% if doctor_data_obj.has_next %}#}
+{#                            <li class="next"><a onclick="add_pagination('{{ doctor_data_obj.next_page_number }}')" href="javascript:void(0)">Next</a></li>#}
+{#                        {% endif %}#}
+{#                    </ul>#}
+{#              </div>#}
+{#            {% endif %}#}
+
+
+            <div class="row m_tb_10">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="filter" name="x">
+                        <select id="zone" class="chosen-select" name="zone">
+                            {% if not zone_filter %}
+                                <option value="">--Select Zone--</option>
+                            {% endif %}
+                            {% if zone_obj %}
+                                {% for r in zone_obj %}
+                                    <option value="{{ r.id }}"
+                                            {% if zone_filter == r.id|slugify %}selected{% endif %}>{{ r.name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select class="chosen-select" name="zone_location" id="zone_location">
+
+                            {% for l in zone_location_obj %}
+
+                                <option value="{{ l.id }}"
+                                        {% if zone_location_filter_length == l.id %}selected {% endif %}>
+                                    {% if zone_location_obj %}{{ l.name }}{% else %}Select Zone
+                                        Location{% endif %}</option>
+
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select id="category_data" class="chosen-select" name="category">
+                            {% if not category_filter %}
+                                <option value="">--Select Category--</option>
+                            {% endif %}
+                            {% if category_obj %}
+                                {% for u in category_obj %}
+                                    <option value="{{ u.id }}"
+                                            {% if category_filter == u.id %}selected{% endif %}>{{ u.name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="filter" name="x">
+                        <select id="stage_da" class="chosen-select" name="stage_da">
+                            {% if not stage_filter %}
+                                <option value="">--Select Stage--</option>
+                            {% endif %}
+                            {% if stage_data %}
+                                {% for s in stage_data %}
+                                    <option value="{{ s.id }}"
+                                            {% if stage_filter == s.id %}selected{% endif %}>{{ s.stage_name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    <input type="hidden" value="doctor" id="xx" name ="yy">
+    
+    <div class="input-group">
+        <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+        <span class="input-group-btn"> <button class="btn btn-default"
+                                               onclick="SearchDoctorForPublisher({{ request.user.id }})"> Search
+        </button></span>
+    </div>
+
+   <div class="table-responsive table_modify_for_all p_tb_10">
+      <table class="table table-bordered m_b_0">
+         <thead class="bg_ededed">
+            <tr>
+               <th><input id="checkAll" type="checkbox"/></th>
+               <th>Sr. No.</th>
+               <th>Name</th>
+               <th>Zone</th>
+               <th>Zone Location</th>
+               <th>Category</th>
+               <th>Current User</th>
+               <th>Stage</th><th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+               <th>Action</th>
+            </tr>
+         </thead>
+         <tbody>
+         {% if doctor_data_obj %}
+            {% for d in doctor_data_obj %}
+            <tr>
+               <td><input type="checkbox" value="{{ d.id }}"></td>
+               <td>{{ forloop.counter }}</td>
+               <td>{{ d.name }}</td>
+               <td>{{ d.zone.name | capfirst}}</td>
+               <td>{{ d.zone_location.name | capfirst}}</td>
+               <td>{{ d.category.name }}</td>
+               <td>{{ d.current_user.username }}</td>
+               <td>{{ d.stage.stage_name }}</td><td>{{ d.createdAt }}</td>
+                            <td>{{ d.updatedAt }}</td>
+               {% if d.stage_id != 5 %}<td><a class="text_white" href="{% url 'doctor-listing-edit' d.id %}"><i
+                                        class="fa fa-edit"></i></a> </td>
+               {% else %}
+               <td></td>
+               {% endif %}
+            </tr>
+            {% endfor %}
+         {% else %}
+             <div class="table-responsive table_modify_for_all p_tb_10">No Doctor By this name could be found </div>
+         {% endif %}
+         </tbody>
+      </table>
+      {% if doctor_data_obj %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if doctor_data_obj.has_previous %}
+            <li class="prev"><a href="?page={{doctor_data_obj.previous_page_number }}{% if search_name %}&search_name={{ search_name }}{% endif %}{% if filter_name %}&x={{filter_name}}&category={{ category_data }}&stage_da={{ stage_id_data }}&zone={{zone_data}}&zone_location={{ zone_location_data }}{% endif %}">Prev</a> </li>
+            {% endif %}
+            <li><a href="">Page {{doctor_data_obj.number }} of {{doctor_data_obj.paginator.num_pages }}</a> </li>
+            {% if doctor_data_obj.has_next %}
+            <li class="next"><a href="?page={{doctor_data_obj.next_page_number }}{% if search_name %}&search_name={{ search_name }}{% endif %}{% if filter_name %}&x={{filter_name}}&category={{ category_data }}&stage_da={{ stage_id_data }}&zone={{zone_data}}&zone_location={{ zone_location_data }}{% endif %}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+   </div>
+</div>
+
+<script>
+        //$('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchDoctorForPublisher({{ request.user.id }})
+            }
+        }
+</script>
+
+<!--Right End-->
+<script>
+   $("#checkAll").change(function () {
+       $("input:checkbox").prop('checked', $(this).prop("checked"));
+   });
+   var $rows = $('#table tr');
+   $('#search').keyup(function () {
+       var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+   
+       $rows.show().filter(function () {
+           var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+           return !~text.indexOf(val);
+       }).hide();
+   });
+
+   $(document).ready(function () {
+            //alert()
+            $("#zone").chosen().change(function () {
+                //alert()
+                var zone = $('#zone').val();
+                //alert()
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                $.ajax({
+                    type: 'post',
+                    url: DOMAIN + '/doctor/zone_location/',
+                    data: {action: "get_filter", zone_id: zone},
+                    beforeSend: function () {
+                        var text = 'getting zone location  of ' + zone + ' . please wait..';
+                        ajaxindicatorstart(text);
+                    },
+                    success: function (data) {
+                        ajaxindicatorstop();
+                        // alert(data);
+
+                        {#                 console.log(JSON.parse(data));#}
+                        var obj = JSON.parse(data);
+                        {#                 var len_obj = Object.keys(obj).length;#}
+                        //console.log(len_obj);
+                        //alert(len);
+                        if (obj.length != 0) {
+                            $("#zone_location option").remove();
+                            $("#zone_location").trigger("chosen:updated");
+                            var key_sel = '';
+                            var value_sel = 'Select Zone Location';
+                            var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                            $("#zone_location").append(select);
+                            $("#zone_location").val(key_sel);
+                            $("#zone_location").trigger("chosen:updated");
+                            for (var i = 0; i < obj.length; i++) {
+                                var name = obj[i].name;
+                                name = name.capitalize();
+                                var option = '<option value=' + obj[i].id + '>' + name + '</option>';
+                                $("#zone_location").append(option);
+                                $("#zone_location").trigger("chosen:updated")
+
+                            }
+
+                        }
+                    },
+                    error: function (jqXHR, ex) {
+                    }
+                });
+            });
+            {#         $("#zone_location").chosen().change(function () {#}
+            {#             alert($("#zone_location").val())#}
+            {#         })#}
+
+        });
+         String.prototype.capitalize = function () {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        }
+   $('#alert').fadeIn().delay(2000).fadeOut('slow');
+   /**
+    * publisher
+     * @constructor
+    */
+   function PublishForPublisher(type,data_type){
+       var checkedValues = $('input:checkbox:checked').map(function () {
+           return this.value;
+       }).get();
+       var formDATA = {};
+       checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+       if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+           alert("Please select value....");
+           return false;
+       }
+       formDATA.checkedValues = checkedValues;
+       formDATA.type = type;
+       formDATA.data_type = data_type;
+       if (formDATA.checkedValues != '') {
+           $.ajax({
+               type: 'POST', url: Domain + '{% url 'data-publish' %}', data: formDATA, beforeSend: function () {
+                   var text = 'Please wait....';
+                   ajaxindicatorstart(text);
+               },
+               success: function (resData) {
+                   ajaxindicatorstop();
+                   resData = JSON.parse(resData);
+                   if (resData.Redirect == true) {
+                       alert(resData.Message);
+                       window.location = resData.RedirectUrl;
+                   }
+                   else {
+   
+                       alert(resData.Message);
+                       window.location.reload(true);
+                   }
+               },
+               error: function(data){
+                   alert('Something Bad Happened');
+                   location.reload();
+               }
+           });
+       }
+       else
+       {
+           alert("Please select Doctors.")
+       }
+
+   }
+
+       
+</script>
+{% endblock %}

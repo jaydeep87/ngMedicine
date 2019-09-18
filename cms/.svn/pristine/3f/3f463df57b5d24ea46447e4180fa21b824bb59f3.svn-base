@@ -1,0 +1,208 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+        <div class="row m_0">
+            <h4 class="font_weight_600 text_white m_t_0 cursor_pointers" data-toggle="collapse"
+                data-target="#select_filterss"><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion <span
+                    class="caret"></span></h4>
+            <div class="collapse" id="select_filterss">
+                <form role="form" method="get" action="{% url 'live-organisation-listing' %}">
+                    <button type="submit" class="btn btn-info btn-sm">Apply</button>
+                    <a href="{% url 'live-organisation-listing' %}" class="btn btn-warning btn-sm">Reset</a>
+                    <div class="row m_t_10">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <input type="hidden" value="live_organisation_filter" name="x">
+                                <select class="chosen-select" name="state_id">
+
+                                    <option value="">--Select State--</option>
+                                    {% for stateone in state_data_obj %}
+                                        {% if state_filter == stateone.id %}
+                                            <option value="{{ stateone.id }}"
+                                                    selected>{{ stateone.name | capfirst }}</option>
+                                        {% else %}
+                                            <option value="{{ stateone.id }}">{{ stateone.name | capfirst }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <select class="chosen-select" name="city_id">
+
+                                    <option value="">---Select City ---</option>
+                                    {% for cityone in city_obj %}
+                                        {% if city_filter == cityone.id %}
+                                            <option value="{{ cityone.id }}"
+                                                    selected>{{ cityone.name | capfirst }}</option>
+                                        {% else %}
+                                            <option value="{{ cityone.id }}">{{ cityone.name | capfirst }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <select class="chosen-select" name="locality_id">
+                                    <option value="">--Select Location---</option>
+                                    {% for localityone in locality_obj %}
+                                        {% if locality_filter == localityone.id %}
+                                            <option value="{{ localityone.id }}"
+                                                    selected>{{ localityone.name | capfirst }}</option>
+                                        {% else %}
+                                            <option value="{{ localityone.id }}">{{ localityone.name | capfirst }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                            <select class="chosen-select" name="status_data">
+                            <option value="">----Select Status---</option>
+                            <option value="active"{% if status_data == 'active' %}selected{% endif %}>Active</option>
+                            <option value="inactive" {% if status_data == 'inactive' %}selected{% endif %}>De-Activated</option>
+                        </select>
+                        </div>
+
+                    </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="col-sm-4">
+                <div class="input-group">
+                    <input type="text" placeholder="Search |" class="form-control" id="livesearch" autofocus="autofocus">
+                    <span class="input-group-btn"> <button class="btn btn-default"
+                                                           onclick="SearchLiveOrganisation({{ request.user.id }})"> Search</button></span>
+                </div>
+            </div>
+            <input type="hidden" value="organisation" id="xx" name ="yy">
+        {% include 'publisher/markascomplete.html' %}
+        </div>
+        <br>
+        <div style="overflow:auto; height:400px; padding: 5px 20px;">
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th><input id="checkAll" type="checkbox"/></th>
+                        <th>Sr No</th>
+                        <th>Organisation Name</th>
+                        <th>Type</th>
+                        <th>Disable</th>
+                        <th>Stage</th>
+                        <th>Duplicates</th>
+                        <th>City</th>
+                        <th>Locality</th>
+                        {% if request.user|can_view_caller %}
+                            <th>Status</th>{% endif %}
+                        {% if request.user|can_view_review %}
+                            <th>Previous user</th>{% endif %}
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th style="min-width: 150px;">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if organisation_data_obj %}
+                        {% for l in organisation_data_obj %}
+
+                            <tr><td><input type="checkbox" value="{{ l.id }}"></td>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ l.name }}</td>
+                                <td> {% if l.is_hospital %}Hospital{% elif l.is_clinic %}Clinic{% endif %}</td>
+                                <td>{{ l.is_disable }}</td>
+                                <td>{{ l.stage.stage_name | capfirst }}</td>
+                                <td><a href="{% url 'view_duplicates_organisation' d.id %}" ><img src="/static/images/images/notes_warning.png" alt="Smiley face" height="20" width="20"></a></td>
+                                <td>{{ l.city.name | capfirst }}</td>
+                                <td>{{ l.locality.name | capfirst }}</td>
+                                {% if request.user|can_view_caller %}
+                                    {% if l.free_text %}
+                                        <td style="color:rgba(236, 151, 31, 0.7);"> Reverted</td>
+                                    {% else %}
+                                       <td>New</td>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if request.user|can_view_review %}
+                                    {% if not l.previous_user %}
+                                        <td style="color:white;">None</td>
+                                    {% else %}
+
+                                          {% if l|check_org_previous_user %}
+                                              {% for j in user_data %}
+                                                {% if j.id ==  l.previous_user %}
+                                                    <td style="color:white;">{{ j.username|default_if_none:"" | capfirst }}</td>
+                                                {% endif %}
+                                            {% endfor %}
+                                          {% else %}
+                                              <td style="color:white;">None</td>
+                                          {% endif %}
+
+
+                                    {% endif %}
+                                {% endif %}
+                                <td>{{ l.created_at }}</td>
+                                <td>{{ l.updatedAt }}</td>
+                                <td>
+
+                                    <span class="p_lr_5">|</span>
+                                    <a class="text_white" href="{% url 'live-organisation-listing-edit' l.id %}?tab=1"><i
+                                            class="fa fa-edit"></i></a>
+
+                                   {% if request.user|is_doctor_reviewer %}| <a href="{% if l.is_disable %}{% url 'activate-live-organisation' l.id %}{% else %}{% url 'deactivate_live_organisation' l.id %}{% endif %}"
+class="btn btn-default btn-sm">{% if l.is_disable %}Enable {% else %}Disable {% endif %}</a> {% endif %}
+
+
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+                    {% else %}
+
+                    {% endif %}
+                    </tbody>
+
+                </table>
+                {% if organisation_data_obj %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if organisation_data_obj.has_previous %}
+                                <li class="prev"><a
+                                        href="?page={{ organisation_data_obj.previous_page_number }}">Prev</a>
+                                </li>
+                            {% endif %}
+                            <li><a>Page {{ organisation_data_obj.number }}
+                                of {{ organisation_data_obj.paginator.num_pages }}</a></li>
+                            {% if organisation_data_obj.has_next %}
+                                <li class="next"><a href="?page={{ organisation_data_obj.next_page_number }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchOrganisation({{ request.user.id }})
+            }
+        }
+    </script>
+{% endblock %}

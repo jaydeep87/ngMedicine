@@ -1,0 +1,369 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <!--Right Start-->
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+        <div class="panel-body">
+            <form role="form" class="form-horizontal" method="post" action="{% url 'providers-add' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!--Left Start-->
+
+                <div class=" m_tb_5 row">
+                    <div class="col-md-12">
+                        <h3 class="text-center text-uppercase text_white">Vendor Registration Form</h3>
+
+                        <h3>Organisational Details</h3>
+                        <hr>
+                    </div>
+                </div>
+
+                <div class="m_tb_5 row">
+                    <div class="col-md-12">
+                        <label class="checkbox-inline font_weight_600"><input type="checkbox" data-unchecked="0" name="home_is" value="1" id="is_home_service">Home Services Provider </label>
+                        <label class="checkbox-inline font_weight_600"><input type="checkbox" data-unchecked="0" name="life_is" value="1" id="is_life_service">Life Services Provider </label>
+                        <label class="checkbox-inline font_weight_600"><input type="checkbox" data-unchecked="0" name="enter_is" value="1" id="is_enterprise_service">Enterprise Service Provider
+                        </label>
+                        <hr>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label>Type of Business:</label><span class="text-danger">*</span>
+                        <select class="chosen-select" name="business_type" required="" style="display: none;">
+
+                            <option value="" selected="">--Select Business Type--</option>
+                            {% for i in bussiness_type %}
+                          <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="m_tb_5 row">
+                    <div class="col-md-6">
+                        <label>Name of Organisation:</label><span class="text-danger">*</span>
+                        <input type="text" name="organisation_name" value="" class="form-control"
+                               placeholder="Name of Organisation" required="">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Name of Owner:</label><span class="text-danger">*</span>
+                        <input type="text" name="ownerName" value="" class="form-control" placeholder="Name of Owner"
+                               required="">
+                    </div>
+                </div>
+
+                <div class="m_tb_5 row">
+                    <div class="col-md-6">
+                        <label>Years in Service:</label><span class="text-danger">*</span>
+                        <input type="text" id="years_in_service" name="years_in_service" value="" class="form-control"
+                               placeholder="Years in Service" required="">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Quality Certification(If Any)</label>
+                        <input type="text" name="qualityCertification" class="form-control"
+                               placeholder="Quality Certification(if any)" required="">
+                    </div>
+                </div>
+
+                <div class="m_tb_5 row">
+                    <div class="col-md-12">
+                        <label>Website:</label>
+                        <input type="text" name="website" value="" class="form-control" placeholder="www.example.com"
+                               required="">
+                    </div>
+                </div>
+
+                <h3>Service Details</h3>
+                <hr>
+                <div class="m_tb_5 row">
+                    <div class="col-md-4">
+                        <label>Home Services List:</label><span class="text-danger"></span>
+                        <input type="text" name="hs_list" value="" class="form-control" placeholder="Home Services List">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Life Services List:</label><span class="text-danger"></span>
+                        <input type="text" name="ls_list" maxlength="500" value="" class="form-control"
+                               placeholder="Life Services List">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Enterprise Service List:</label><span class="text-danger"></span>
+                        <input type="text" name="es_list" value="" class="form-control" placeholder="Enterprise Service List">
+                    </div>
+                    <div class="col-md-4 p_t_10">
+                        <label>Home Service Rate Card:</label><span class="text-danger"></span>
+                        <input type="file" name="home_rate" accept="application/pdf*">
+                    </div>
+
+
+                    <div class="col-md-4 p_t_10">
+                        <label>Life Service Rate Card:</label><span class="text-danger"></span>
+                        <input type="file" name="life_rate" accept="application/pdf">
+                    </div>
+
+
+                    <div class="col-md-4 p_t_10">
+                        <label>Enterprise Service Rate Card:</label><span class="text-danger"></span>
+                        <input type="file" name="enterprise_rate" accept="application/pdf">
+                    </div>
+
+                    <div class="col-md-4 p_t_10">
+                        <label>Certification validity:</label><span class="text-danger">*</span>
+                        <input type="text" name="c_validity" value="" class="form-control" placeholder="Certification validity"
+                               required="">
+                    </div>
+
+                    <div class="col-md-4 p_t_10">
+                        <label>Preferred location:</label><span class="text-danger">*</span>
+                        <input type="text" name="p_location" value="" class="form-control" placeholder="Preferred location"
+                               required="">
+                    </div>
+
+                    <div class="col-md-4 p_t_10">
+                        <label>TAT for providing the services:</label><span class="text-danger">*</span>
+                        <input type="text" name="tat" value="" class="form-control" placeholder="TAT for providing the services"
+                               required="">
+                    </div>
+
+                    <div class="col-md-4 p_t_10">
+                        <label>Remarks:</label><span class="text-danger">*</span>
+                        <input type="text" name="remarks" value="" class="form-control" placeholder="Remarks"
+                               required="">
+                    </div>
+
+
+                </div>
+
+
+                <h3>Contact Details</h3>
+                <hr>
+                <h4>Contact Person:</h4>
+
+                <div class="m_tb_5 row">
+                    <div class="col-md-4">
+                        <label>Name:</label><span class="text-danger">*</span>
+                        <input type="text" name="person_name" value="" class="form-control" placeholder="Name"
+                               required="">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Mobile Number:</label><span class="text-danger">*</span>
+                        <input type="text" name="mobile" maxlength="10" value="" class="form-control"
+                               placeholder="Mobile No." required="">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Email Id:</label><span class="text-danger">*</span>
+                        <input type="email" name="email_id" value="" class="form-control" placeholder="Email Id"
+                               required="">
+                    </div>
+                </div>
+                <h3>Address Details</h3>
+                <hr>
+                <div class="m_tb_5 row">
+                    <div class="col-md-6">
+                        <h4>Registered Office Address<p class="pull-right bg-info btn-sm" style="margin-bottom: 0">
+                            <input type="checkbox" id="is_same">&nbsp;Is Same</p></h4>
+                        <hr>
+                        <label>House No. / Door No. / Bldg:</label>
+                        <input type="text" name="r_house_door_bldg" value="" class="form-control"
+                               placeholder="House No. / Door No. / Bldg" required="">
+                    </div>
+                    <div class="col-md-6">
+                            <span>
+
+                            <h4>Correspondence Address</h4>
+                            <hr>
+                            <label>House No. / Door No. / Bldg:</label>
+                            <input type="text" name="c_house_door_bldg" value="" class="form-control"
+                                   placeholder="House No. / Door No. / Bldg" required=""></span>
+                    </div>
+                </div>
+                <div class="m_tb_5 row">
+                    <div class="col-md-6">
+                        <label>Street Name:</label>
+                        <input type="text" name="r_street" value="" class="form-control" placeholder="Street Name"
+                               required="">
+                    </div>
+                    <div class="col-md-6">
+
+                        <label>Street Name:</label>
+                        <input type="text" name="c_street" value="" class="form-control" placeholder="Street Name"
+                               required="">
+                    </div>
+                </div>
+                <div class="m_tb_5 row">
+                    <div class="col-md-6">
+                        <label>Location:</label>
+                        <input type="text" name="r_location" value="" class="form-control" placeholder="Location"
+                               required="">
+                    </div>
+                    <div class="col-md-6">
+
+                        <label>Location:</label>
+                        <input type="text" name="c_location" value="" class="form-control" placeholder="Location"
+                               required="">
+                    </div>
+                </div>
+
+
+                <div class="m_tb_5 row">
+                    <div class="col-md-3">
+                        <label>City:</label><span class="text-danger">*</span>
+                        <input type="text" name="r_city" value="" class="form-control" placeholder="City" required="">
+                    </div>
+                    <div class="col-md-3">
+                        <label>State:</label><span class="text-danger">*</span>
+                        <input type="text" name="r_state" value="" class="form-control" placeholder="State" required="">
+                    </div>
+                    <div class="col-md-3">
+                        <label>City:</label><span class="text-danger">*</span>
+                        <input type="text" name="c_city" value="" class="form-control" placeholder="City" required="">
+                    </div>
+                    <div class="col-md-3">
+                        <label>State:</label><span class="text-danger">*</span>
+                        <input type="text" name="c_state" value="" class="form-control" placeholder="State" required="">
+                    </div>
+                </div>
+
+                <div class="m_tb_5 row">
+                    <div class="col-md-3">
+                        <label>Zip Code:</label><span class="text-danger">*</span>
+                        <input type="text" name="r_zip_code" maxlength="6" value="" class="form-control"
+                               placeholder="Pin Code" required="">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Phone Number:</label>
+                        <input type="text" name="r_phone_number" maxlength="10" value="" class="form-control"
+                               placeholder="Phone Number" required="">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Zip Code:</label><span class="text-danger">*</span>
+                        <input type="text" name="c_zip_code" maxlength="6" value="" class="form-control"
+                               placeholder="Pin Code" required="">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Phone Number:</label>
+                        <input type="text" name="c_phone_number" maxlength="10" value="" class="form-control"
+                               placeholder="Phone Number" required="">
+                    </div>
+                </div>
+                <h3>Bank Details</h3>
+                <hr>
+                <div class="m_tb_5 row">
+                    <div class="col-md-6">
+                        <label>Beneficiary Name:</label><span class="text-danger">*</span>
+                        <input type="text" name="beneficiary_name" value="" class="form-control"
+                               placeholder="Beneficiary Name" required="">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Bank Name:</label><span class="text-danger">*</span>
+                        <input type="text" name="bank_name" value="" class="form-control" placeholder="Bank Name"
+                               required="">
+                    </div>
+                </div>
+
+                <div class="m_tb_5 row">
+                    <div class="col-md-4">
+                        <label>Branch:</label><span class="text-danger">*</span>
+                        <input type="text" name="branch_name" value="" class="form-control" placeholder="Branch Name"
+                               required="">
+
+                    </div>
+                    <div class="col-md-4">
+                        <label>Account No.:</label><span class="text-danger">*</span>
+                        <input type="text" name="account_no" value="" class="form-control" placeholder="Account No"
+                               required="">
+
+                    </div>
+                    <div class="col-md-4">
+                        <label>IFSC Code:</label><span class="text-danger">*</span>
+                        <input type="text" name="ifsc_code" value="" class="form-control" placeholder="IFSC Code"
+                               required="">
+                    </div>
+                </div>
+
+
+                <div class="m_tb_5 row">
+                    <div class="col-md-6 pull-right">
+                        <p align="right">
+                            <button type="submit" class="btn btn-info m_tb_10">Submit</button>
+
+                        </p>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <!--Right End-->
+
+
+    <script>
+     $(document).ready(function () {
+            $("#is_same").change(function () {
+                if (this.checked) {
+                    //alert("checked ");
+                    //get the values of the filled fields
+                    var r_house_door_bldg = $("input[name=r_house_door_bldg]").val();
+                    var r_street = $("input[name=r_street]").val();
+                    var r_location = $("input[name=r_location]").val();
+                    var r_city = $("input[name=r_city]").val();
+                    var r_state = $("input[name=r_state]").val();
+                    var r_zip_code = $("input[name=r_zip_code]").val();
+                    var r_phone_number = $("input[name=r_phone_number]").val();
+
+
+                    //alert(r_house_door_bldg);
+
+                    // then add those values to your billing infor window feilds
+                    $("input[name=c_house_door_bldg]").val(r_house_door_bldg);
+                    $("input[name=c_street]").val(r_street);
+                    $("input[name=c_location]").val(r_location);
+                    $("input[name=c_city]").val(r_city);
+                    $("input[name=c_state]").val(r_state);
+                    $("input[name=c_zip_code]").val(r_zip_code);
+                    $("input[name=c_phone_number]").val(r_phone_number);
+
+                    // then form will be automatically filled ..
+
+                }
+                else {
+                    $("input[name=c_house_door_bldg]").val('');
+                    $("input[name=c_street]").val('');
+                    $("input[name=c_location]").val('');
+                    $("input[name=c_city]").val('');
+                    $("input[name=c_state]").val('');
+                    $("input[name=c_zip_code]").val('');
+                    $("input[name=c_phone_number]").val('');
+                }
+            });
+                           var home_service = $('#is_home_service');
+                    var life_service = $('#is_life_service');
+                    var enterprise_service = $('#is_enterprise_service');
+                    if ("True" === "{{ a.home_service }}") {
+                        home_service.attr('checked', true);
+                    }
+                    if ("True" === "{{ a.life_service }}") {
+                        life_service.attr('checked', true);
+                    }
+            if ("True" === "{{ a.enterprise_service }}") {
+                        enterprise_service.attr('checked', true);
+                    }
+
+        });
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+{#                SearchOrganisationAssign()#}
+            }
+        }
+    </script>
+
+{% endblock %}

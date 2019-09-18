@@ -1,0 +1,40 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+
+</div>
+<div class="col-md-4 four_member">
+<a class="thumbnail" style="background-color: Green ;" href="{% url 'country_data_master' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Country</h3>
+<h3 class="m_t_0">415</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" style="background-color: Green ;" href="{% url 'state_data_master' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>State</h3>
+<h3 class="m_t_0">415</h3>
+</a>
+
+</div>
+    <div class="col-md-4 four_member">
+<a class="thumbnail" style="background-color: Green ;" href="{% url 'city_data_master' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>City</h3>
+<h3 class="m_t_0">415</h3>
+</a>
+
+</div>
+    <div class="col-md-4 four_member">
+<a class="thumbnail" style="background-color: Green ;" href="{% url 'locality_data_master' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Locality</h3>
+<h3 class="m_t_0"></h3>
+</a>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+<style>
+.div11 {
+    background-color: #295629!important;
+}
+.siz11 {
+    width: 150px;
+    height: 150px;
+}
+a.div11:hover{
+    background-color: #985f0d!important;
+}
+</style>
+                                    <div class="col-md-3 four_member ">
+                                        <a class="thumbnail div11" href="{% url 'doctor-care-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Doctors At Home</h3>
+
+                                        </a>
+                                    </div>
+                                    <!--  <div class="col-md-3 four_member">
+                                        <a class="thumbnail div11" href="{% url 'doctor-care-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Labs At Home</h3>
+
+                                        </a>
+                                    </div>
+                                   <div class="col-md-3 four_member">
+                                        <a class="thumbnail div11" href="{% url 'doctor-care-listing' %}">
+                                            <span class="label label-warning"></span>
+                                            <figure><img src="{% static 'images/images/doctor.png' %}"></figure>
+                                            <h3>Nurses At Home</h3>
+
+                                        </a>
+                                    </div>
+                                     -->
+{% endblock %}

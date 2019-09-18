@@ -1,0 +1,388 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block js %}
+ <script type="text/javascript" src="{% static 'js/chosen.jquery.min.js' %}"></script>
+{#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+<script>
+tinymce.init({
+  selector: "textarea",  // change this value according to your html
+  plugins: "textcolor advlist autolink lists link image charmap print image imagetools preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template paste textcolor colorpicker textpattern",
+  automatic_uploads: true,
+  images_upload_url:"/tinymice/image-upload/",
+  toolbar: "forecolor backcolor textcolor advlist autolink lists link image imagetools charmap print preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template paste textcolor textpattern bullist numlist outdent indent | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+  height : 750,
+});
+</script>
+{% endblock %}
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <div style="padding-bottom:50px;"><button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button></div>
+
+
+    <!--COLLAPSE START-->
+            {% if symptoms.stage_id != 5 %}
+            <div id="markAsComplate" class="collapse in">
+                <div class="thumbnail p_10">
+                    <div class="row">
+                        <div class="col-md-12 m_b_15">
+
+
+                            <form role="form" action="{% if request.user|can_view_caller_disease %}{% url 'mark-caller-complete-symptoms' %}{% elif request.user|can_view_review_disease %}{% url 'mark-reverse-symptoms-to-caller'  %}{% elif request.user|can_view_publisher %}{% url 'mark-reverse-symptoms-to-caller'  %} {% endif %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ symptoms.id }}" name="symptoms_id">
+                                {% if request.user|can_view_review_disease %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {# Form portion to move symptoms data from publisher user to caller user#}
+                                {% if request.user|can_view_publisher %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if request.user|can_view_caller_disease %}
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            {% for b in reviewer_user_data %}
+                                                <option value="" disabled>Select Reviewer User</option>
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <select class="form-control" name="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Complete</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_review_disease %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+                        {% if request.user|can_view_review_disease %}
+                            <div class="col-md-12">
+                                <form action = "{% url 'mark-reviewer-complete-symptoms' %}" method = "post">
+                                <input type="hidden" value="{{ symptoms.id }}" name="symptoms_id" id="symptoms_id">
+                                <div class="col-md-4">
+                                    <select class="form-control" name="publisher_name" id="publisher_name">
+                                        <option value="" disabled>Select Publisher User</option>
+                                        {% for b in publisher_user_data %}
+
+                                            <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                              <div class="col-md-4">
+                                        <select class="form-control" name="validator_name" id="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                <div class="col-md-4">
+                                    <button type = "submit"  value = "submit" class="btn btn-info" >Move to Next
+                                        Stage
+                                    </button>
+                                </div>
+                              </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# NEW Form  to move symptoms data from publisher user to review user#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-reverse-symptoms-to-reviewer' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ symptoms.id }}" name="symptoms_id">
+
+
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in reviewer_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>
+                                    </div>
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+
+
+                {# NEW Form  to PUBLISH  symptoms data from and move symptoms to stage 4 (PUBLISHED)#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-complete-publisher-symptoms-stage-four' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ symptoms.id }}" name="symptoms_id">
+
+
+                                <button type = "submit"  value = "submit" class="btn btn-info" >Publish To Live
+                                    </button>
+
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+            </div>
+    {% endif %}
+        <!--COLLAPSE END-->
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+        <div class="well well-sm text_logo font_weight_600"><i class="fa fa-flask fa-fw"></i> Edit symptoms Info
+
+{#            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info btn-sm pull-right"#}
+{#                       style="margin-top: -5px;">Go Back</a>#}
+            <a href="{% if user_is_publisher %}{% url  'publisher-symptoms-listing'  %}{% elif request.user.is_superuser%} {% url 'symptoms-assignment' %} {% else %}{% url  'symptoms-listing' %}{% endif %}" class="btn btn-info btn-sm pull-right">Go Back</a>
+
+        </div>
+<div class="row" >
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'symptoms-listing-edit' symptoms.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="col-md-12">
+
+                    <div class="form-group">
+                        <label style="color:black;">Topic Title</label>
+                        <input type="text"  class="form-control" name="topic_title" value= "{{ symptoms.topic_title }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;" >Small Description</label>
+                        <input type="text"  class="form-control" name="small_description" value = "{{ symptoms.small_description }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;" >Publish Date (dd-mm-yyyy)</label>
+                        <input type="text"  class="form-control MyDatePicker" name="publish_date" value= "{{ pub_date }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Title</label>
+                        <input type="text"  class="form-control"  value= "{{ symptoms.page_title }}" name="page_title">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Keywords</label>
+                        <input type="text"  class="form-control" value= "{{ symptoms.page_keywords }}" name="page_keywords">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Description</label>
+                        <input type="text"  class="form-control" value= "{{ symptoms.page_description }}" name="page_description">
+                    </div>
+
+{#                    <div class="form-group">#}
+{#                        <label  style="color:black;">Doctor's Category</label>#}
+{#                        <input type="text"  class="form-control" name="doctors_category" value= "{{ symptoms.doctors_category }}">#}
+{#                    </div>#}
+
+
+                      <div class="form-group">
+                         <label>Category</label>
+                            <select id="doccategory" class="chosen-select" name="category"  multiple>
+                                    <option value="">--Select Doctor's Categories--</option>
+                                    {% if category_obj %}
+                                        {% for u in category_obj %}
+                                            {% if u.id|slugify in current_cats %}
+                                                                <option value="{{ u.id }}" selected >{{ u.name }}</option>
+                                            {% else %}
+                                                <option value="{{ u.id }}">{{ u.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                            </select>
+                       </div>
+
+
+                    <div class="form-group">
+                        <label  style="color:black;">Tag String</label>
+                        <input type="text"  class="form-control" name="tag_string" value= "{{ symptoms.tag_string }}">
+                    </div>
+
+
+
+{#                    <div class="form-group">#}
+{#                        <label>Disease Type</label>#}
+{#                        <select id="type" class="chosen-select" name="type" multiple>#}
+{#                            <option value="" disabled>--Select Type--</option>#}
+{#                            {% for type in symptoms_type %}#}
+{#                                {% if type.id|slugify in current_type_list %}#}
+{#                                <option value="{{ type.id }}" selected>{{ type.name | capfirst}}</option>#}
+{#                                {% else %}#}
+{#                                <option value="{{ type.id }}">{{ type.name | capfirst}}</option>#}
+{#                                {% endif %}#}
+{#                            {% endfor %}#}
+{#                        </select>#}
+{#                    </div>#}
+{##}
+{##}
+                    <div class="form-group">
+                        <label>Related Topics</label>
+                        <select id="related_topics" class="chosen-select" name="related_topics" multiple>
+                            <option value="" style="color: #761c19;" disabled>----------------------------SELECT ARTICLES----------------------</option>
+                            {% for article in symptoms_articles %}
+                                {% if article.id|slugify in current_article_list %}
+                                 <option style="word-break:break-all!important;" value="{{ article.id }}" selected>{{ article.topic_title| capfirst}}</option>
+                                {% else %}
+                                <option value="{{ article.id }}" >{{ article.topic_title | capfirst}}</option>
+                                {% endif %}
+                                <option value=""  style="color: #761c19;" disabled>--------------------------------------------------------------------</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label  style="color:black;">Converted HTML</label>
+                        <textarea rows="4" cols="50" id="textarea" name = "symptoms_html_refined">{{symptoms.symptoms_html_refined}}</textarea>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="clearfix col-md-12 text-right">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                  </div>
+
+            </form>
+        </div>
+
+</div>
+
+</div>
+
+    <!--Right End-->
+    <script>
+     $('#alert').fadeIn().delay(5000).fadeOut('slow');
+    function readURL(input) {
+
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      $('#blah').attr('src', e.target.result);
+
+      $('#blah').hide();
+      $('#blah').fadeIn(650);
+
+    };
+
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#imgInp").change(function() {
+  readURL(this);
+});
+var clone_index = $("#app").length;
+
+$("#btn1").click(function(){
+        $("#sss").append('<div id="app"><div class="form-group col-md-6"><textarea class="form-control" name="bullet_header"></textarea> </div> <div class="form-group col-md-6"><textarea class="form-control" name="bullet_body"></textarea> </div></div></div>');
+    clone_index++;
+    });
+     $("#btn2").click(function(){
+         if(clone_index>1){
+        $("#app").remove();
+             clone_index--;
+             }
+    });
+
+    </script>
+{% endblock %}

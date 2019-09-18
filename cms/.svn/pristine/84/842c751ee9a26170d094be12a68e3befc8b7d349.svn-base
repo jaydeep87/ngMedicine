@@ -1,0 +1,23 @@
+{% extends 'index/index.html' %}
+{% load staticfiles%}
+{%  block login_form %}
+
+<!--USER LOGIN START-->
+<div>
+<form role="form" class="form-group-lg" method="post" action="{% url 'users-login' %}">
+    {% csrf_token %}
+<div class="form-group">
+<label class="font_weight_400">User Name:</label>
+    <input type="text" value="is_user" name="user_type" hidden>
+<input type="text" class="form-control" name="username" placeholder="User Name" autofocus="autofocus">
+</div>
+
+<div class="form-group">
+<label class="font_weight_400">Password:</label>
+<input type="password" class="form-control" name="password" placeholder="***********">
+</div>
+<p class="m_t_20"><button type="submit" class="btn btn-info btn-lg">Login</button></p>
+</form>
+</div>
+<!--USER LOGIN END-->
+{% endblock %}

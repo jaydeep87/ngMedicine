@@ -1,0 +1,229 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+
+<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'doctor-management' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Doctor </br> Management</h3>
+<h3 class="m_t_0">{{ doctor_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+
+<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'live_doctor_management' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Live Docs</br> Management</h3>
+<h3 class="m_t_0">{{ live_doctor_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+
+{#    <div class="col-md-3 four_member">#}
+{#<a class="thumbnail">#}
+{##}
+{#<figure><img src="{% static 'images/doctor.png' %}"></figure>#}
+{#<h3>Doctors Stage wise</h3>#}
+{#<h3 class="m_t_0">415 <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>#}
+{#</a>#}
+{#</div>#}
+
+
+<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'organisation-management' %}">
+<figure><img src="{% static 'images/hospital.png' %}"></figure>
+<h3>Organisation Management</h3>
+<h3 class="m_t_0">{{ organisation_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'live-organisation-management' %}">
+<figure><img src="{% static 'images/hospital.png' %}"></figure>
+<h3>Live Organisation Management</h3>
+<h3 class="m_t_0">{{ live_organisation_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+<style>.four_member a.thumbnail{min-height: 290px;}</style>
+
+<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'lab-management' %}">
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Lab </br> Management</h3>
+<h3 class="m_t_0">{{ lab_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+{% comment %}<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'bloodbank-management' %}">
+<span class="label label-warning">4</span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>BloodBank </br> Management</h3>
+<h3 class="m_t_0">{{ bloodbank_data }}<span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span><h3>
+</a>
+</div>{% endcomment %}
+
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'bloodbank-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> BloodBank </br> Management</h3>
+<h3 class="m_t_0">{{ bloodbank_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+
+
+{% comment %}<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'ambulance-management' %}">
+<span class="label label-warning">4</span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Total Ambulances</h3>
+<h3 class="m_t_0">{{ ambulance_data }}<span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span><h3>
+</a>
+</div>{% endcomment %}
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'ambulance-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Total </br> Ambulances</h3>
+<h3 class="m_t_0">{{ ambulance_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+{% comment %}<div class="col-md-3 four_member">
+<a class="thumbnail" href="{% url 'pharmacy-management' %}">
+<span class="label label-warning">4</span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Total Phamacies</h3>
+<h3 class="m_t_0">{{ pharmacy_data }}<span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span><h3>
+</a>
+</div>{% endcomment %}
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'pharmacy-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Total </br>Phamacies</h3>
+<h3 class="m_t_0">{{ pharmacy_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'global-feed-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Global Feeds Management</h3>
+<h3 class="m_t_0">{{ global_feed_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+<div class="col-md-3 four_member">
+ <a class="thumbnail"  href=" {% url 'wellness-feed-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3>Wellness Feeds Management</h3>
+<h3 class="m_t_0">{{ wellness_feed_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'home-plan-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Home Service Management</h3>
+<h3 class="m_t_0">{{ home_plan_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'life-plan-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Life Service </br> Management</h3>
+<h3 class="m_t_0">{{ life_plan_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'enterprise-plan-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Enterprise Service Management</h3>
+<h3 class="m_t_0">{{ enterprise_plan_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'rehab-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Rehab Management</h3>
+<h3 class="m_t_0">{{ rehab_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'nurse_bureau-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Nurse Bureau Management</h3>
+<h3 class="m_t_0">{{ nurse_bureau_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'dietitian-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Dietitian Management</h3>
+<h3 class="m_t_0">{{ dietitian_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'therapist-management' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Therapist Management</h3>
+<h3 class="m_t_0">{{ therapist_data }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'questions_listing' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Total Free Questions</h3>
+<h3 class="m_t_0">{{ question_obj_count }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+<div class="col-md-3 four_member">
+<a class="thumbnail"  href=" {% url 'feedback_listing' %}" >
+<span class="label label-warning"></span>
+<figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+<h3> Total Feedbacks</h3>
+<h3 class="m_t_0">{{ feedbank_obj_count }} <span class="font_size_16">Completed <i class="fa fa-check text-success"></i></span></h3>
+</a>
+</div>
+
+
+
+</div>
+</div>
+{% endblock %}

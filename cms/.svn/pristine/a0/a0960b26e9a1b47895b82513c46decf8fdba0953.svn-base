@@ -1,0 +1,61 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+{% endif %}
+
+    <div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+        <div class="well well-sm text_logo font_weight_600"><i class="fa fa-flask fa-fw"></i> Add Association <a href="{% url 'new_association_data_page' %}" class="btn btn-info btn-sm pull-right"
+                       style="margin-top: -5px;">Go Back</a></div>
+        <div class="row">
+{#            <hr>#}
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'new_association_add' %}">
+                {% csrf_token %}
+                <div class="col-md-6">
+
+                  <div class="form-group">
+                        <label>Association Category</label>
+                        <select class="form-control" name="category">
+                                {% for cat in category_list %}
+                                        <option value="{{ cat.id }}" selected>{{ cat.name }}</option>
+                                {% endfor %}
+                        </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Select Service Offered</label>
+                    <select class="form-control chosen-select" name='so'  multiple>
+                                {% for so in ServiceOfferedAll %}
+                                        <option value="{{ so.id }}" >{{ so.name }}</option>
+                                {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Select Speciality</label>
+                    <select class="form-control chosen-select" name="speciality" multiple>
+                                {% for spl in SpecialityAll %}
+                                        <option value="{{ spl.id }}" >{{ spl.name }}</option>
+                                {% endfor %}
+                    </select>
+                  </div>
+
+                <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                </div>
+                <!--RIGHT PANEL END-->
+            </form>
+        </div>
+    </div>
+
+    <!--Right End-->
+
+
+{% endblock %}

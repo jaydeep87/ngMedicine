@@ -1,0 +1,383 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% for k in user_data_obj %}
+        <div>
+
+            <form role="form" class="p_30" style="background:rgba(0,0,0,0.3);" action="{% url 'users-edit' k.user_id %}"
+                  method="post">
+                <div class="row">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ k.user_id }}" name="id_user">
+                    <div class="form-group col-md-6">
+                        <label class="text_white">First Name:</label>
+                        <input type="text" name=firstname class="form-control" placeholder="First Name"
+                               value="{{ k.user.first_name }}">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="text_white">Last Name:</label>
+                        <input type="text" name=lastname class="form-control" placeholder="Last Name"
+                               value="{{ k.user.last_name }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label class="text_white">User Name*:</label>
+                        <input type="text" class="form-control" name='user_name' id="user_name" placeholder="User Name"
+                               onchange="checkUserName()" required value="{{ k.user.username }}" readonly>
+
+                        <span class="text-danger" id="not_valid"></span>
+
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="text_white">Email ID*:</label>
+                        <input type="email" name='email' class="form-control" placeholder="demo@demo.com"
+                               value="{{ k.user.email }}" required>
+                        {% if messages %}
+                            {% for message in messages %}
+                                <span class="text-danger" id="not_valid">{{ message }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label class="text_white">Password*:</label>
+                        <input type="password" name='password' class="form-control" placeholder="********">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="text_white">User Type:</label>
+                        <input type="text" class="form-control" placeholder="Users Type" name=type
+                               value="{% if user_type == 'is_caller' %}Caller{% elif user_type == 'is_reviewer' %}Reviewer{% elif user_type == 'is_admin' %}Admin{% elif user_type == 'is_publisher' %}Publisher{% elif user_type == 'is_news' %}News{% elif user_type == 'is_service' %}Service{% endif %}"
+                               readonly>
+                    </div>
+                </div>
+                {% if user_type == 'is_reviewer' %}
+                    <div class="row">
+
+                        <h3 class="font_size_18 text_white"> Access Right</h3>
+                        <div class="row m_0">
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="news_id"
+                                                                                        name=is_news_reviewer> Is News
+                                Reviewer
+                            </label></div>
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="service_id"
+                                                                                        name=is_service_reviewer> Is
+                                Service
+                                Reviewer </label></div>
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox"
+                                                                                        id="dcotor_rew_id"
+                                                                                        name=is_doctor_reviewer> Is
+                                Doctor/Organisation Reviewer </label></div>
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="path_rew_id"
+                                                                                        name=is_path_reviewer> Is
+                                Pathology
+                                Reviewer </label></div>
+                        </div>
+                        <div class="row m_0">
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox"
+                                                                                        id="blood_rew_id"
+                                                                                        name=is_blood_reviewer> Is Blood
+                                Bank
+                                Reviewer </label></div>
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox"
+                                                                                        id="disease_rew_id"
+                                                                                        name=is_disease_reviewer> Is
+                                Disease
+                                Reviewer </label></div>
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="phar_rew_id"
+                                                                                        name=is_phar_reviewer> Is
+                                Pharmacy
+                                Reviewer </label></div>
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="ambu_rew_id"
+                                                                                        name=is_ambu_reviewer> Is
+                                Ambulance
+                                Reviewer </label></div>
+
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="physio_rehab_reviewer_id"
+                                                                                        name=is_physio_rehab_reviewer> Is
+                                Physio/Rehab
+                                Reviewer </label></div>
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="nurse_bureau_reviewer_id"
+                                                                                        name=is_nurse_bureau_reviewer> Is
+                                Nurse-Bureau
+                                Reviewer </label></div>
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="dietitian_reviewer_id"
+                                                                                        name=is_dietitian_reviewer> Is
+                                Dietitian
+                                Reviewer </label></div>
+                            <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="therapist_reviewer_id"
+                                                                                        name=is_therapist_reviewer> Is
+                                Therapist
+                                Reviewer </label></div>
+
+                        </div>
+
+                    </div>
+                {% endif %}
+
+                {% if user_type == 'is_caller' %}
+                {# Added By Nishank 26-9-16 #}
+                <div class="row">
+
+                    <h3 class="font_size_18 text_white"> Access Right</h3>
+
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="dcotor_caller_id"
+                                                                                name=is_doctor_caller> Is
+                        Doctor/Organisation Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="path_caller_id"
+                                                                                name=is_path_caller> Is Pathology
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="blood_caller_id"
+                                                                                name=is_blood_caller> Is Blood Bank
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="disease_caller_id"
+                                                                                name=is_disease_caller> Is Disease
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="phar_caller_id"
+                                                                                name=is_phar_caller> Is Pharmacy
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="ambu_caller_id"
+                                                                                name=is_ambu_caller> Is Ambulance
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="physio_rehab_caller_id"
+                                                                                name=is_physio_rehab_caller> Is Physio/Rehab
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="nurse_bureau_caller_id"
+                                                                                name=is_nurse_bureau_caller> Is Nurse-Bureau
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="dietitian_caller_id"
+                                                                                name=is_dietitian_caller> Is Dietitian
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="therapist_caller_id"
+                                                                                name=is_therapist_caller> Is Therapist
+                        Caller </label></div>
+
+                </div>
+            {% endif %}
+
+
+
+                <p class="text-right">
+                    <button type="submit" class="btn btn-info">{% if add == 'add' %}Save{% else %}
+                        Update{% endif %}</button>
+                </p>
+            </form>
+        </div>
+        <script>
+
+            $(document).ready(function () {
+                var news_rev = $('#news_id');
+                var service_rev = $('#service_id');
+                var doctor_rev = $('#dcotor_rew_id');
+                {#                Added By Vishnu#}
+                var patho_rev = $('#path_rew_id');
+                var blood_rev = $('#blood_rew_id');
+                var disease_rev = $('#disease_rew_id');
+                var phar_rev = $('#phar_rew_id');
+                var ambu_rev = $('#ambu_rew_id');
+                var physio_rehab_rev = $('#physio_rehab_reviewer_id');
+                var nurse_bureau_rev = $('#nurse_bureau_reviewer_id');
+                var dietitian_rev = $('#dietitian_reviewer_id');
+                var therapist_rev = $('#therapist_reviewer_id');
+
+
+                var doctor_call = $('#dcotor_caller_id');
+                var patho_call = $('#path_caller_id');
+                var blood_call = $('#blood_caller_id');
+                var disease_call = $('#disease_caller_id');
+                var phar_call = $('#phar_caller_id');
+                var ambu_call = $('#ambu_caller_id');
+                var physio_rehab_call = $('#physio_rehab_caller_id');
+                var nurse_bureau_call = $('#nurse_bureau_caller_id');
+                var dietitian_call = $('#dietitian_caller_id');
+                var therapist_call = $('#therapist_caller_id');
+
+
+                if ("True" === "{{ k.is_news_reviewer }}") {
+                    news_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_service_reviewer }}") {
+                    service_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_doctor_reviewer }}") {
+                    doctor_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_path_reviewer }}") {
+                    patho_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_blood_reviewer }}") {
+                    blood_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_ambulance_reviewer }}") {
+                    ambu_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_phar_reviewer }}") {
+                    phar_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_disease_reviewer }}") {
+                    disease_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_physio_rehab_reviewer }}") {
+                    physio_rehab_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_nurse_bureau_reviewer }}") {
+                    nurse_bureau_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_dietitian_reviewer }}") {
+                    dietitian_rev.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_therapist_reviewer }}") {
+                    therapist_rev.attr('checked', true);
+                }
+
+
+                if ("True" === "{{ k.is_doctor_caller }}") {
+                    doctor_call.attr('checked', true);
+                }
+                if ("True" === "{{ k.is_path_caller }}") {
+                                    patho_call.attr('checked', true);
+                                }
+                if ("True" === "{{ k.is_blood_caller }}") {
+                                    blood_call.attr('checked', true);
+                                }
+                if ("True" === "{{ k.is_ambulance_caller }}") {
+                                    ambu_call.attr('checked', true);
+                                }
+                if ("True" === "{{ k.is_phar_caller }}") {
+                                    phar_call.attr('checked', true);
+                                }
+                if ("True" === "{{ k.is_disease_caller }}") {
+                                    disease_call.attr('checked', true);
+                                }
+                if ("True" === "{{ k.is_physio_rehab_caller }}") {
+                                    physio_rehab_call.attr('checked', true);
+                                }
+                if ("True" === "{{ k.is_nurse_bureau_caller }}") {
+                                    nurse_bureau_call.attr('checked', true);
+                                }
+                if ("True" === "{{ k.is_dietitian_caller }}") {
+                                    dietitian_call.attr('checked', true);
+                                }
+                if ("True" === "{{ k.is_therapist_caller }}") {
+                                    therapist_call.attr('checked', true);
+                                }
+
+
+
+
+                news_rev.click(function () {
+
+                    if (!news_rev.prop('checked')) {
+                        news_rev.attr('checked', false);
+
+                    }
+                    else {
+                        news_rev.attr('checked', true);
+                    }
+
+                });
+                service_rev.click(function () {
+
+                    if (!service_rev.prop('checked')) {
+                        service_rev.attr('checked', false);
+
+                    }
+                    else {
+                        service_rev.attr('checked', true);
+                    }
+
+                });
+                doctor_rev.click(function () {
+
+                    if (!doctor_rev.prop('checked')) {
+                        doctor_rev.attr('checked', false);
+
+                    }
+                    else {
+                        doctor_rev.attr('checked', true);
+                    }
+
+                });
+
+                {#                Added By Vishnu#}
+                patho_rev.click(function () {
+
+                    if (!patho_rev.prop('checked')) {
+                        patho_rev.attr('checked', false);
+
+                    }
+                    else {
+                        patho_rev.attr('checked', true);
+                    }
+
+                });
+                blood_rev.click(function () {
+
+                    if (!blood_rev.prop('checked')) {
+                        blood_rev.attr('checked', false);
+
+                    }
+                    else {
+                        blood_rev.attr('checked', true);
+                    }
+
+                });
+                disease_rev.click(function () {
+
+                    if (!disease_rev.prop('checked')) {
+                        disease_rev.attr('checked', false);
+
+                    }
+                    else {
+                        disease_rev.attr('checked', true);
+                    }
+
+                });
+
+                phar_rev.click(function () {
+
+                    if (!phar_rev.prop('checked')) {
+                        phar_rev.attr('checked', false);
+
+                    }
+                    else {
+                        phar_rev.attr('checked', true);
+                    }
+
+                });
+                ambu_rev.click(function () {
+
+                    if (!ambu_rev.prop('checked')) {
+                        ambu_rev.attr('checked', false);
+
+                    }
+                    else {
+                        ambu_rev.attr('checked', true);
+                    }
+
+                });
+
+            });
+
+
+        </script>
+    {% endfor %}
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+
+    </script>
+
+
+
+{% endblock %}

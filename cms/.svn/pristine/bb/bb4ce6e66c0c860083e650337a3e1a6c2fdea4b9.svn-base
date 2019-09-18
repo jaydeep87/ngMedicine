@@ -1,0 +1,329 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+    <!--Right Start-->  {% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+             id="alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+
+        <div style="padding-bottom:0;" class="border_5_light_white p_t_10">
+            <div class="row m_0">
+             <input type="hidden" value="doctor" id="type_of"/>
+                <div class="col-sm-4">
+                    <div class="form-group"><select class="form-control" id="stage">
+                        <option>----Select Stage---</option>
+                        {% for c in stage_data %}
+                            <option value="{{ c.id }}">{{ c.stage_name }}</option>
+                        {% endfor %}
+                    </select></div>
+
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group"><select class="form-control" id="telecaller" name="users_data">
+                        <option>---Select Users---</option>
+                    </select></div>
+                </div>
+                <div class="col-sm-4 text-right">
+
+{#                    <form method ='post' target="{% url 'excel-doctor' %}">#}
+                    <!--<a href = "{% url 'excel-doctor' %}"><button class="btn btn-danger" type="button" >Export</button>--></a>
+                    <button class="btn btn-info" type="button" onclick="LIveDoctorAssign()">Assign</button>
+                </div>
+
+            </div>
+        </div>
+
+
+        <h4 class="font_weight_600 text_white m_t_0" ><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion</h4>
+
+        <form role="form" method="get" action="{% url 'live_doctor_assignment' %}">
+            <button type="submit" class="btn btn-info btn-sm">Apply</button>
+            <a href="{% url 'live_doctor_assignment' %}" class="btn btn-warning btn-sm">Reset</a>
+
+{#          {% if doctor_data_obj %}#}
+{#              <div class="text-right"  style="margin-top: -61px">#}
+{#                    <ul class="pagination">#}
+{#                        {% if doctor_data_obj.has_previous %}#}
+{#                            <li class="prev"><a onclick="add_pagination('{{ doctor_data_obj.previous_page_number }}')" href="javascript:void(0)">Prev</a></li>#}
+{#                        {% endif %}#}
+{#                        <li><a>Page {{ doctor_data_obj.number }} of {{ doctor_data_obj.paginator.num_pages }}</a></li>#}
+{#                        {% if doctor_data_obj.has_next %}#}
+{#                            <li class="next"><a onclick="add_pagination('{{ doctor_data_obj.next_page_number }}')" href="javascript:void(0)">Next</a></li>#}
+{#                        {% endif %}#}
+{#                    </ul>#}
+{#              </div>#}
+{#            {% endif %}#}
+
+
+            <div class="row m_tb_10">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="filter" name="x">
+                        <select id="zone" class="chosen-select" name="zone">
+                            {% if not zone_filter %}
+                                <option value="">--Select Zone--</option>
+                            {% endif %}
+                            {% if zone_obj %}
+                                {% for r in zone_obj %}
+                                    <option value="{{ r.id }}"
+                                            {% if zone_filter == r.id %}selected{% endif %}>{{ r.name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select class="chosen-select" name="zone_location" id="zone_location">
+
+                            {% for l in zone_location_obj %}
+
+                                <option value="{{ l.id }}"
+                                        {% if zone_location_filter_length == l.id %}selected {% endif %}>
+                                    {% if zone_location_obj %}{{ l.name }}{% else %}Select Zone
+                                        Location{% endif %}</option>
+
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select id="category_data" class="chosen-select" name="category">
+                            {% if not category_filter %}
+                                <option value="">--Select Category--</option>
+                            {% endif %}
+                            {% if category_obj %}
+                                {% for u in category_obj %}
+                                    <option value="{{ u.id }}"
+                                            {% if category_filter == u.id %}selected{% endif %}>{{ u.name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="filter" name="x">
+                        <select id="stage_da" class="chosen-select" name="stage_da">
+                            {% if not stage_filter %}
+                                <option value="">--Select Stage--</option>
+                            {% endif %}
+                            {% if stage_data %}
+                                {% for s in stage_data %}
+                                    <option value="{{ s.id }}"
+                                            {% if stage_filter == s.id %}selected{% endif %}>{{ s.stage_name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="filter" name="x">
+                        <select id="user_da" class="chosen-select" name="user_da">
+                            {% if not user_filter %}
+                                <option value="">--Select User--</option>
+                            {% endif %}
+                            {% if user_data %}
+                                {% for t in user_data %}
+                                    <option value="{{ t.id }}"
+                                            {% if user_filter == t.id %}selected{% endif %}>{{ t.username|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+
+        <div class="input-group">
+            <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                    <span class="input-group-btn"> <button class="btn btn-default"
+                                                           onclick="SearchLIveDoctorAssign()" id="sbutton"> Search
+                    </button></span>
+        </div>
+<div style="overflow:auto; height:400px; padding: 5px 20px;">
+        <div class="table-responsive table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+                    <th><input id="checkAll" type="checkbox"/></th>
+                    <th>Sr. No.</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Zone</th>
+                    <th>Zone Location</th>
+                    <th>Category</th>
+                    <th>Talk to Doc</th>
+                    <th>Activated</th>
+                    <th>Current User</th>
+                    <th>Stage</th>
+                    <th>Duplicates</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th class="col-md-2">Action</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for d in doctor_data_obj %}
+                    <tr>
+                        <td><input type="checkbox" value="{{ d.id }}"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ d.firstName | capfirst}}</td>
+                        <td>{{ d.lastName | capfirst}}</td>
+                        <td>{{ d.zone.name | capfirst}}</td>
+                        <td>{{ d.zone_location.name | capfirst}}</td>
+                        <td>
+                            {% for c in category_obj %}
+                                {% if c.id|slugify == d.category|slugify %}
+                                    {{ c.name|capfirst }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{% if d|check_if_talktodoc_is_true %}Yes{% else %}No{% endif %}</td>
+                        <td>{% if d.activationStatus %}YES{% else %}No{% endif %}</td>
+                        <td>{{ d.current_user.username | capfirst}}</td>
+                        <td>{{ d.stage.stage_name | capfirst}}</td>
+                        <td><a href="{% url 'view_duplicates' d.id %}" ><img src="/static/images/images/notes_warning.png" alt="Smiley face" height="20" width="20"></a></td>
+                        <td>{{ d.createdAt }}</td>
+                        <td>{{ d.updatedAt }}</td>
+                        <td>
+                           <a href="{% url 'live_doctor_listing_edit' d.id %}?tab=1" class="btn btn-default btn-sm" style="padding:0 3px;"> <i class="fa fa-edit"></i></a>
+                           {% if d.is_disable == False %}<a href="{% url 'deactivate_single_live_doctor' d.id %}" class="btn btn-danger btn-sm" style="padding:0 3px;">Disable </a>{% endif %}
+                           {% if d.is_disable == True %}<a href="{% url 'activate_single_live_doctor' d.id %}" class="btn btn-success btn-sm" style="padding:0 3px;">Enable </a>{% endif %}
+
+{#                            {% if d.publish == False %}| <a href="{% url 'delete_live_doctor_from_system' d.id %}" class="btn btn-danger btn-sm" style="padding:0 3px;"><i class="fa fa-close fa-fw"></i> </a>{% endif %} {% if d.publish == True %}| <a href="{% url 'unpublish_single_live_doctor' d.id %}" class="btn btn-success btn-sm" style="padding:0 3px;">Unpublish </a>{% endif %}#}
+
+
+                            {#                            <a href="{% if d.is_disable %}{% url 'doctor-data-enable' d.id %}{% else %}{% url 'doctor-data-deactivate' d.id %}{% endif %}"#}
+{#                                                                                  class="btn btn-default btn-sm">#}
+{#                                                                {% if d.is_disable %}Enable {% else %}Disable {% endif %}</a>#}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+         <!--   {#  {% if doctor_data_obj %}#}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {# {% if doctor_data_obj.has_previous %} #}
+                            <li class="prev"><a onclick="add_pagination('{# {{ doctor_data_obj.previous_page_number }} #}')" href="javascript:void(0)">Prev</a></li>
+                        {# {% endif %} #}
+                        <li><a>Page {# {{ doctor_data_obj.number }} #} of {# {{ doctor_data_obj.paginator.num_pages }} #}</a></li>
+                        {# {% if doctor_data_obj.has_next %} #}
+                            <li class="next"><a onclick="add_pagination('{# {{ doctor_data_obj.next_page_number }} #}')" href="javascript:void(0)">Next</a></li>
+                        {# {% endif %} #}
+                    </ul>
+                </div>
+            {#  {% endif %}#}  -->
+
+
+            {% if doctor_data_obj %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if doctor_data_obj.has_previous %}
+                            <li class="prev"><a href="?page={{ doctor_data_obj.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&?x={{filter_name}}&zone={{zone_data}}&zone_location={{zone_location_data}}&category={{category_data}}&x={{filter_name}}&stage_da={{stage_id_data}}&x={{filter_name}}&user_da={{user_id_data }}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ doctor_data_obj.number }} of {{ doctor_data_obj.paginator.num_pages }}</a></li>
+                        {% if doctor_data_obj.has_next %}
+                            <li class="next"><a href="?page={{doctor_data_obj.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&?x={{filter_name}}&zone={{zone_data}}&zone_location={{zone_location_data}}&category={{category_data}}&x={{filter_name}}&stage_da={{stage_id_data}}&x={{filter_name}}&user_da={{user_id_data }}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+
+
+        </div>
+</div>
+    </div>
+    <!--Right End-->
+    <script>
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+        var $rows = $('#table tr');
+        $('#search').keyup(function () {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function () {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+        $(document).ready(function () {
+            $("#zone").chosen().change(function () {
+                var zone = $('#zone').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                $.ajax({
+                    type: 'post',
+                    url: DOMAIN + '/doctor/zone_location/',
+                    data: {action: "get_filter", zone_id: zone},
+                    beforeSend: function () {
+                        var text = 'getting zone location  of ' + zone + ' . please wait..';
+                        ajaxindicatorstart(text);
+                    },
+                    success: function (data) {
+                        ajaxindicatorstop();
+                        // alert(data);
+
+                        {#                 console.log(JSON.parse(data));#}
+                        var obj = JSON.parse(data);
+                        {#                 var len_obj = Object.keys(obj).length;#}
+                        //console.log(len_obj);
+                        //alert(len);
+                        if (obj.length != 0) {
+                            $("#zone_location option").remove();
+                            $("#zone_location").trigger("chosen:updated");
+                            var key_sel = '';
+                            var value_sel = 'Select Zone Location';
+                            var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                            $("#zone_location").append(select);
+                            $("#zone_location").val(key_sel);
+                            $("#zone_location").trigger("chosen:updated");
+                            for (var i = 0; i < obj.length; i++) {
+                                var name = obj[i].name;
+                                name = name.capitalize();
+                                var option = '<option value=' + obj[i].id + '>' + name + '</option>';
+                                $("#zone_location").append(option);
+                                $("#zone_location").trigger("chosen:updated")
+
+                            }
+
+                        }
+                    },
+                    error: function (jqXHR, ex) {
+                    }
+                });
+            });
+            {#         $("#zone_location").chosen().change(function () {#}
+            {#             alert($("#zone_location").val())#}
+            {#         })#}
+
+        });
+
+        String.prototype.capitalize = function () {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        }
+
+    </script>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function(e){
+        if(e.keyCode == 13){
+           SearchLIveDoctorAssign()
+        }
+        }
+    </script>
+{% endblock %}

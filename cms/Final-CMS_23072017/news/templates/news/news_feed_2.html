@@ -1,0 +1,116 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+{% endif %}
+
+    {% if type_data == 'global' %}
+{#        <div class="col-md-3 four_member">#}
+{#            <a class="thumbnail" href="{% url 'global-listing' %}">#}
+{#                <span class="label label-warning"></span>#}
+{#                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>#}
+{#                <h3>Global Feeds Listing</h3>#}
+{#                <h3 class="m_t_0"></h3>#}
+{#            </a>#}
+{#        </div>#}
+        <div class="col-md-3 four_member">
+            <a class="thumbnail" href="{% url 'global-by-users-for-admin' %}">
+                <span class="label label-warning"></span>
+                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                <h3>Global Feeds By Users</h3>
+                <h3 class="m_t_0"></h3>
+            </a>
+        </div>
+
+        <div class="col-md-3 four_member">
+            <a class="thumbnail" href="{% url 'global-by-stages-for-admin' %}">
+                <span class="label label-warning"></span>
+                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                <h3>Global Feeds By Stages</h3>
+                <h3 class="m_t_0"></h3>
+            </a>
+        </div>
+
+        <div class="col-md-3 four_member">
+            <a class="thumbnail" href="{% url 'get-assign-global-feed' %}">
+                <span class="label label-warning"></span>
+                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                <h3>Global Feeds Assignment</h3>
+                <h3 class="m_t_0"></h3>
+            </a>
+        </div>
+    {% elif type_data == 'wellness' %}
+{#        <div class="col-md-3 four_member">#}
+{#            <a class="thumbnail" href="{% url 'wellness-listing' %}">#}
+{#                <span class="label label-warning"></span>#}
+{#                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>#}
+{#                <h3>Wellness Feeds Listing</h3>#}
+{#                <h3 class="m_t_0"></h3>#}
+{#            </a>#}
+{#        </div>#}
+
+        <div class="col-md-3 four_member">
+            <a class="thumbnail" href="{% url 'wellness-by-users-for-admin' %}">
+                <span class="label label-warning"></span>
+                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                <h3>Wellness Feeds By Users</h3>
+                <h3 class="m_t_0"></h3>
+            </a>
+        </div>
+
+        <div class="col-md-3 four_member">
+            <a class="thumbnail" href="{% url 'wellness-by-stages-for-admin' %}">
+                <span class="label label-warning"></span>
+                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                <h3>Wellness Feeds By Stages</h3>
+                <h3 class="m_t_0"></h3>
+            </a>
+        </div>
+
+        <div class="col-md-3 four_member">
+            <a class="thumbnail" href="{% url 'get-assign-wellness-feed' %}">
+                <span class="label label-warning"></span>
+                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                <h3>Wellness Feeds Assignment</h3>
+                <h3 class="m_t_0"></h3>
+            </a>
+        </div>
+
+    {% elif type_data == 'health' %}
+
+
+        <div class="col-md-3 four_member">
+            <a class="thumbnail" href="{% url 'health-by-users-for-admin' %}">
+                <span class="label label-warning"></span>
+                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                <h3>Health Feeds By Users</h3>
+                <h3 class="m_t_0"></h3>
+            </a>
+        </div>
+
+        <div class="col-md-3 four_member">
+            <a class="thumbnail" href="{% url 'health-by-stages-for-admin' %}">
+                <span class="label label-warning"></span>
+                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                <h3>Health Feeds By Stages</h3>
+                <h3 class="m_t_0"></h3>
+            </a>
+        </div>
+
+        <div class="col-md-3 four_member">
+            <a class="thumbnail" href="{% url 'get-assign-health-feed' %}">
+                <span class="label label-warning"></span>
+                <figure><img src="{% static 'images/lab-microscope.png' %}"></figure>
+                <h3>Health Feeds Assignment</h3>
+                <h3 class="m_t_0"></h3>
+            </a>
+        </div>
+    {% endif %}
+
+
+{% endblock %}

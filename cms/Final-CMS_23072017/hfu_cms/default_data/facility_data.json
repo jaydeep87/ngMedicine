@@ -1,0 +1,128 @@
+[
+  {
+    "model": "hfu_cms.facility",
+    "pk": 1,
+    "fields": {
+      "name": "Portable X -ray"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 2,
+    "fields": {
+      "name": "Cath Lab"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 3,
+    "fields": {
+      "name": "Operation Theater"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 4,
+    "fields": {
+      "name": "Ambulance Service "
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 5,
+    "fields": {
+      "name": "24 Hour Emergency Services"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 6,
+    "fields": {
+      "name": "Pharmacy"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 7,
+    "fields": {
+      "name": "Blood Bank"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 8,
+    "fields": {
+      "name": "Incubators"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 9,
+    "fields": {
+      "name": "PICU"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 10,
+    "fields": {
+      "name": "ICCU"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 11,
+    "fields": {
+      "name": "ICU"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 12,
+    "fields": {
+      "name": "NICU "
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 13,
+    "fields": {
+      "name": "24 Hours Imaging "
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 14,
+    "fields": {
+      "name": "Waiting Area"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 15,
+    "fields": {
+      "name": "Airport Pick up and Drop"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 16,
+    "fields": {
+      "name": "In House Pathology"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 17,
+    "fields": {
+      "name": "Cashless Insurance"
+    }
+  },
+  {
+    "model": "hfu_cms.facility",
+    "pk": 18,
+    "fields": {
+      "name": "Ayurvedic Pharmacy"
+    }
+  }
+]

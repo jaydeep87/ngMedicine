@@ -1,0 +1,170 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+        <div class="row m_0">
+
+
+
+     <div style="padding-bottom:0;" class="border_5_light_white p_t_10">
+      <div class="row m_0">
+         <div class="col-md-6">
+            <div class="row">
+               <div class="col-md-8">
+
+                  <div class="form-group">
+                     <select class="form-control" id="type">
+                        <option value="" disabled >----Select Model Type---</option>
+
+                        <option value="Doctor">Doctor</option>
+                        <option value="Organisation">Organisation</option>
+                        <option value="Lab">Lab</option>
+                        <option value="Pharmacy">Pharmacy</option>
+                        <option value="Rehab">Rehab</option>
+                        <option value="Ambulance">Ambulance</option>
+                        <option value="Disease Article">Disease Article</option>
+                        <option value="Symptom Article">Symptom Article</option>
+                        <option value="News Feed">News Feed</option>
+                        <option value="Service Plans">Service Plans</option>
+                        <option value="Therapist">Therapist</option>
+                        <option value="NB">Nurse Bureau</option>
+                        <option value="Dietitian">Dietitian</option>
+                        <option value="Live-Doctor">Live-Doctor</option>
+                        <option value="BloodBank">BloodBank</option>
+
+                     </select>
+                  </div>
+
+                  <div class="input-group" style="padding-bottom: 20px;">
+                        <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                        <span class="input-group-btn"> <button class="btn btn-default"
+                                                               onclick="globalsearchForAllUsers()"> Search
+                        </button></span>
+                  </div>
+
+               </div>
+
+            </div>
+         </div>
+      </div>
+   </div>
+
+
+
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>S No.</th>
+                        <th>ID</th>
+                        {% if type == 'Disease Article' or  type == 'Symptom Article' or  type ==  'News Feed' %}<th>Topic Title</th>{% elif type == 'Service Plans' %}}<th>Plan Name</th>{% elif type == 'Rehab' %}<th>Clinic Name</th>{% else %}<th>Name</th>{% endif %}
+                        {% if type == 'Doctor' or type == 'Live-Doctor' %}<th>Zone</th><th>Zone Location</th><th>Category</th>{% elif  type == 'Disease Article' or  type == 'Symptom Article' or  type ==  'News Feed' or type == 'Service Plans' %}{% else %}<th>City</th><th>Locality</th>{% endif %}
+
+                        <th>Current User</th>
+                        <th>Free Text</th>
+                        <th>Stage</th>
+                        <th>Publish</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if results  %}
+                        {% for i in results %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ i.id }}</td>
+                                {% if type == 'Disease Article' or  type == 'Symptom Article' or  type ==  'News Feed' %}<td>{{ i.topic_title | capfirst }}</td>{% elif type == 'Service Plans' %}}<td>{{ i.plan_name | capfirst }}</td>{% elif type == 'Live-Doctor' %}<td>{{ i.firstName | capfirst }}&nbsp;{{ i.lastName | capfirst }}</td>{% elif type == 'Rehab' %}<td>{{ i.clinic_name | capfirst }}</td>{% else %}<td>{{ i.name | capfirst }}</td>{% endif %}
+                                {% if type == 'Doctor' %} <td>{{ i.zone.name | capfirst }}</td><td>{{ i.zone_location.name | capfirst }}</td><td>{{ i.category.name }}</td>{% elif type == 'Live-Doctor' %}  <td>{{ i.zone.name | capfirst }}</td><td>{{ i.zone_location.name | capfirst }}</td><td>{{ i.category|get_category |capfirst }}</td>{% elif  type == 'Disease Article' or  type == 'Symptom Article' or  type ==  'News Feed' or type == 'Service Plans' %}{% else %}<td>{{ i.city.name | capfirst }}</td><td>{{ i.locality.name | capfirst }}</td>{% endif %}
+
+
+                                <td>{{ i.current_user.username | capfirst }}</td>
+                                <td>{{ i.free_text | capfirst }}</td>
+                                <td>{{ i.stage.stage_name | capfirst }}</td>
+                                <td>{{ i.publish | capfirst }}</td>
+                                <td>{{ i.createdAt }}</td>
+                                <td>{{ i.updatedAt }}</td>
+                                {% if type == 'Doctor' %}<td><a href="{% url 'doctor-global-search' i.id %}" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">view</a></td>
+
+                                {% elif type == 'Organisation' %}<td><a href="{% url 'organisation-global-search' i.id %}" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">view</a></td>
+
+                                {% elif type == 'Lab' %}<td><a  href="{% url 'lab-global-search' i.id %}?tab=1" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">View</a></td>
+
+                                {% elif type == 'Pharmacy' %}<td><a href="{% url 'pharmacy-global-search' i.id %}" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">view</a></td>
+
+                                {% elif type == 'Rehab' %}<td><a href="{% url 'rehab-global-search' i.id %}?tab=1" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">view</a></td>
+
+                                {% elif type == 'Ambulance' %}<td><a href="{% url 'ambulance-global-search' i.id %}?tab=1" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">view</a></td>
+
+                                {% elif type == 'Therapist' %}<td><a href="{% url 'therapist-global-search' i.id %}?tab=1" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">view</a></td>
+
+                                {% elif type == 'NB' %}<td><a href="{% url 'nurse-bureau-global-search' i.id %}?tab=1" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">view</a></td>
+
+                                {% elif type == 'Dietitian' %}<td><a href="{% url 'dietitian_global_search' i.id %}?tab=1" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">view</a></td>
+
+                                 {% elif type == 'BloodBank' %}<td><a href="{% url 'bloodbank_global_search' i.id %}?tab=1" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">view</a></td>
+
+                                {% elif type == 'Live-Doctor' %}<td><a href="{% url 'liveDoctor_global_search' i.id %}?tab=1" class="btn btn-info btn-sm pull-right"
+                                 style="margin-top: -5px;">view</a></td>
+                                {% else %}
+                                <td></td>
+                                {% endif %}
+
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="10">----No Data--------- </td></tr>
+                    {% endif %}
+                    </tbody>
+
+                </table>
+                {% if results %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if results.has_previous %}
+                                <li class="prev"><a href="?page={{ results.previous_page_number }}{% if data_found %}&data_found={{ data_found }}&type={{ type }}&value={{ value }}{% endif %}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ results.number }} of {{ results.paginator.num_pages }}</a></li>
+                            {% if results.has_next %}
+                                <li class="next"><a href="?page={{ results.next_page_number }}{% if data_found %}&data_found={{ data_found }}&type={{ type }}&value={{ value }}{% endif %}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+
+    </div>
+
+
+<script>
+        //$('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                globalsearchForAllUsers()
+            }
+        }
+</script>
+
+
+{% endblock %}

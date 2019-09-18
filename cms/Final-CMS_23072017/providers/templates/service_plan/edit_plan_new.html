@@ -1,0 +1,379 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <div class="well well-sm text_logo font_weight_600"><a href="{% if request.user|can_view_admin %}{% url 'plan-name-listing-admin' %}{% elif request.user|can_view_publisher %}{% url 'publisher-serviceplan-listing' %}{% else %}{% url 'plan-name-listing' %}{% endif %}" class="btn btn-info btn-sm pull-right"
+                       style="margin-top: -5px;">Go Back</a></div>
+    {% if not request.user|can_view_admin %}
+    <div style="padding-bottom:50px;"><button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button></div>
+{% endif %}
+    <!--COLLAPSE START-->
+         {% if plan_obj.stage_id != 5 %}
+
+            <div id="markAsComplate" class="collapse">
+                <div class="thumbnail p_10">
+                    <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% if request.user|is_service_caller %}{% url 'mark-caller-complete-service-plan' %}{% elif request.user|is_service_reviewer %}{% url 'mark-reverse-service-plan-to-caller'  %}{% elif request.user|can_view_publisher %}{% url 'mark-reverse-service-plan-to-caller'  %} {% endif %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ plan_obj.id }}" name="plannew-id">
+                                {% if request.user|is_service_caller %}
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in reviewer_user_data %}
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <select class="form-control" name="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Complete</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|is_service_reviewer %}
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+                        {% if request.user|is_service_reviewer %}
+                            <div class="col-md-12">
+                                <form action = "{% url 'mark-reviewer-complete-service-plan' %}" method = "post">
+                                <input type="hidden" value="{{ plan_obj.id }}" name="plannew-id">
+                                <div class="col-md-4">
+                                    <select class="form-control" name="publisher_name" id="publisher_name">
+                                        <option value="" disabled>Select Publisher User</option>
+                                        {% for b in publisher_user_data %}
+                                            <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                              <div class="col-md-4">
+                                        <select class="form-control" name="validator_name" id="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                <div class="col-md-4">
+                                    <button type = "submit"  value = "submit" class="btn btn-info" >Move to Next
+                                        Stage
+                                    </button>
+                                </div>
+                              </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-reverse-service-plan-to-reviewer' %}"
+                                  method="post">
+                                <input type="hidden" value="{{ plan_obj.id }}" name="plannew-id">
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in reviewer_user_data %}
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>
+                                    </div>
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs m_tb_20">
+              <li {% if tab == '1' %}class="active"{% endif %}><a href="#plans" data-toggle="tab">Plans</a></li>
+              <li {% if tab == '2' %}class="active"{% endif %}><a href="#tests"  data-toggle="tab">Tests</a></li>
+        </ul>
+    <!-- Tab content -->
+    <div class="tab-content">
+    	<!-- tab plans -->
+          <div class="tab-pane photo {% if tab  == '1' %} in active {% else %} fade {% endif %}" class="tab-pane active" id="plans">
+            <div class="bg_f3f3f3 p_tb_10">
+                <h1 class="font_size_18 p_l_15">Plans</h1>
+                <form action="{% url 'plannew-edit' plan_obj.id %}?tab=1" method="post">
+                    <div class="col-md-4 form-group">
+                        <label class="font_size_14">City</label>
+                        <select id="" class="form-control" name="city" required>
+                            <option value="{{ plan_obj.city.id }}">{{ plan_obj.city.name }}</option>
+                            {% for i in city %}
+                            <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="font_size_14">Provider Name</label>
+                        <select class="form-control" name="provider" required>
+                            <option value="{{ plan_obj.provider.id }}">{{ plan_obj.provider.owner_name }} || {{ plan_obj.provider.c_city }}</option>
+                            {% for i in provider_name %}
+                            <option value="{{ i.id }}">{{ i.owner_name }}&nbsp;||&nbsp;{{ i.c_city }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-4 form-group">
+                        <label class="font_size_14">Select Category</label>
+                        <select id="plancatnew" name="plancat" class="form-control" required>
+                            <option value="{{ plan_obj.plan_category.id }}">{{ plan_obj.plan_category.name }}</option>
+                            {% for i in category %}
+                            <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label class="font_size_14">Sub Category</label>
+                        <select id="plansubcatnew" name="plansubcat" class="form-control" required>
+                            <option value="{{ plan_obj.plan_sub_category.id }}">{{ plan_obj.plan_sub_category.name }}</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-8 form-group">
+                        <label class="font_size_14">Plan Name</label>
+                       <input type="text" name="planname" class="form-control" value="{{ plan_obj.other_details.plan_name }}" required>
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label class="font_size_14">Plan Duration</label>
+                        <select class="form-control" id="dur" name="duration">
+                            <option value="{{ plan_obj.other_details.plan_duration }}">{{ plan_obj.other_details.plan_duration }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 form-group">
+                       <label class="font_size_14">Min. no. of Employees</label>
+                       <select class="form-control" id="emp" name="no_of_emp">
+                            <option value="{{ plan_obj.other_details.min_emp }}">{{ plan_obj.other_details.min_emp }}</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                     <div class="col-md-2 form-group">
+                        <label class="font_size_14">Plan for Gender</label>
+                        <select id="" class="form-control" name="gender" required>
+                            <option>{{ plan_obj.other_details.gender }}</option>
+                            <option>Both</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                    </div>
+                     <div class="col-md-2 col-md-offset-2 form-group">
+                        <label class="font_size_14">Age Group</label>
+                        <select class="form-control" id="f_age" name="from_age">
+                            <option value="{{ plan_obj.other_details.from_age }}">{{ plan_obj.other_details.from_age }}</option>
+                        </select>
+                        <span style="display:inline-block; float:right; margin-top:-30px; margin-right:-22px">To </span>
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label>&nbsp;</label>
+                        <select class="form-control" id="t_age" name="to_age">
+                            <option value="{{ plan_obj.other_details.to_age }}">{{ plan_obj.other_details.to_age }}</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                     <div class="col-md-12 form-group">
+                        <label class="font_size_14">Short Description</label>
+                        <textarea rows="2" name="short_desc" class="form-control">{{ plan_obj.other_details.short_desc }}</textarea>
+                    </div>
+                     <div class="col-md-12 form-group">
+                        <label class="font_size_14">Description</label>
+                        <textarea rows="4" name="desc" class="form-control">{{ plan_obj.other_details.desc }}</textarea>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <label class="font_size_14">Instruction</label>
+                        <textarea rows="2" name="instructions" class="form-control">{{ plan_obj.other_details.instruction }}</textarea>
+                    </div>
+                <button type="submit" class="btn btn-info" style="margin-left: 15px;">Submit</button>
+                </form>
+                <div class="clearfix"></div>
+            </div>
+       	</div>
+    <div class="tab-pane photo {% if tab  == '2' %} in active {% else %} fade {% endif %}" class="tab-pane active" id="tests">
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'plannew-edit' plan_obj.id %}?tab=2">
+                {% csrf_token %}
+                <div class="tableschedule" style="border: 1px solid #FFF;">
+
+                  <div class="form-group col-md-2">
+                          <label class="font_weight_400">Plan Detail</label>
+                          <select id="plandetail" name="detail" class="form-control" required>
+                              <option value="">Select Detail</option>
+                              {% for i in plan_detail %}
+                                    <option value="{{i.id}}">{{i.name}}</option>
+                              {% endfor %}
+                              </select>
+                  </div>
+                   <div class="form-group col-md-2">
+                    <label class="font_weight_400">Plan Component</label>
+                            <select id="plancomponent" name="component" class="form-control" required>
+                                    <option value="">Select Component</option>
+                              </select>
+                   </div>
+                <div class="form-group col-md-2">
+                        <label class="font_weight_400">Plan Sub Component</label>
+                        <select id="plansubcomponent" name="subcomponent" class="form-control" required>
+                                    <option value="">Select SubComponent</option>
+                              </select>
+                </div>
+                <div class="form-group col-md-2">
+                        <label class="font_weight_400">Count</label>
+                        <select id="amountcount" name="test_count" class="form-control" required>
+                                    <option value=""></option>
+                              </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-info m_t_30">Create Test</button>
+                </div>
+                </div>
+                <!--RIGHT PANEL END-->
+            </form>
+    <div class="table_modify_for_all m_t_15">
+        <table class="table table-bordered">
+            <thead class="bg_ededed">
+                <tr>
+                    <th>Plan Detail</th>
+                    <th>Plan Component</th>
+                    <th>Plan Sub Component</th>
+                    <th>Count</th>
+                    <th>Total Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            {% for i in plan_obj.test_details %}
+                {% for j in i.d_comp %}
+                    {% for k in j.c_subcomp %}
+                        <tr>
+                            <td>{{ i.d_name | capfirst }}</td>
+                            <td>{{ j.c_name | capfirst }}</td>
+                            <td>{{ k.s_name | capfirst }}</td>
+                            <td>{{ k.s_count }}</td>
+                            <td>{{ k.s_amount }}</td>
+                            <td><a class="btn btn-danger btn-sm p_0"
+                               href="{% url 'delete-test' plan_obj.id %}?s_name={{ k.s_name }}">
+                                <i class="fa fa-trash-o text-danger fa-fw text_white"></i></a></td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+            <tr>
+                <td colspan="4">Total Price</td>
+                <td>{{ plan_obj.total_price }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <form method="post" action="{% url 'plannew-edit' plan_obj.id %}?tab=2">
+                {% csrf_token %}
+                <div class="tableschedule" style="border: 1px solid #FFF;">
+                   <div class="form-group col-md-2">
+                   <input type="hidden" name="dc" value="dc">
+                    <label class="font_weight_400">Discounted Rate</label>
+                       <input type="text" placeholder="Discounted Rate" class="form-control" name="dis_price" value="{{ plan_obj.discounted_price }}">
+                   </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-info m_t_30">Submit</button>
+                </div>
+                </div>
+                <!--RIGHT PANEL END-->
+            </form>
+
+
+         </div><!-- tab create Test -->
+
+  	</div> <!-- end Tab content -->
+
+
+
+
+
+    <script>
+    $(function(){
+    var $select = $("#f_age");
+    for (i=1;i<=100;i++){
+        $select.append($('<option></option>').val(i).html(i))
+        }
+    });
+    $(function(){
+    var $select = $("#t_age");
+    for (i=1;i<=100;i++){
+        $select.append($('<option></option>').val(i).html(i))
+        }
+    });
+    $(function(){
+    var $select = $("#emp");
+    for (i=1;i<=100;i++){
+        $select.append($('<option></option>').val(i).html(i))
+        }
+    })
+    $(function(){
+    var $select = $("#dur");
+    for (i=1;i<=365;i++){
+        $select.append($('<option></option>').val(i).html(i))
+        }
+    });
+    $(function(){
+    var $select = $("#amountcount");
+    for (i=1;i<=20;i++){
+        $select.append($('<option></option>').val(i).html(i))
+        }
+    });
+    </script>
+{% endblock %}

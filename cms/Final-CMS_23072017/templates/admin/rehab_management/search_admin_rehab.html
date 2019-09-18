@@ -1,0 +1,74 @@
+<div class="table-responsive table_modify_for_all p_tb_10">
+    <table class="table table-bordered m_b_0">
+        <thead class="bg_ededed">
+        <tr>
+            <th><input id="checkAll" type="checkbox"/></th>
+            <th>Sr No</th>
+            <th>Rehab Name</th>
+            <th>City</th>
+            <th>Location</th>
+            <th>Current User</th>
+            <th>Stage</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if rehab %}
+            {% for rehab in rehab %}
+                <tr>
+                    <td><input type="checkbox" value="{{ rehab.id }}"></td>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ rehab.clinic_name | capfirst }}</td>
+                    <td>{{ rehab.city.name | capfirst }}</td>
+                    <td>{{ rehab.locality.name | capfirst }}</td>
+                    <td>{{ rehab.current_user.username | capfirst }}</td>
+                    <td>{{ rehab.stage.stage_name | capfirst }}</td>
+                    <td>{{ rehab.createdAt }}</td>
+                    <td>{{ rehab.updatedAt }}</td>
+                    <td><a class="btn btn-default btn-sm p_0" href="{% url 'time-schedule-rehab' rehab.id %}"><i class="fa fa-clock-o fa-fw text_333"></i></a>
+                        <a class="btn btn-default btn-sm p_0" href="{% url 'rehab-listing-edit' rehab.id %}?tab=1"><i
+                              class="fa fa-pencil-square-o fa-fw"></i></a> | <a href="{% if rehab.is_disable %}{% url 'any-master-object-activate' rehab.id 42 %}{% else %}{% url 'any-master-object-deactivate' rehab.id 42 %}{% endif %}"
+                                                                                      class="btn btn-default btn-sm">
+                                {% if rehab.is_disable %}Enable {% else %}Disable {% endif %}</a></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="7"><b>Rehab's Name could not be found in system...<span class='fa fa-frown-o fa-lg'></span></b></td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+    {% if rehab %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if rehab.has_previous %}
+                            <li class="prev"><a href="?page={{ rehab.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ rehab.number }} of {{ rehab.paginator.num_pages }}</a></li>
+                        {% if rehab.has_next %}
+                            <li class="next"><a href="?page={{rehab.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+      {% endif %}
+<script>
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+        var $rows = $('#table tr');
+        $('#search').keyup(function () {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function () {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+
+
+    </script>
+
+</div>

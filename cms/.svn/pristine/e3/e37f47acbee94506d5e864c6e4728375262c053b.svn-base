@@ -1,0 +1,445 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+    <!--Right Start-->  {% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+             id="alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+
+        <!-- <div style="padding-bottom:0;" class="border_5_light_white p_t_10">
+            <div class="row m_0">
+             <input type="hidden" value="doctor" id="type_of"/>
+                <div class="col-sm-4">
+                    <div class="form-group"><select class="form-control" id="stage">
+                        <option>----Select Stage---</option>
+                        {% for c in stage_data %}
+                            <option value="{{ c.id }}">{{ c.stage_name }}</option>
+                        {% endfor %}
+                    </select></div>
+
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group"><select class="form-control" id="telecaller" name="users_data">
+                        <option>---Select Users---</option>
+                    </select></div>
+                </div>
+                <div class="col-sm-4 text-right">
+
+{#                    <form method ='post' target="{% url 'excel-doctor' %}">#}
+                   </a>
+                    <button class="btn btn-info" type="button" onclick="LIveDoctorAssign()">Assign</button>
+                </div>
+
+            </div>
+        </div> -->
+
+
+        <h4 class="font_weight_600 text_white m_t_0" ><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion</h4>
+
+        <form role="form" method="get" action="{% url 'sponsored_ranks_deleted_schedules' %}">
+            <button type="submit" class="btn btn-info btn-sm">Apply</button>
+            <a href="{% url 'live_doctor_assignment' %}" class="btn btn-warning btn-sm">Reset</a>
+
+{#          {% if doctor_data_obj %}#}
+{#              <div class="text-right"  style="margin-top: -61px">#}
+{#                    <ul class="pagination">#}
+{#                        {% if doctor_data_obj.has_previous %}#}
+{#                            <li class="prev"><a onclick="add_pagination('{{ doctor_data_obj.previous_page_number }}')" href="javascript:void(0)">Prev</a></li>#}
+{#                        {% endif %}#}
+{#                        <li><a>Page {{ doctor_data_obj.number }} of {{ doctor_data_obj.paginator.num_pages }}</a></li>#}
+{#                        {% if doctor_data_obj.has_next %}#}
+{#                            <li class="next"><a onclick="add_pagination('{{ doctor_data_obj.next_page_number }}')" href="javascript:void(0)">Next</a></li>#}
+{#                        {% endif %}#}
+{#                    </ul>#}
+{#              </div>#}
+{#            {% endif %}#}
+
+
+            <div class="row m_tb_10">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="filter" name="x">
+                        <select id="city" class="chosen-select" name="city">
+                            {% if not city_filter %}
+                                <option value="">--Select City--</option>
+                            {% endif %}
+                            {% if city_obj %}
+                                {% for r in city_obj %}
+                                    <option value="{{ r.id }}"
+                                            {% if city_filter == r.id|slugify %}selected{% endif %}>{{ r.name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select class="chosen-select" name="city_location" id="city_location">
+
+                            {% for l in city_location_obj %}
+
+                                <option value="{{ l.id }}"
+                                        {% if city_location_filter_length == l.id %}selected {% endif %}>
+                                    {% if city_location_obj %}{{ l.name }}{% else %}Select city
+                                        Location{% endif %}</option>
+
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <select id="category_data" class="chosen-select" name="category">
+                            {% if not category_filter %}
+                                <option value="">--Select Category--</option>
+                            {% endif %}
+                            {% if category_obj %}
+                                {% for u in category_obj %}
+                                    <option value="{{ u.id }}"
+                                            {% if category_filter == u.id %}selected{% endif %}>{{ u.name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="filter" name="x">
+                        <select id="stage_da" class="chosen-select" name="stage_da">
+                            {% if not stage_filter %}
+                                <option value="">--Select Stage--</option>
+                            {% endif %}
+                            {% if stage_data %}
+                                {% for s in stage_data %}
+                                    <option value="{{ s.id }}"
+                                            {% if stage_filter == s.id %}selected{% endif %}>{{ s.stage_name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="hidden" value="filter" name="x">
+                        <select id="user_da" class="chosen-select" name="user_da">
+                            {% if not user_filter %}
+                                <option value="">--Select User--</option>
+                            {% endif %}
+                            {% if user_data %}
+                                {% for t in user_data %}
+                                    <option value="{{ t.id }}"
+                                            {% if user_filter == t.id %}selected{% endif %}>{{ t.username|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+
+        <div class="input-group">
+            <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                    <span class="input-group-btn"> <button class="btn btn-default"
+                                                           onclick="SearchDeletedSchedulesLiveDoctor()" id="sbutton"> Search
+                    </button></span>
+        </div>
+<div style="overflow:auto; height:400px; padding: 5px 20px;">
+
+--------{{ del_sch_mainlist }}---------
+        <div class="table-responsive table_modify_for_all p_tb_10">
+            <table class="table table-bordered m_b_0">
+                <thead class="bg_ededed">
+                <tr>
+                    <th></th><!--<input id="checkAll" type="checkbox"/></th> -->
+                    <th>Sr. No.</th>
+                    <th>Doctor ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>City</th>
+                    <th>Locality</th>
+                    <th>Category</th>
+                    <th>CC Key</th>
+                    <th>CC Sponsored Rank</th>
+                    <th>CLC Key</th>
+                    <th>CLC Sponsored Rank</th>
+                    <th>Current User</th>
+                    <th>Stage</th>
+
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for d in del_sch_mainlist %}
+                    <tr>
+                        <td><input type="checkbox" value="{{ d.0.id }}" name="remove_ranks_chkbox"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td><input style="width:100%!important;color: black!important;" type="text" value="{{ d.0.id }}" name="doctor_id"disabled ></td>
+                        <td>{{ d.0.firstName | capfirst}}</td>
+                        <td>{{ d.0.lastName | capfirst}}</td>
+                        <td>{{ d.2.city.name | capfirst}}</td>
+                        <td>{{ d.2.locality.name | capfirst}}</td>
+                        <td>{{ d.1 | capfirst}}</td>
+                        <td ><input style="width:100%!important;color: black!important;" type="text" value="{{ d.5 }}" name="Spon_CC_KEY" disabled ></td>
+                        <td ><input style="width:60%!important;color: black!important;" type="text" value="{{ d.3 }}" name="Spon_CC_RANK_list"></td>
+                        <td ><input style="width:100%!important;color: black!important;" type="text" value="{{ d.6 }}" NAME="Spon_CLC_KEY" disabled></td>
+                        <td ><input style="width:60%!important;color: black!important;" type="text" value="{{ d.4 }}" name="Spon_CLC_RANK_list"></td>
+                        <td>{{ d.0.current_user.username | capfirst}}</td>
+                        <td>{{ d.0.stage.stage_name | capfirst}}</td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+             <button class="btn btn-success" type="button" onclick="ResetLiveDoctorSponsoredRank()">Update</button>
+
+         <!--   {#  {% if doctor_data_obj %}#}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {# {% if doctor_data_obj.has_previous %} #}
+                            <li class="prev"><a onclick="add_pagination('{# {{ doctor_data_obj.previous_page_number }} #}')" href="javascript:void(0)">Prev</a></li>
+                        {# {% endif %} #}
+                        <li><a>Page {# {{ doctor_data_obj.number }} #} of {# {{ doctor_data_obj.paginator.num_pages }} #}</a></li>
+                        {# {% if doctor_data_obj.has_next %} #}
+                            <li class="next"><a onclick="add_pagination('{# {{ doctor_data_obj.next_page_number }} #}')" href="javascript:void(0)">Next</a></li>
+                        {# {% endif %} #}
+                    </ul>
+                </div>
+            {#  {% endif %}#}  -->
+
+
+            {% if del_sch_mainlist %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if del_sch_mainlist.has_previous %}
+                            <li class="prev"><a href="?page={{ del_sch_mainlist.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&?x={{filter_name}}&city={{city_data}}&city_location={{city_location_data}}&category={{category_data}}&x={{filter_name}}&stage_da={{stage_id_data}}&x={{filter_name}}&user_da={{user_id_data }}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ del_sch_mainlist.number }} of {{ del_sch_mainlist.paginator.num_pages }}</a></li>
+                        {% if del_sch_mainlist.has_next %}
+                            <li class="next"><a href="?page={{del_sch_mainlist.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if filter_name %}&?x={{filter_name}}&city={{city_data}}&city_location={{city_location_data}}&category={{category_data}}&x={{filter_name}}&stage_da={{stage_id_data}}&x={{filter_name}}&user_da={{user_id_data }}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+
+
+        </div>
+</div>
+    </div>
+    <!--Right End-->
+    <script>
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+        var $rows = $('#table tr');
+        $('#search').keyup(function () {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function () {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+        $(document).ready(function () {
+            $("#city").chosen().change(function () {
+                var city = $('#city').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                $.ajax({
+                    type: 'post',
+                    url: DOMAIN + '/get-cities-list/',
+                    data: {action: "get_filter", city_id: city},
+                    beforeSend: function () {
+                        var text = 'getting city location  of ' + city + ' . please wait..';
+                        ajaxindicatorstart(text);
+                    },
+                    success: function (data) {
+                        ajaxindicatorstop();
+                        // alert(data);
+
+                        {#                 console.log(JSON.parse(data));#}
+                        var obj = JSON.parse(data);
+                        //alert(obj);
+                        {#                 var len_obj = Object.keys(obj).length;#}
+                        //console.log(len_obj);
+                        //alert(len);
+                        if (obj.length != 0) {
+                            $("#city_location option").remove();
+                            $("#city_location").trigger("chosen:updated");
+                            var key_sel = '';
+                            var value_sel = 'Select city Location';
+                            var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                            $("#city_location").append(select);
+                            $("#city_location").val(key_sel);
+                            $("#city_location").trigger("chosen:updated");
+                            for (var i = 0; i < obj.length; i++) {
+                                var name = obj[i].name;
+                                name = name.capitalize();
+                                var option = '<option value=' + obj[i].id + '>' + name + '</option>';
+                                $("#city_location").append(option);
+                                $("#city_location").trigger("chosen:updated")
+
+                            }
+
+                        }
+                    },
+                    error: function (jqXHR, ex) {
+                    ajaxindicatorstop();
+                    alert(ex);
+                    }
+                });
+            });
+            {#         $("#city_location").chosen().change(function () {#}
+            {#             alert($("#city_location").val())#}
+            {#         })#}
+
+        });
+
+        String.prototype.capitalize = function () {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        }
+
+    </script>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function(e){
+        if(e.keyCode == 13){
+           SearchLIveDoctorAssign()
+        }
+        }
+    </script>
+
+<script>
+    function  ResetLiveDoctorSponsoredRank(){
+    var checkedValues = $('input:checkbox:checked').map(function () {
+        return this.value;
+    }).get();
+    var formDATA = {};
+
+    Doctor_id_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Doctor_id_list.push($(this).parent().parent().children().eq(2).find("input").val());
+
+            });
+
+    for(i=0;i<=Doctor_id_list.length;i++){
+        if (Doctor_id_list[i]==""){Doctor_id_list[i]="NoValue"}
+    }
+    Doctor_id_list = (Doctor_id_list).toString().toLowerCase();
+    formDATA.Doctor_id_list = Doctor_id_list;
+
+
+    Spon_CC_KEY_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Spon_CC_KEY_list.push($(this).parent().parent().children().eq(8).find("input").val());
+
+            });
+
+   for(i=0;i<=Spon_CC_KEY_list.length;i++){
+        if (Spon_CC_KEY_list[i]==""){Spon_CC_KEY_list[i]="NoValue"}
+    }
+    Spon_CC_KEY_list = (Spon_CC_KEY_list).toString().toLowerCase();
+    formDATA.Spon_CC_KEY_list = Spon_CC_KEY_list;
+
+
+
+    Spon_CC_RANK_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Spon_CC_RANK_list.push($(this).parent().parent().children().eq(9).find("input").val());
+
+            });
+    for(i=0;i<=Spon_CC_RANK_list.length;i++){
+        if (Spon_CC_RANK_list[i]==""){Spon_CC_RANK_list[i]="NoValue"}
+    }
+    Spon_CC_RANK_list = (Spon_CC_RANK_list).toString().toLowerCase();
+    formDATA.Spon_CC_RANK_list = Spon_CC_RANK_list;
+
+
+    Spon_CLC_KEY_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Spon_CLC_KEY_list.push($(this).parent().parent().children().eq(10).find("input").val());
+
+            });
+    for(i=0;i<=Spon_CLC_KEY_list.length;i++){
+        if (Spon_CLC_KEY_list[i]==""){Spon_CLC_KEY_list[i]="NoValue"}
+    }
+    Spon_CLC_KEY_list = (Spon_CLC_KEY_list).toString().toLowerCase();
+    formDATA.Spon_CLC_KEY_list = Spon_CLC_KEY_list;
+
+
+    Spon_CLC_RANK_list = Array();
+    $.each($('input:checkbox:checked'),
+            function () {
+                //values.push($(this).parent().children('td.seven').text());
+                Spon_CLC_RANK_list.push($(this).parent().parent().children().eq(11).find("input").val());
+            });
+    for(i=0;i<=Spon_CLC_RANK_list.length;i++){
+        if (Spon_CLC_RANK_list[i]==""){Spon_CLC_RANK_list[i]="NoValue"}
+    }
+    Spon_CLC_RANK_list = (Spon_CLC_RANK_list).toString().toLowerCase();
+    formDATA.Spon_CLC_RANK_list = Spon_CLC_RANK_list;
+
+    checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+
+    if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+        alert("Please select value....");
+        return false;
+    }
+
+    formDATA.checkedValues = checkedValues;
+
+    if (formDATA.checkedValues != '') {
+        $.ajax({
+            type: 'POST',
+            url: Domain + '{% url 'reset_livedoctor_sponsranks_deleted_schedules' %}',
+            data:{formDATA: formDATA, csrfmiddlewaretoken: '{{ csrf_token }}'},
+            beforeSend: function () {
+                var text = 'Please wait....';
+                ajaxindicatorstart(text);
+            },
+            success: function (resData) {
+                ajaxindicatorstop();
+                resData = JSON.parse(resData);
+                if (resData.Redirect == true) {
+                    alert(resData.Message);
+                    window.location = resData.RedirectUrl;
+                }
+                else {
+
+                    alert(resData.Message);
+                    alert('Please click "Get Live Doctors" button to refresh the values');
+                    //window.location.reload(true);
+                }
+            },
+            error: function(data){
+                alert(JSON.stringify(data));
+                //console.log(JSON.stringify(data));
+                //location.reload();
+            }
+        });
+    }
+    else
+    {
+        alert("Please Check Rows.")
+    }
+
+}
+</script>
+
+{% endblock %}

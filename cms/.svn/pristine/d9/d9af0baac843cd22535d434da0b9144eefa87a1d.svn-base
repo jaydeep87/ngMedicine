@@ -1,0 +1,78 @@
+<{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+        {% block table %}
+
+           <p class="text-right"><a href="{% url 'organisation_facilities_add' %}" class="btn btn-info"><i class="fa fa-user fa-fw"></i> Add New Organisation Facility</a>
+
+           </p>
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Sr No</th>
+                        <th>Hospital Facility</th>
+                        <th>Status</th>
+                        <th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in org_facilities %}
+
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.name | capfirst }}</td>
+                            <td>{{ i.delete | capfirst}}</td>
+                            <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+
+
+                            <td><a class="text_white" href="{% url 'organisation_facilities_edit' i.id %}"><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.delete == False %}<a href="{% url 'any-master-object-deactivate' object_id=i.id object_type=26 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'any-master-object-activate' object_id=i.id object_type=26 %}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}</td>
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                {% if org_facilities %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if org_facilities.has_previous %}
+                                <li class="prev"><a href="?page={{ org_facilities.previous_page_number }}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ org_facilities.number }} of {{ org_facilities.paginator.num_pages }}</a></li>
+                            {% if org_facilities.has_next %}
+                                <li class="next"><a href="?page={{ org_facilities.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        {% endblock %}
+    </div>
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                Searchorg_facilities({{ request.user.id }})
+            }
+        }
+    </script>
+{% endblock %}

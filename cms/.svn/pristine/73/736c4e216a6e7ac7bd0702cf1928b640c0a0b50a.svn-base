@@ -1,0 +1,222 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+<div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+                <div class="row">
+                      <div class="panel-heading">
+                    <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                                               class="font_weight_600"> <i class="fa fa-user-md fa-fw"></i> New
+                        Doctor</a>
+                        <a href="{% url 'doctor-care-listing' %}" class="btn btn-info btn-sm pull-right"
+                           style="margin-top: -5px;">Go Back</a>
+                    </h4>
+                </div>
+                    <hr>
+                  <!--LEFT PANEL START-->
+                 <form method="post" action="{% url 'doctor-care-add'%}">
+                 {% csrf_token %}
+                  <div class="col-md-6">
+
+                    <div class="form-group">
+                      <label>Doctor List</label>
+                      <select id="doctor_id" class="chosen-select" name="doctor_id">
+                                    <option value="">--Select Doctor--</option>
+                                    {% if doctor_list %}
+                                        {% for doc in doctor_list %}
+                                            <option value="{{ doc.id }}">{{ doc.name }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                      </select>
+                    </div>
+
+
+                    <div class="form-group">
+                      <label>Doctor Care Services</label>
+                      <select id="service_id_list" class="chosen-select" name="service_id_list" multiple>
+                                    <option value="" disabled>--Select Multiple Services--</option>
+                                    {% if care_services_list %}
+                                        {% for svc in care_services_list %}
+                                            <option value="{{ svc.id }}">{{ svc.name }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                          <label>Alternate Phone</label>
+                          <input type="text" class="form-control" placeholder="Alternate Phone" name="alternate_phone">
+                    </div>
+
+                </div>
+                  <!--LEFT PANEL END-->
+
+                  <!--RIGHT PANEL START-->
+                        <div class="col-md-6">
+
+                          <div class="form-group">
+                              <label>Doctor Areas Covered</label>
+                              <input type="text" class="form-control" placeholder="Doctor Areas Covered" name="doctor_areas_covered">
+                          </div>
+
+                          <div class="form-group">
+                              <label>Doctor Rates</label>
+                              <input type="text" class="form-control" placeholder="Doctor Rates" name="doctor_rates">
+                          </div>
+
+                          <div class="form-group">
+                              <label>Doctors Packages</label>
+                              <input type="text" class="form-control" placeholder="Doctors Packages" name="doctors_packages">
+                          </div>
+
+                        </div>
+
+                  <!--RIGHT PANEL END-->
+                  <div class="clearfix col-md-12 text-right">
+                    <button type="submit" class="btn btn-info">Save</button>
+                  </div>
+                 </form>
+                </div>
+            </div>
+
+<script type="text/javascript">
+$('#is_emergency').change(function() {
+    $('#is_emergency_details').toggle();
+});
+</script>
+
+<script type="text/javascript">
+$('#talk_to_doc').change(function() {
+    $('#talk_to_doc_details').toggle();
+});
+</script>
+
+      <script type="text/javascript">
+        $(document).ready(function () {
+            $('#zone').change(function () {
+                var zone = $('#zone').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                $.ajax({
+                    type: 'post',
+                    url: DOMAIN + '/doctor/zone_location/',
+                    data: {action: "get_filter", zone_id: zone},
+                    beforeSend: function () {
+                        var text = 'getting zone location  of ' + zone + ' . please wait..';
+                        ajaxindicatorstart(text);
+                    },
+                    success: function (data) {
+                        ajaxindicatorstop();
+                        var obj = JSON.parse(data);
+
+                        if (obj.length != 0) {
+                            $("#zone_location option").remove();
+                            $("#zone_location").trigger("chosen:updated");
+                            var key_sel = "";
+                            var value_sel = 'Select Zone Location';
+                            var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                            $("#zone_location").append(select);
+                            $("#zone_location").val(key_sel);
+                            $("#zone_location").trigger("chosen:updated");
+                            for (var i = 0; i < obj.length; i++) {
+                                var option = '<option value=' + obj[i].id + '>' + obj[i].name + '</option>';
+                                $("#zone_location").append(option);
+                                $("#zone_location").trigger("chosen:updated")
+
+                            }
+
+                        }
+                    },
+                    error: function (jqXHR, ex) {
+                    }
+                });
+            });
+
+
+        });
+    </script>
+    <!--Right End-->
+    <script type="application/javascript">
+        function ValidateMobileCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{10},)*\d{10}$/.test(value));
+            if (!check) {
+                alert("Please put correct 10 digit Mobile No");
+
+            }
+            return check
+
+        }
+        function ValidatePhoneCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8},)*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct 8 digitPhone No");
+
+            }
+            return check
+
+        }
+        function ValidateFax(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8})*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct Fax No");
+
+            }
+            return check
+
+        }
+
+        function ValidatePincode(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{6})*\d{6}$/.test(value));
+            if (!check) {
+                alert("Please put correct Pin Code No");
+
+            }
+            return check
+
+        }
+
+        function validateMyForm() {
+            var mobile = ValidateMobileCSV(document.getElementById('mobile').value);
+            var phone = ValidatePhoneCSV(document.getElementById('phone').value);
+            var fax = ValidateFax(document.getElementById('fax').value);
+            var pincode = ValidatePincode(document.getElementById('pincode').value);
+            var website = isValidURL(document.getElementById('website').value)
+            if (mobile && phone && pincode && fax && website) {
+                return true
+            }
+            return false
+        }
+
+        function isValidURL(url) {
+            if (!url) {
+                return true;
+            }
+            var RegExp = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+            if (RegExp.test(url)) {
+                return true;
+            } else {
+                alert("Please put valid website url");
+                return false;
+            }
+        }
+
+    </script>
+{% endblock %}

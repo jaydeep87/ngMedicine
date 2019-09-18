@@ -1,0 +1,249 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+   id="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+
+
+<!--Right Start-->
+<div class="p_10" style="background: rgba(0,0,0,0.3);">
+   <div style="padding-bottom:0;" class="border_5_light_white p_t_10">
+      <div class="row m_0">
+         <div class="col-md-6">
+            <div class="row">
+               <div class="col-md-10">
+                  <div class="form-group">
+                     <select class="form-control" id="stage_data">
+                        <option value="">----Select Stage---</option>
+                        {% for c in stage_data %}
+                        <option value="{{ c.id }}">{{ c.stage_name }}</option>
+                        {% endfor %}
+                     </select>
+                  </div>
+               </div>
+               <div class="col-md-2"><button type="button" class="btn btn-info" onclick="SearchGlobalNewsByPublisher($('#stage_data').val(),'global')">GO</button></div>
+            </div>
+         </div>
+
+         <div class="col-md-6" style="width: 80px;" >
+                <a href="{% url 'newsfeed_error_logs' %}"><img   src="/static/images/images/notes_warning.png" alt="Smiley face" height="42" width="42"></a>
+         </div>
+
+         <div class="col-md-6 text-right" style="width: 350px;" >
+            <button class="btn btn-success" type="button" onclick="PublishNewsForPublisher('publish','global')">Publish</button>
+            <button class="btn btn-danger" type="button" onclick="UnPublishNewsForPublisher('un-publish','global')">Un publish</button>
+            <button class="btn btn-warning" type="button" onclick="PublishNewsForPublisher('publish','global')">Re publish</button>
+         </div>
+      </div>
+   </div>
+   <input type="hidden" value="globalnews" id="xx" name ="yy">
+   {% include 'publisher/markascomplete.html' %}
+   <div class="input-group">
+            <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                    <span class="input-group-btn"> <button class="btn btn-default"
+                                                           onclick="SearchGlobalFeedForPublisher({{ request.user.id }})" id="sbutton"> Search
+                    </button></span>
+   </div>
+<div style="overflow:auto; height:400px; padding: 5px 20px;">
+
+   <div class="table-responsive table_modify_for_all p_tb_10">
+      <table class="table table-bordered m_b_0">
+         <thead class="bg_ededed">
+            <tr>
+               <th><input id="checkAll" type="checkbox"/></th>
+               <th>Sr No</th>
+                <th>Topic title</th>
+                <th>Tag String</th>
+                <th>free_text</th>
+                <th>Current User</th>
+                <th>Stage</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th class="col-md-1">Action</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% if publisher_data %}
+                {% for d in publisher_data %}
+                <tr>
+                   <td><input type="checkbox" value="{{ d.id }}"></td>
+                   <td>{{ forloop.counter }}</td>
+                    <td>{{ d.topic_title | capfirst }}</td>
+                    <td>{{ d.tag_string | capfirst }}</td>
+                    <td>{{ d.free_text | capfirst }}</td>
+                    <td>{{ d.current_user.username | capfirst }}</td>
+                    <td>{{ d.stage.stage_name | capfirst }}</td>
+                    <td>{{ d.createdAt }}</td>
+                    <td>{{ d.updatedAt }}</td>
+                   {% if d.stage_id != 5 %}
+                       <td>
+                       <a  href ="{% url 'edit-global-news' news_id=d.id %}"><i class="fa fa-edit"></i></a>
+                       <span class="p_lr_10"></span>
+                       <a class="btn btn-danger btn-sm p_0"
+                                   href="{% url 'delete_newsfeed' d.id d.news_type_id %}"><i
+                                        class="fa fa-trash-o text-danger fa-fw text_white"></i></a>
+                   </td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+
+            </tr>
+                 {% endfor %}
+
+            {% else  %}
+                <tr><td colspan="8">No Data Found</td></tr>
+            {% endif %}
+
+
+         </tbody>
+      </table>
+      {% if publisher_data %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if publisher_data.has_previous %}
+            <li class="prev"><a href="?page={{ publisher_data.previous_page_number }}{% if search_data %}&search_data={{ search_data }}{% endif %}">Prev</a> </li>
+            {% endif %}
+            <li><a href="">Page {{ publisher_data.number }} of {{ publisher_data.paginator.num_pages }}</a> </li>
+            {% if publisher_data.has_next %}
+            <li class="next"><a href="?page={{ publisher_data.next_page_number }}{% if search_data %}&search_data={{ search_data }}{% endif %}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+   </div>
+</div>
+<!--Right End-->
+
+<script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function(e){
+        if(e.keyCode == 13){
+           SearchGlobalFeedForPublisher({{ request.user.id }})
+        }
+        }
+</script>
+
+
+<script>
+   $("#checkAll").change(function () {
+       $("input:checkbox").prop('checked', $(this).prop("checked"));
+   });
+   var $rows = $('#table tr');
+{#   $('#search').keyup(function () {#}
+{#       var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();#}
+{#   #}
+{#       $rows.show().filter(function () {#}
+{#           var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();#}
+{#           return !~text.indexOf(val);#}
+{#       }).hide();#}
+{#   });#}
+   $('#alert').fadeIn().delay(2000).fadeOut('slow');
+   /**
+    * publisher
+     * @constructor
+    */
+   function PublishNewsForPublisher(type,data_type){
+       var checkedValues = $('input:checkbox:checked').map(function () {
+           return this.value;
+       }).get();
+       var formDATA = {};
+       checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+       if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+           alert("Please select value....");
+           return false;
+       }
+       formDATA.checkedValues = checkedValues;
+       formDATA.type = type;
+       formDATA.data_type = data_type;
+       if (formDATA.checkedValues != '') {
+           $.ajax({
+               type: 'POST', url: Domain + '{% url 'put-publish-global-feed' %}', data: formDATA, beforeSend: function () {
+                   var text = 'Please wait....';
+                   ajaxindicatorstart(text);
+               },
+               success: function (resData) {
+                   ajaxindicatorstop();
+                   resData = JSON.parse(resData);
+                   if (resData.Redirect == true) {
+                       alert(resData.Message);
+                       window.location = resData.RedirectUrl;
+                   }
+                   else {
+   
+                       alert(resData.Message);
+                       window.location.reload(true);
+                   }
+               },
+               error: function(data){
+                   alert('Something Bad Happened');
+                   location.reload();
+               }
+           });
+       }
+       else
+       {
+           alert("Please select News.")
+       }
+
+   }
+   /**
+    *
+    * @param type
+    * @param data_type
+    * @returns {boolean}
+    * @constructor
+    */
+   function UnPublishNewsForPublisher(type,data_type){
+       var checkedValues = $('input:checkbox:checked').map(function () {
+           return this.value;
+       }).get();
+       var formDATA = {};
+       checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+       if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+           alert("Please select value....");
+           return false;
+       }
+       formDATA.checkedValues = checkedValues;
+       formDATA.type = type;
+       formDATA.data_type = data_type;
+       if (formDATA.checkedValues != '') {
+           $.ajax({
+               type: 'POST', url: Domain + '{% url 'out-publish-global-feed' %}', data: formDATA, beforeSend: function () {
+                   var text = 'Please wait....';
+                   ajaxindicatorstart(text);
+               },
+               success: function (resData) {
+                   ajaxindicatorstop();
+                   resData = JSON.parse(resData);
+                   if (resData.Redirect == true) {
+                       alert(resData.Message);
+                       window.location = resData.RedirectUrl;
+                   }
+                   else {
+
+                       alert(resData.Message);
+                       window.location.reload(true);
+                   }
+               },
+               error: function(data){
+                   alert('Something Bad Happened');
+                   location.reload();
+               }
+           });
+       }
+       else
+       {
+           alert("Please select News.")
+       }
+
+   }
+
+       
+</script>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'live_doctor_by_users' %}">
+
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Live Doctor by Users</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'live_doctor_by_stages' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Live Doctors by Stages</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'live_doctor_assignment' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Live Doctors Assigment </h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'live_doc_notification' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Live Doctors Notification </h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href=" {% url 'live-doc-mark-for-search-results' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Manage Sponsored & Subscribed Ranks</h3>
+</a>
+</div>
+
+<!--<div class="col-md-4 four_member">-->
+<!--{# <a class="thumbnail" href="{% url 'live_doc_notification' %}"> #}-->
+<!--<figure><img src="{% static 'images/doctor.png' %}"></figure>-->
+<!--<h3>Live Doctors Notification</h3>-->
+<!--</a>-->
+<!--</div>-->
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'sponsored_ranks_deleted_schedules' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Manage Sponsored Ranks For Deleted Schedules </h3>
+</a>
+</div>
+
+</div>
+
+</div>
+{% endblock %}

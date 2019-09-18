@@ -1,0 +1,747 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+{% endif %}
+
+
+    <div style="padding-bottom:50px;"><button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button></div>
+
+
+    <!--COLLAPSE START-->
+         {% if rehab_obj.stage_id != 5 %}
+
+            <div id="markAsComplate" class="collapse">
+                <div class="thumbnail p_10">
+                    <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% if request.user|can_view_caller_physio_rehab %}{% url 'mark-caller-complete-rehab' %}{% elif request.user|can_view_review_physio_rehab %}{% url 'mark-reverse-rehab-to-caller'  %}{% elif request.user|can_view_publisher %}{% url 'mark-reverse-rehab-to-caller'  %} {% endif %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ rehab_obj.id }}" name="rehab_id">
+                                {% if request.user|can_view_review_physio_rehab %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {# Form portion to move lab data from publisher user to caller user#}
+                                {% if request.user|can_view_publisher %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if request.user|can_view_caller_physio_rehab %}
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            {% for b in reviewer_user_data %}
+                                                <option value="" disabled>Select Reviewer User</option>
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <select class="form-control" name="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Complete</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_review_physio_rehab %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+
+                        {% if request.user|can_view_review_physio_rehab %}
+                            <div class="col-md-12">
+                                <form action = "{% url 'mark-reviewer-complete-rehab' %}" method = "post">
+                                <input type="hidden" value="{{ rehab_obj.id }}" name="rehab_id" id="rehab_id">
+                                <div class="col-md-4">
+                                    <select class="form-control" name="publisher_name" id="publisher_name">
+                                        <option value="" disabled>Select Publisher User</option>
+                                        {% for b in publisher_user_data %}
+
+                                            <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                              <div class="col-md-4">
+                                        <select class="form-control" name="validator_name" id="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                <div class="col-md-4">
+                                    <button type = "submit"  value = "submit" class="btn btn-info" >Move to Next
+                                        Stage
+                                    </button>
+                                </div>
+                              </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# NEW Form  to move lab data from publisher user to review user#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-reverse-rehab-to-reviewer' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ rehab_obj.id }}" name="rehab_id">
+
+
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in reviewer_user_data %}
+
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>
+                                    </div>
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+
+
+                {# NEW Form  to PUBLISH  lab data from and move lab to stage 4 (PUBLISHED)#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-complete-publisher-rehab-stage-four' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ rehab_obj.id }}" name="rehab_id">
+
+
+                                <button type = "submit"  value = "submit" class="btn btn-info" >Publish To Live
+                                    </button>
+
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+         {% endif %}
+            </div>
+        {% endif %}
+        <!--COLLAPSE END-->
+
+
+
+
+
+
+
+
+                <ul class="nav nav-tabs">
+                    <li class="{% if tab == '1' %}active{% endif %}"><a href="#rehabtab1"
+                                                                        onclick="refreshURL('{% url 'rehab-listing-edit' rehab_obj.id %}?tab=1')"
+                                                                        data-toggle="tab">Rehab Details</a></li>
+{#                    <li class="{% if tab == '2' %}active{% endif %}"><a href="#labtab2"#}
+{#                                                                        onclick="refreshURL('{% url 'lab-listing-edit' lab.id %}?tab=2')"#}
+{#                                                                        data-toggle="tab">Lab Tests</a></li>#}
+{#                    <li class="{% if tab == '3' %}active{% endif %}"><a href="#labtab3"#}
+{#                                                                        onclick="refreshURL('{% url 'lab-listing-edit' lab.id %}?tab=3')"#}
+{#                                                                        data-toggle="tab">Manage Branches</a></li>#}
+{#                    <li class="{% if tab == '4' %}active{% endif %}"><a href="#labtab4"#}
+{#                                                                        onclick="refreshURL('{% url 'lab-listing-edit' lab.id %}?tab=4')"#}
+{#                                                                        data-toggle="tab">Package Association</a></li>#}
+
+
+                </ul>
+
+
+
+
+        <div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+        <div class="well well-sm text_logo font_weight_600"><i class="fa fa-flask fa-fw"></i> Edit Rehab
+
+{#            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info btn-sm pull-right"#}
+{#                       style="margin-top: -5px;">Go Back</a>#}
+
+            <a href="{% if user_is_publisher %}{% url  'publisher-rehab-listing'  %}{% elif request.user.is_superuser%} {% url 'rehab-assignment' %} {% else %}{% url  'rehab-listing' %}{% endif %}" class="btn btn-info btn-sm pull-right">Go Back</a>
+
+
+        </div>
+        {% if tab == '1' %}
+            <div class="row" id="rehabtab1">
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'rehab-listing-edit' rehab_obj.id %}?tab=1">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Rehab Clinic Name</label>
+                        <input type="text" class="form-control" name="clinic_name" value="{{ rehab_obj.clinic_name }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rehab Address</label>
+                        <textarea rows="2" class="form-control"  name="address">{{ rehab_obj.address }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pincode</label><span style="color: orangered;">&nbsp;&nbsp;*max 10 characters</span>
+                    <td  >
+                    <input type ="text" style="width:150px!important;" class="form-control" value="{{ rehab_obj.pincode}}" name="apincode" ></textarea>
+                    </td>
+                    </div>
+
+                     {# -------NOV 21---NISHANK--------START---  #}
+
+                       <div class="form-group">
+                        <label>Rehab Type</label>
+                        <select id="rehab_type" class="chosen-select" name="rehab_type" multiple>
+                            <option value="" disabled>--Select Type--</option>
+                            {% for type in rehab_type_master %}
+                                     {% if type.id|slugify in rehab_type_list %}
+                                     <option value="{{ type.id }}" selected>{{ type.name | capfirst}}</option>
+                                     {% else %}
+                                     <option value="{{ type.id }}" >{{ type.name | capfirst}}</option>
+                                     {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+
+                        <div class="form-group">
+                        <label>Rehab Services </label>
+                        <select id="rehab_services" class="chosen-select" name="rehab_services" multiple>
+                            <option value="" disabled>--Select Service--</option>
+                            {% for service in rehab_services_master %}
+                                {% if service.id|slugify in rehab_services_list %}
+                                <option value="{{ service.id }}" selected>{{ service.name | capfirst}}</option>
+                                {% else %}
+                                <option value="{{ service.id }}">{{ service.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+
+
+                        <div class="form-group">
+                        <label>Rehab Speciality</label>
+                        <select id="rehab_speciality" class="chosen-select" name="rehab_speciality" multiple>
+                            <option value="" disabled>--Select Speciality--</option>
+                            {% for speciality in rehab_speciality_master %}
+                             {% if speciality.id|slugify in rehab_speciality_list %}
+                             <option value="{{ speciality.id }}" selected>{{ speciality.name | capfirst}}</option>
+                             {% else %}
+                             <option value="{{ speciality.id }}" >{{ speciality.name | capfirst}}</option>
+                             {% endif %}
+                            {% endfor %}
+                        </select>
+                        </div>
+
+
+
+
+                     {# -------NOV 21---NISHANK--------End--- #}
+
+                    <div class="form-group">
+                        <label>Country</label>
+                        <select id="zone" class="chosen-select" name="country_id">
+                            <option value="">--Select Country--</option>
+                            {% for i in country_obj %}
+                                {% if  i.id == rehab_obj.country_id%}
+                                <option value="{{ i.id }}"selected>{{ i.name | capfirst}}</option>
+                                {% else %}
+                                 <option value="{{ i.id }}">{{ i.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>State</label>
+                        <select id="state" class="chosen-select" name="state_id">
+                            <option value="">--Select State--</option>
+                            {% for i in state_obj %}
+                                {% if  i.id == rehab_obj.state_id%}
+                                <option value="{{ i.id }}"selected>{{ i.name | capfirst}}</option>
+                                {% else %}
+                                <option value="{{ i.id }}">{{ i.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>City</label>
+                        <select id="city" class="chosen-select" name="city_id">
+                            {% for cityc in city %}
+                                {% if rehab_obj.city_id == cityc.id %}
+                                    <option value="{{ rehab_obj.city.id }}" selected>{{ rehab_obj.city.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ cityc.id }}" >{{ cityc.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <select id="locality" class="chosen-select" name="locality_id">
+                            {% for loc in locality %}
+                            {% if rehab_obj.locality_id == loc.id %}
+                             <option value="{{ rehab_obj.locality.id }}" selected>{{ rehab_obj.locality.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {# -------Locality to from 25nNov Nishank start ----------------- #}
+                        <div class="form-group" style="border: 2px white">
+                        <h3>Area Covered</h3>
+
+                        <label>FROM</label>
+                        <select id="location-2" class="chosen-select" name="locality_idfrom">
+                            <option value ='msg'>----Select Locality---</option>
+                            {% for loc in locality %}
+                            {% if rehab_obj.rehab_locality_coverage_from_id == loc.id %}
+                             <option value="{{ loc.id }}" selected>{{ loc.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+
+
+                        <label>TO</label>
+                        <select id="location-3" class="chosen-select" name="locality_idto">
+                            <option value ='msg'>----Select Locality---</option>
+                            {% for loc in locality %}
+                            {% if rehab_obj.rehab_locality_coverage_to_id == loc.id %}
+                             <option value="{{ loc.id }}" selected>{{ loc.name | capfirst}}</option>
+                            {% else %}
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+
+                        </div>
+
+                     <div class="form-group">
+                        <label>Rehab Website</label>
+                        <input type="text" class="form-control" name="website" value = "{{ rehab_obj.website }}">
+                     </div>
+                    {# -------Locality to from 25nNov Nishank start ----------------- #}
+
+
+                    <div class="form-group" style="border: 2px white">
+                        <div class="checkbox m_tb_10">
+
+                                            <input style="height: 30px;" type="checkbox" class="form-control"
+                                                       name="is_emergency"
+                                                       {% if rehab_obj.is_emergency %}value="1" checked {% else %}value="0"
+                                                {% endif %}
+                                                onclick="$(this).attr('value', this.checked ? 1 : 0)">Emergency Services Available</label>
+
+                           </div>
+                           </div>
+
+
+
+{#                    <div class="form-group">#}
+{#                        <label>Rate</label>#}
+{#                        <input type="text" value="{{ lab.rate }}" class="form-control" placeholder="Rate" name="rate">#}
+{#                    </div>#}
+                </div>
+                <!--LEFT PANEL END-->
+
+                <!--RIGHT PANEL START-->
+                <div class="col-md-6">
+{#                    <div class="form-group">#}
+{#                        <label>Pathology Doctor Name</label>#}
+{#                        <input type="text" class="form-control" value="{{ lab.pathology_doctor_name }}"#}
+{#                               name="pathology_doctor_name" placeholder="Doctor Name">#}
+{#                    </div>#}
+
+                  <div class="form-group">
+                        <label>Telephone</label>
+                        <input type="text" class="form-control" value="{{ rehab_obj.telephone }}" name="telephone">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        <input type="text" class="form-control" value="{{ rehab_obj.mobile }}" name="mobile">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" class="form-control" value="{{ rehab_obj.email }}" name="email">
+                    </div>
+{#                    <div class="form-group">#}
+{#                        <label>Rehab Collection Timings</label>#}
+{#                        <input type="text" class="form-control" placeholder="Rehab Collection Timings" name="rehab_collection_timing">#}
+{#                    </div>#}
+
+                    <div class="form-group">
+                        <label>Rates</label>
+                        <input type="text" class="form-control" value="{{ rehab_obj.rates }}" name="rates">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rehab Doctor Name</label>
+                        <input type="text" class="form-control" value="{{ rehab_obj.doctor_name }}" name="doctor_name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Experience</label>
+                        <input type="text" class="form-control" value="{{ rehab_obj.experience }}" name="experience">
+                    </div>
+                    <div class="form-group">
+                        <label>Qualification</label>
+                        <input type="text" class="form-control" value="{{ rehab_obj.qualification }}" name="qualification">
+                    </div>
+
+
+
+                         {# ----------------------Doctor Attached end--------------- #}
+
+
+{#                        {% endif %}#}
+
+                    </div>
+                    <div class="clearfix col-md-12 text-right">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                </div>
+                <!--RIGHT PANEL END-->
+            </form>
+        </div>
+
+
+
+        {% endif %}
+</div>
+
+    <!--Right End-->
+    <script>
+        var clone_indexa = $("#wrap1").length;
+        var clone_indexb = $("#wrap2").length;
+        var clone_indexc = $("#wrap3").length;
+        var clone_indexd = $("#wrap4").length;
+
+
+        $("#btn1").click(function () {
+            $("#wrap1").append('<div id = "in1"  class="form-group col-md-12"><input type="text" name="investigations" class="form-control" placeholder="Investigations" ></div>');
+            clone_indexa++;
+
+        });
+        $("#btn2").click(function () {
+            if (clone_indexa > 1) {
+                $("#in1").remove();
+
+                clone_indexa--;
+
+            }
+        });
+
+        $("#btn3").click(function () {
+            $("#wrap2").append('<div id = "in2"  class="form-group col-md-12"><input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests" ></div>');
+            clone_indexb++;
+        });
+        $("#btn4").click(function () {
+            if (clone_indexb > 1) {
+                $("#in2").remove();
+                clone_indexb--;
+            }
+        });
+
+        $("#btn5").click(function () {
+            $("#wrap3").append('<div id = "in3"  class="form-group col-md-12"><input type="text" name="diabetes_evaluation" class="form-control" placeholder="Diabetes Evaluation" ></div>');
+            clone_indexc++;
+        });
+        $("#btn6").click(function () {
+            if (clone_indexc > 1) {
+                $("#in3").remove();
+                clone_indexc--;
+            }
+        });
+
+        $("#btn7").click(function () {
+            $("#wrap4").append('<div id = "in4" class="form-group col-md-12"><input type="text" name="Consultations" class="form-control" placeholder="Consultations" ></div>');
+            clone_indexd++;
+        });
+        $("#btn8").click(function () {
+            if (clone_indexd > 1) {
+                $("#in4").remove('');
+                clone_indexd--;
+            }
+        });
+
+    </script>
+
+
+
+    <script>
+
+    function refreshURL(url) {
+                    window.location = url
+                }
+
+
+     $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    function readURL(input) {
+
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      $('#blah').attr('src', e.target.result);
+
+      $('#blah').hide();
+      $('#blah').fadeIn(650);
+
+    };
+
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#imgInp").change(function() {
+  readURL(this);
+});
+var clone_index = $("#app").length;
+
+$("#btnn1").click(function(){
+        $("#sss").append('<div id="app"><div class="form-group col-md-6"><label>Lab Test</label><select  class="chosen-select" name="test_name" ><option value="" disabled>--Select Test--</option>{% for test in lab_tests_all %}<option value="{{ test.name }}">{{ test.name | capfirst}}</option>{% endfor %}</select></div><div class="form-group col-md-6"><label>Lab Test Price</label><textarea class="form-control" rows="1" name="test_price" placeholder = "Test Price"></textarea></div><div class="clearfix"></div></div>');
+    clone_index++;
+    });
+     $("#btnn2").click(function(){
+         if(clone_index>1){
+        $("#app").remove();
+             clone_index--;
+             }
+    });
+
+    var clone_indextwo = $("#insert").length;
+
+$("#btn1new").click(function(){
+        $("#appnew").append('<div id = "insert" class="form-group col-md-6"><textarea class="form-control" placeholder = "Doctor on Board" name="lab_doctors_on_board"></textarea> </div> </div>');
+    clone_indextwo++;
+    });
+     $("#btn2new").click(function(){
+         if(clone_indextwo>1){
+        $("#insert").remove();
+             clone_indextwo--;
+             }
+    });
+
+
+
+
+
+
+
+{##}
+{#var clone_indextab4bb = $("#in2").length;#}
+{##}
+{#$("#bbtn3").click(function(){#}
+{#        $("#wrapnew32").append('<div id="in2" class="form-group col-md-12"><input type="text" name="blood_tests" class="form-control" placeholder="Blood Tests"></div>');#}
+{#    clone_indextab4bb++;#}
+{#    });#}
+{#     $("#bbtn3").click(function(){#}
+{#         if(clone_indextab4bb>1){#}
+{#        $("#in2").remove();#}
+{#             clone_indextab4bb--;#}
+{#             }#}
+{#    });#}
+
+
+    $(function(){
+  $('.js-popup-link').click(function(e){
+    e.preventDefault()
+    $('#popup').dialog({modal: true}).dialog('open').load(this.href)
+  })
+})
+
+
+    </script>
+
+    <script>
+    $(document).ready(function () {
+            $("#state").chosen().change(function () {
+                var state = $('#state').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (state > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_city/',
+                        data: {action: "get_filter", state_id: state},
+                        beforeSend: function () {
+                            var text = 'Getting City  of ' + state + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.city_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.city_list.length != 0) {
+                                $("#city option").remove();
+                                $("#city").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select City--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#city").append(select);
+                                $("#city").val(key_sel);
+                                $("#city").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.city_list.length; i++) {
+                                    var option = '<option value=' + obj.city_list[i].id + '>' + obj.city_list[i].name + '</option>';
+                                    $("#city").append(option);
+                                    $("#city").trigger("chosen:updated")
+
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select State...")
+                }
+
+
+            });
+
+            $("#city").chosen().change(function () {
+                var city = $('#city').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                if (city > 0) {
+                    $.ajax({
+                        type: 'post',
+                        url: DOMAIN + '/get_location/',
+                        data: {action: "get_filter", city_id: city},
+                        beforeSend: function () {
+                            var text = 'Getting Location of ' + city + ' . Please wait..';
+                            ajaxindicatorstart(text);
+                        },
+                        success: function (data) {
+                            ajaxindicatorstop();
+                            // alert(data);
+
+                            {#                 console.log(JSON.parse(data));#}
+                            var obj = JSON.parse(data);
+                            {#                        alert(obj.location_list[0].id);#}
+                            {#                        console.log(obj);#}
+                            {#                 var len_obj = Object.keys(obj).length;#}
+                            //console.log(len_obj);
+                            //alert(len);
+                            if (obj.location_list.length != 0) {
+                                $("#location option").remove();
+                                $("#location").trigger("chosen:updated");
+                                var key_sel = '';
+                                var value_sel = '--Select Location--';
+                                var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                                $("#location").append(select);
+                                $("#location").val(key_sel);
+                                $("#location").trigger("chosen:updated");
+                                for (var i = 0; i <= obj.location_list.length; i++) {
+                                    var option = '<option value=' + obj.location_list[i].id + '>' + obj.location_list[i].name + '</option>';
+                                    $("#location").append(option);
+                                    $("#location").trigger("chosen:updated")
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, ex) {
+                        }
+                    });
+                }
+                else {
+                    alert("Please Select City...")
+                }
+            });
+
+        });
+
+    </script>
+
+
+
+
+{% endblock user_management %}

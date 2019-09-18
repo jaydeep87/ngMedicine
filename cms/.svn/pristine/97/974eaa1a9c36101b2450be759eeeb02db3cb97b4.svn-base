@@ -1,0 +1,50 @@
+ <div class="table-responsive table_modify_for_all">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Name</th>
+                    <th>Generic NAme</th>
+                    <th>Free Text</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if drug_all_data %}
+                    {% for i in drug_all_data %}
+                        <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ i.name | capfirst }}</td>
+                        <td>{{ i.generic_name | capfirst }}</td>
+                        <td>{{ i.free_text | capfirst }}</td>
+                        <td>{{ i.createdAt }}</td>
+                        <td>{{ i.updatedAt }}</td>
+                            <td><a class="text_white" href="# {#{% url 'drug-listing-edit' i.id %} #}"><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.is_disable == False %}<a href="# {#{% url 'any-master-object-deactivate' object_id=i.id object_type=11 %}#}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="# {#{% url 'any-master-object-activate' object_id=i.id object_type=11 %}#}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}</td>
+
+                {% endfor %}
+                {% else %}
+                    <tr>
+                    <td colspan="7"><b>Drug's Name could not be found in system...<span class='fa fa-frown-o fa-lg'></span></b></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+
+            </table>
+ {% if drug_all_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if drug_all_data.has_previous %}
+                            <li class="prev"><a href="?page={{ drug_all_data.previous_page_number }}{% if search_data_two %}&search_data_two={{search_data_two}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ drug_all_data.number }} of {{ drug_all_data.paginator.num_pages }}</a></li>
+                        {% if drug_all_data.has_next %}
+                            <li class="next"><a href="?page={{ drug_all_data.next_page_number }}{% if search_data_two %}&search_data_two={{search_data_two}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>

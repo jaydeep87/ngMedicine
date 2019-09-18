@@ -1,0 +1,262 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+  <div class="p_10" style="background: rgba(0,0,0,0.3);">
+        <h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Filter Criterion</h4>
+        <form role="form" method="get" action="{% url 'doctor-listing' %}">
+            <button type="submit" class="btn btn-info btn-sm">Apply</button>
+            <a href="{% url 'doctor-listing' %}" class="btn btn-warning btn-sm">Reset</a>
+
+
+            <div class="row m_tb_10">
+                <input type="hidden" value="filter" name="x">
+                <div class="col-sm-3">
+                    <div class="form-group">
+
+                        <select id="zone" class="chosen-select" name="zone">
+                            {% if not zone_filter %}
+                                <option value="">--Select Zone--</option>
+                            {% endif %}
+                            {% if zone_obj %}
+                                {% for r in zone_obj %}
+                                    <option value="{{ r.id }}"
+                                            {% if zone_filter == r.id %}selected{% endif %}>{{ r.name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <select class="chosen-select" name="zone_location" id="zone_location">
+
+                            {% for l in zone_location_obj %}
+
+                                <option value="{{ l.id }}"
+                                        {% if zone_location_filter == l.id %}selected {% endif %}>
+                                    {% if zone_location_obj %}{{ l.name }}{% else %}Select Zone
+                                        Location{% endif %}</option>
+
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <select class="chosen-select" name="category" id="ser">
+                            {% if not category_filter %}
+                                <option value="">--Select Category--</option>
+                            {% endif %}
+                            {% if category_obj %}
+                                {% for u in category_obj %}
+                                    <option value="{{ u.id }}"
+                                            {% if category_filter == u.id %}selected{% endif %}>{{ u.name|capfirst }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <select class="chosen-select" name="status_data">
+                        <option value="">----Select Status---</option>
+                        <option value="active"{% if status_data == 'active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if status_data == 'inactive' %}selected{% endif %}>De-Activated</option>
+                     </select>
+                    <div>
+                </div>
+
+            </div>
+            </div>
+            </div>
+        </form>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="input-group">
+                    <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                    <span class="input-group-btn"> <button class="btn btn-default"
+                                                           onclick="SearchDoctor({{ request.user.id }})"> Search
+                    </button></span>
+                </div>
+            </div>
+            {% if request.user|can_view_caller %}
+                <div class="col-sm-8"><p class="pull-right"><a class="btn btn-info" href="{% url 'doctor-add' %}"><i
+                        class="fa fa-user-md fa-fw"></i> Add New Doctor</a></p></div>
+            {% endif %}
+            <input type="hidden" value="doctor" id="xx" name ="yy">
+            
+        </div>
+        <br>
+        {% block table %}
+            <div style="overflow:auto; height:400px; padding: 5px 20px;">
+                <div class="table-responsive table_modify_for_all">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th><input id="checkAll" type="checkbox"/></th>
+                            <th>Sr No</th>
+                            <th>Doctor Name</th>
+                            <th>Stage</th>
+                            <th>Category</th>
+                            <th>Disabled</th>
+                            <th>Zone</th>
+                            <th>Zone Location</th>
+                            {#                        <th>City</th>#}
+                            {#                        <th>Locality</th>#}
+                            {% if request.user|can_view_caller %}
+                                <th>Status</th>{% endif %}
+                            {% if request.user|can_view_review %}
+                                <th>Previous user</th>{% endif %}
+                            <th>Created At</th>
+                            <th>Updated At</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in doctor %}
+                            <tr>
+                                <td><input type="checkbox" value="{{ i.id }}"></td>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ i.name | capfirst }}</td>
+
+                                <td>{{ i.stage.stage_name | capfirst }}</td>
+                                <td>{{ i.category.name | capfirst }}</td>
+                                <td><b>{{ i.is_disable }}</b></td>
+                                <td>{{ i.zone.name | capfirst }}</td>
+                                <td>{{ i.zone_location.name | capfirst }}</td>
+
+                                {% if request.user|can_view_caller %}
+                                    {% if i.free_text %}
+                                        <td style="color:rgba(236, 151, 31, 0.7);"> Reverted</td>{% else %}
+                                        <td>New</td>
+                                    {% endif %}
+                                {% endif %}
+                                {% if request.user|can_view_review %}
+                                    {% if not i.previous_user %}
+                                        <td style="color:white;"></td>
+                                    {% else %}
+                                        {% for j in user_data %}
+                                            {% if j.id ==  i.previous_user %}
+                                                <td style="color:white;">{{ j.username|default_if_none:"" }}</td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endif %}
+                                <td>{{ i.createdAt }}</td>
+                                <td>{{ i.updatedAt }}</td>
+                                <td><a class="text_white" href="{% url 'doctor-listing-edit' i.id %}"><i
+                                        class="fa fa-edit"></i></a>
+                                   {% if request.user|is_doctor_reviewer %}| <a href="{% if i.is_disable %}{% url 'doctor-data-enable' i.id %}{% else %}{% url 'doctor-data-deactivate' i.id %}{% endif %}"
+class="btn btn-default btn-sm">    {% if i.is_disable %}Enable {% else %}Disable {% endif %}{% endif %}</a>
+
+
+
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+
+                    </table>
+                    {% if doctor %}
+                        <div class="text-right">
+                            <ul class="pagination">
+                                {% if doctor.has_previous %}
+                                    <li class="prev"><a onclick="add_pagination('{{ doctor.previous_page_number }}')"
+                                                        href="javascript:void(0)">Prev</a></li>
+                                {% endif %}
+                                <li><a>Page {{ doctor.number }} of {{ doctor.paginator.num_pages }}</a></li>
+                                {% if doctor.has_next %}
+                                    <li class="next"><a onclick="add_pagination('{{ doctor.next_page_number }}')"
+                                                        href="javascript:void(0)">Next</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endblock %}
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#zone").chosen().change(function () {
+                var zone = $('#zone').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                $.ajax({
+                    type: 'post',
+                    url: DOMAIN + '/doctor/zone_location/',
+                    data: {action: "get_filter", zone_id: zone},
+                    beforeSend: function () {
+                        var text = 'getting zone location  of ' + zone + ' . please wait..';
+                        ajaxindicatorstart(text);
+                    },
+                    success: function (data) {
+                        ajaxindicatorstop();
+                        // alert(data);
+
+                        {#                 console.log(JSON.parse(data));#}
+                        var obj = JSON.parse(data);
+                        {#                 var len_obj = Object.keys(obj).length;#}
+                        //console.log(len_obj);
+                        //alert(len);
+                        if (obj.length != 0) {
+                            $("#zone_location option").remove();
+                            $("#zone_location").trigger("chosen:updated");
+                            var key_sel = '';
+                            var value_sel = 'Select Zone Location';
+                            var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                            $("#zone_location").append(select);
+                            $("#zone_location").val(key_sel);
+                            $("#zone_location").trigger("chosen:updated");
+                            for (var i = 0; i < obj.length; i++) {
+                                var name = obj[i].name;
+                                name = name.capitalize();
+                                var option = '<option value=' + obj[i].id + '>' + name + '</option>';
+                                $("#zone_location").append(option);
+                                $("#zone_location").trigger("chosen:updated")
+
+                            }
+
+                        }
+                    },
+                    error: function (jqXHR, ex) {
+                    }
+                });
+            });
+            {#         $("#zone_location").chosen().change(function () {#}
+            {#             alert($("#zone_location").val())#}
+            {#         })#}
+
+        });
+        String.prototype.capitalize = function () {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        };
+
+    </script>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchDoctor({{ request.user.id }})
+            }
+        }
+    </script>
+{% endblock %}

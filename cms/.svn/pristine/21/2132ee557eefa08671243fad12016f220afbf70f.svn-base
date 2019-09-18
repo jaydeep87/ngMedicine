@@ -1,0 +1,2496 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+                 xmlns="http://www.w3.org/1999/html">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+{#        <div class="m_b_10 m_s_t_10">#}
+            {#      {% if doctor_add != 'add' %}#}
+{#            <button class="btn btn-info" type="button"><i class="fa fa-file-pdf-o fa-fw"></i> Print PDF</button>#}
+{#            <span class="btn btn-info" type="button"><i class="fa-fw"></i> {{ live_doctor.name | capfirst }}</span>#}
+{#            {% if live_doctor.free_text %}#}
+{#                <span style="padding: 4px; color:white; background-color: #9c9c9c; border-radius: 3px">Reviewer Remark : {{ live_doctor.free_text | capfirst }}</span>#}
+{#            {% endif %}#}
+{#        <span style="padding: 4px; color:white; background-color: #9c9c9c; border-radius: 3px"> Validation Mode: {{ live_doctor.resource_validate.name }}</span>#}
+
+            {#          {% endif %}#}
+
+{#                <button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"#}
+{#                        type="button"><i#}
+{#                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button>#}
+                {#                {% if i.free_text %}#}
+                {#                    <p>{{ i.free_text }}</p>#}
+                {#                {% endif %}#}
+
+
+        </div>
+        <!--COLLAPSE START-->
+
+{#            <div id="markAsComplate" class="collapse">#}
+{#                <div class="thumbnail p_10">#}
+{#                    <div class="row">#}
+{#                        <div class="col-md-12 m_b_15">#}
+{#                            <form role="form" action="#}
+{##}
+{#                                    {% if request.user|can_view_caller_doc_org %}{% url 'mark-caller' %}{% elif request.user|can_view_review_doc_org %}{% url 'mark-reviewer' %}{% elif request.user|can_view_publisher %}{% url 'mark-reviewer' %}{% endif %}"#}
+{#                                  method="post">#}
+{#                                <input type="hidden" value="{{ live_doctor.id }}" name="doctor_id">#}
+{#                                <input type="hidden" value="TrUe" name="live_doc_true" id="live_doc_true">#}
+{#                                {% if request.user|can_view_review_doc_org %}#}
+{#                                    <div class="col-md-4">#}
+{#                                        <input class="form-control" type="text" value="" name="free_text"#}
+{#                                               placeholder="Comment" required>#}
+{#                                    </div>#}
+{#                                    <div class="col-md-4">#}
+{#                                        <select class="form-control" name="caller_name">#}
+{#                                            <option value="" disabled>Select Caller User</option>#}
+{#                                            {% for b in reviewer_user_data %}#}
+{##}
+{#                                                <option value="{{ b.id }}">{{ b.username }}</option>#}
+{#                                            {% endfor %}#}
+{#                                        </select>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+{##}
+{#                                {% if request.user|can_view_publisher %}#}
+{#                                    <div class="col-md-4">#}
+{#                                        <input class="form-control" type="text" value="" name="free_text"#}
+{#                                               placeholder="Comment" required>#}
+{#                                    </div>#}
+{#                                    <div class="col-md-4">#}
+{#                                        <select class="form-control" name="caller_name">#}
+{#                                            <option value="" disabled>Select Caller User</option>#}
+{#                                            {% for b in user_data_complete %}#}
+{#                                                {% if b.is_doctor_caller and b.user.is_active %}#}
+{##}
+{#                                                    <option value="{{ b.user_id }}">{{ b.user.username }}</option>#}
+{#                                                {% endif %}#}
+{#                                            {% endfor %}#}
+{#                                        </select>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+{##}
+{#                                {% if request.user|can_view_caller_doc_org %}#}
+{#                                    <div class="col-md-4">#}
+{#                                        <select class="form-control" name="reviewer_name">#}
+{#                                            {% for b in reviewer_user_data %}#}
+{#                                                <option value="" disabled>Select Reviewer User</option>#}
+{#                                                <option value="{{ b.id }}">{{ b.username }}</option>#}
+{#                                            {% endfor %}#}
+{#                                        </select>#}
+{#                                    </div>#}
+{#                                     <div class="col-md-4">#}
+{#                                        <select class="form-control" name="validator_name">#}
+{#                                        <option value="" disabled>Select Validation Choice</option>#}
+{#                                            {% for e in valid_choice %}#}
+{##}
+{#                                                <option value="{{ e.id }}">{{ e.name }}</option>#}
+{#                                            {% endfor %}#}
+{#                                        </select>#}
+{#                                    </div>#}
+{##}
+{##}
+{##}
+{#                                    <div class="col-md-4">#}
+{#                                        <button class="btn btn-info" type="submit">Complete</button>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+{#                                {% if request.user|can_view_review_doc_org %}#}
+{#                                    <div class="col-md-4">#}
+{#                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+{#                                {% if request.user|can_view_publisher %}#}
+{#                                    <div class="col-md-4">#}
+{#                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+{#                            </form>#}
+{#                        </div>#}
+{#                        {% if request.user|can_view_review_doc_org %}#}
+{#                            <div class="col-md-12">#}
+{##}
+{#                                <input type="hidden" value="{{ live_doctor.id }}" name="doctor_id" id="doctor_id">#}
+{#                                <input type="hidden" value="TrUe" name="live_doc_true" id="live_doc_true">#}
+{#                                <div class="col-md-4">#}
+{#                                    <select class="form-control" name="publisher_name" id="publisher_name">#}
+{#                                        <option value="" disabled>Select Publisher User</option>#}
+{#                                        {% for b in publisher_user_data %}#}
+{##}
+{#                                            <option value="{{ b.id }}">{{ b.username }}</option>#}
+{##}
+{#                                        {% endfor %}#}
+{#                                    </select>#}
+{#                                </div>#}
+{#                              <div class="col-md-4">#}
+{#                                        <select class="form-control" name="validator_name" id="validator_name">#}
+{#                                        <option value="" disabled>Select Validation Choice</option>#}
+{#                                            {% for e in valid_choice %}#}
+{##}
+{#                                                <option value="{{ e.id }}">{{ e.name }}</option>#}
+{#                                            {% endfor %}#}
+{#                                        </select>#}
+{#                                    </div>#}
+{##}
+{#                                <div class="col-md-4">#}
+{#                                    <button class="btn btn-info" onclick="doctor_move_to_next_stage()">Move to Next#}
+{#                                        Stage#}
+{#                                    </button>#}
+{#                                </div>#}
+{##}
+{#                            </div>#}
+{#                        {% endif %}#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{##}
+                 {# NEW Form  to move organisation data from publisher user to review user#}
+{#                 {% if request.user|can_view_publisher %}#}
+{#                  <div class="thumbnail p_10">#}
+{#                                <div class="row">#}
+{#                                        <div class="col-md-12 m_b_15 ">#}
+{#                                    <form role="form" action=" {% url 'mark-reverse-doctor-to-reviewer' %}"#}
+{#                                    method="post"  >#}
+{#                                     <input type="hidden" value="{{ live_doctor.id }}" name="doctor_id">#}
+{#                                     <input type="hidden" value="TrUe" name="live_doc_true" id="live_doc_true">#}
+{##}
+{##}
+{#                                    <div class="col-md-4 ">#}
+{#                                        <input class="form-control" type="text" value="" name="free_text"#}
+{#                                               placeholder="Comment" required>#}
+{#                                    </div>#}
+{#                                    <div class="col-md-4">#}
+{#                                        <select class="form-control" name="reviewer_name">#}
+{#                                            <option value="" disabled>Select Reviewer User</option>#}
+{#                                            {% for b in user_data_complete %}#}
+{#                                                {% if b.is_doctor_reviewer and b.user.is_active %}#}
+{##}
+{#                                                    <option value="{{ b.user_id }}">{{ b.user.username }}</option>#}
+{#                                            {% endif %}#}
+{#                                            {% endfor %}#}
+{#                                        </select>#}
+{#                                    </div>#}
+{#                                    <div class="col-md-4">#}
+{#                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>#}
+{#                                    </div>#}
+{##}
+{##}
+{##}
+{#                                     </form>#}
+{#                                </div>#}
+{#                                </div>#}
+{#                  </div>#}
+{##}
+{#                  <div class="thumbnail p_10">#}
+{#                <div class="row">#}
+{#                        <div class="col-md-12 m_b_15">#}
+{#                            <form role="form" action="  " method="post">#}
+{#                                <input type="hidden" value=" " name="doctor_id">#}
+{#                                <input type="hidden" value="TrUe" name="live_doc_true" id="live_doc_true">#}
+{##}
+{#                                <button type="submit" value="submit" class="btn btn-info">Publish To Live#}
+{#                                    </button>#}
+{##}
+{##}
+{##}
+{##}
+{#                            </form>#}
+{#                        </div>#}
+{#                </div>#}
+{#                </div>#}
+{#                  {% endif %}#}
+{##}
+{##}
+{##}
+{#            </div>#}
+
+        <!--COLLAPSE END-->
+
+        <div class="tab-content tb_five p_10" style="background:rgba(0,0,0,0.3);">
+
+            {% block doctor_data %}
+
+
+
+
+            {% endblock %}
+        </div>
+
+
+
+
+
+
+<div class="p_20 u_my_profile_tab">
+                <h1 class="m_0 text_blue">My Profile &nbsp;:{{ live_doctor.firstName}}&nbsp;{{ live_doctor.lastName  }}</h1>
+                <p>&nbsp;</p>
+                <ul class="nav nav-tabs nav-justified">
+                    <li {% if tab == '1' %}class="active"{% endif %}><a href="#basic_profiless" data-toggle="tab">Basic Profile</a></li>
+                    <li {% if tab == '2' %}class="active"{% endif %}><a href="#upload_photos" data-toggle="tab">Upload Photos</a></li>
+                    <li {% if tab == '3' %}class="active"{% endif %}><a href="#education_and_registration" data-toggle="tab">Education &amp; Registration</a></li>
+                    <li {% if tab == '4' %}class="active"{% endif %}><a href="#experience" data-toggle="tab">Experience</a></li>
+                    <li {% if tab == '5' %}class="active"{% endif %}><a href="#work_schedule" data-toggle="tab">Work Schedule</a></li>
+                    <li {% if tab == '6' %}class="active"{% endif %}><a href="#rewardRecognization" data-toggle="tab">Rewards &amp; Recognization</a></li>
+                    <li {% if tab == '7' %}class="active"{% endif %}><a href="#Membership" data-toggle="tab">Membership</a></li>
+                    <li {% if tab == '8' %}class="active"{% endif %}><a href="#manageAccount" data-toggle="tab">Manage Account</a></li>
+                    <li {% if tab == '9' %}class="active"{% endif %}><a href="#AdditionalData" data-toggle="tab">Additional Data</a></li>
+
+                </ul>
+<div class="tab-content">
+
+
+{# -----------------basic_profiless Tab start---1----------------------- #}
+{#>>>>>>>>>>>>>>>>>{{ tab }}<<<<<<<<<<<<<<<<#}
+
+<div class="tab-pane photo {% if tab  == '1' %} in active {% else %} fade {% endif %}" id="basic_profiless">
+
+
+
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Basic Details</span></h1>
+<p>&nbsp;</p>
+
+<!--ONE START-->
+<div class="row">
+<form action="{% url 'upload_profile_pic' doctor_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<div class="col-md-6 col-sm-6">
+<h5 class="font_weight_600">Upload Profile image</h5>
+<div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src="{{ hostport }}{{ live_doctor.profileImage }}"></img>   </div>
+<!--<input id="ProfileImage" type="file" class="" name="ProfileImage"-->
+<!--<button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload</button>-->
+<p>&nbsp;</p>
+</div>
+</form>
+</div>
+
+
+
+<form action="{% url 'live_doctor_listing_edit' doctor_id %}?tab=1" method="post">
+<div class="row">
+
+<div class="col-md-5">
+<label>First Name<span style="color: red;size: 25px;">*</span> </label>
+<div class="form-group form-group-lg"><input type="text" class="form-control" value= "{{ live_doctor.firstName }}" name="firstName" maxlength="30" minlength="1" pattern="[a-zA-Z ]+" title="Only charecter can be entered " readonly></div>
+<label>Last Name<span style="color: red;size: 25px;">*</span> </label>
+<div class="form-group form-group-lg"><input type="text" class="form-control" value= "{{ live_doctor.lastName }}" name="lastName" maxlength="30" minlength="1" pattern="[a-zA-Z ]+" title="Only charecter can be entered " readonly></div>
+
+<div class="form-group form-group-lg">
+<label>Category:<span style="color: red;size: 25px;">*</span> </label>
+<select id="category" class="chosen-select" name="category" disabled>
+{#    {% if request.user.is_staff %} disabled{% endif %}>#}
+    <option value="">--Select Category--</option>
+    {% if category_obj %}
+        {% for u in category_obj %}
+            {% if u.id|slugify == curent_cat|slugify %}
+            <option value="{{ u.id }}" selected>{{ u.name }}</option>
+            {% else %}
+            <option value="{{ u.id }}" >{{ u.name }}</option>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</select>
+</div>
+
+
+<div class="form-group multi_selections">
+    <label>Service Offered</label>
+    <select id="serviceoffer" name="serviceoffer" class="form-control chosen-select"
+            multiple disabled>
+        {% if serviceOffered %}
+            {% for so in serviceOffered %}
+                {% if so in current_seroff %}
+                    <option value="{{ so.id }}"selected>{{ so.name }}</option>
+                {% else %}
+                    <option value="{{ so.id }}">{{ so.name }}</option>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </select>
+</div>
+
+</div>
+
+<div class="col-md-7">
+<div class="row">
+<div class="col-md-8">
+
+
+<div class="form-group">
+    <label>DOB</label>
+    <input type="text"  value = "{{ live_doctor.dob }}" class="form-control" name="DOB" required id="datePicker" readonly>
+</div>
+
+
+<div class="row form-group" style="height:36px;">
+
+<div class="form-group">
+    <label>Gender:<span style="color: red;size: 25px;">*</span> </label>
+    <label class="radio-inline" style="padding-top: 0;">
+        <input type="radio" id="male" value="male" name="gender" {% if live_doctor.gender == 'male' %}checked="checked"{% endif %} readonly> Male
+    </label>
+    <label class="radio-inline" style="padding-top: 0;">
+        <input type="radio" id="female" value="female" name="gender" {% if live_doctor.gender == 'female' %}checked="checked"{% endif %} readonly>
+        Female
+    </label>
+</div>
+
+
+</div>
+</div>
+
+</div>
+
+<div class="form-group">
+    <label>Speciality</label>
+    <select id="specialty" name="specialty" class="form-control chosen-select" multiple disabled>
+        {% if speciality %}
+            {% for spe in speciality %}
+                 {% if spe in current_specialities %}
+                    <option value="{{ spe.id }}" selected>{{ spe.name }}</option>
+                 {% else %}
+                    <option value="{{ spe.id }}">{{ spe.name }}</option>
+                 {% endif %}
+            {% endfor %}
+        {% endif %}
+    </select>
+ </div>
+
+
+<div class="form-group">
+<label>Zone</label>
+   <select id="zone" class="chosen-select" name="zone" disabled>
+                    <!--{% if request.user.is_staff %} disabled{% endif %}>-->
+                <option value="">--Select Zone--</option>
+                {% if zone_obj %}
+                    {% for r in zone_obj %}
+                        {% if current_zone %}
+                            {% if r.id == current_zone.id %}
+                            <option value="{{ r.id }}" selected>{{ r.name }}</option>
+                            {% else %}
+                            <option value="{{ r.id }}">{{ r.name }}</option>
+                            {% endif %}
+                        {% else %}
+                         <option value="{{ r.id }}">{{ r.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+   </select>
+</div>
+
+
+<div class="form-group">
+<label>Zone Location</label>
+    <select id="zone_location" class="chosen-select" name="zone_location" disabled>
+                <!--{% if request.user.is_staff %} disabled{% endif %}>-->
+            <option value="">--Select Zone Location--</option>
+            {% if current_zone and zone_based_locations %}
+                {% for i in zone_based_locations %}
+                   {% if live_doctor.zone_location.id == i.id %}
+                       <option value="{{ i.id }}" selected>{{ i.name }}</option>
+                   {% else %}
+                       <option value="{{ i.id }}">{{ i.name }}</option>
+                   {% endif %}
+                {% endfor %}
+
+            {% elif current_zone %}
+               <option value="{{ current_zone.id }}" selected>{{ current_zone.name }}</option>
+            {% else %}
+               <option value=""></option>
+            {% endif %}
+
+
+
+
+    </select>
+</div>
+
+<div class="form-group">
+    <label>DID</label>
+    <input type="text" maxlength="11" class="form-control" name="live_did" placeholder="DID" value="{{ live_doctor.did }}" readonly>
+</div>
+
+<div class="form-group">
+    <label>Extension</label>
+    <input type="text" maxlength="4" class="form-control" name="live_extension" placeholder="Extension" value="{{ live_doctor.extension }}" readonly>
+</div>
+
+
+</div>
+
+</div>
+<!--ONE END-->
+
+<p>&nbsp;</p>
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Contact Info</span></h1>
+<p>&nbsp;</p>
+<!--ONE START-->
+<div class="row">
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<input type="text" class="form-control" pattern = "^[1-9][0-9]*$" maxlength="10" minlength="10" placeholder = "Phone No" value = "{{live_doctor.phoneNo}}" name = "phone" readonly>
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<input type="text" class="form-control" placeholder = "Fax" value = "{{live_doctor.fax}}" name = "fax" maxlength="15" minlength="10" pattern="[^a-zA-Z]*" title="Only Numbers and Special Characters allowed " readonly>
+</div>
+</div>
+
+</div>
+<!--ONE END-->
+
+<!--ONE START-->
+<div class="row">
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<label>Mobile no<span style="color: red;size: 25px;">*</span> </label>
+<input type="text" class="form-control" pattern = "^[1-9][0-9]*$" maxlength="10" minlength="10" placeholder = "Mobile No" value = "{{live_doctor.mobileNo}}" name = "mobile" readonly>
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<input type="text" class="form-control" placeholder = "Skype ID" value = "{{ live_doctor.skypeId }}" name = "skype" pattern=".{8,50}"  title="8 to 50 characters" readonly>
+</div>
+</div>
+</div>
+<!--ONE END-->
+
+<!--ONE START-->
+<div class="row">
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<label>Email ID<span style="color: red;size: 25px;">*</span> </label>
+<input type="email" class="form-control" placeholder = "Email ID" value = "{{ live_doctor.email }}" name = "email" readonly>
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<input type="email" class="form-control" placeholder = "Secondary Email ID" value = "{{ live_doctor.alternateEmail }}" name = "secondary_email" readonly>
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="form-group form-group-lg">
+<!--<button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Submit Basic Info</button>-->
+</div>
+</div>
+
+
+</div>
+<!--ONE END-->
+</form>
+<!--ONE START-->
+<div class="row">
+<!--left start-->
+<form action="{% url 'upload_stamp_pic' doctor_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<div class="col-md-6 col-sm-6" style="border-right: 1px dashed #000000;">
+<h5 class="font_weight_600">Upload Stamp :</h5>
+<div class="m_tb_10"><img class="img-thumbnail" src="{{ hostport }}{{ live_doctor.stamp }}" style="width:200px; height:180px;"> </div>
+<!--<input id="StampImage" type="file" class="" name="StampImage">
+<button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload</button>-->
+<p>&nbsp;</p>
+</div>
+</form>
+
+<!--left end-->
+
+<!--right start-->
+
+<form action="{% url 'upload_signature_pic' doctor_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<div class="col-md-6 col-sm-6">
+<h5 class="font_weight_600">Upload Signature</h5>
+<div class="m_tb_10"><img class="img-thumbnail" src="{{ hostport }}{{ live_doctor.signature }}" style="width: 200px; height: 180px;"> </div>
+<!--<input id="SignatureImage" type="file" class="" name="SignatureImage">
+<button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload</button>-->
+<p>&nbsp;</p>
+</form>
+{% comment %}<p class=" text-right">
+<a href="my_profile.html" class="btn btn-info  p_lr_60">Submit</a>
+</p>{% endcomment %}
+</div>
+<!--right end-->
+
+
+</div>
+<!--ONE END-->
+
+
+</div>
+
+
+
+
+
+{# -----------------basic_profiless Tab end---1----------------------- #}
+
+
+            <!--TAB START-->
+
+{# -----------------upload_photos Tab start---2----------------------- #}
+
+
+<div class="tab-pane photo {% if tab  ==  '2' %}in active{% else %}fade{% endif %}" id="upload_photos">
+
+<p>&nbsp;</p>
+<div class="overflow_hidden">
+{#<div class="col-md-3 col-sm-4 col-xs-6"><div class="fileUpload" style="width:100%; height:100%; background-image:none;"><input type="file" class="upload"><img class="img-responsive center-block" src="../images/upload_imaes.jpg" alt="Image" title="Image"></div></div>#}
+
+{% if gallery_image_obj_list %}
+<form action="{% url 'delete_live_doc_gallery_images' doctor_id %}" method="post" >
+    {% for ii in gallery_image_obj_list %}
+        <div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">
+        <em><input type="checkbox"  class="custom_position" value="{{ ii.id }}" name="Images">
+        <label for="custom_checkbox" class="custom_img"></label>
+        </em>
+
+
+{#        <img class="img-responsive center-block img-thumbnail" src="{{ hostport }}{{ ii }}" alt="Image" title="Image">#}
+          <img style="width:100%; height: 200px;" class="img-thumbnail img_100" src="{{ hostport }}{{ ii.name }}" alt="Image" title="Image">
+
+
+
+        </div>
+    {% endfor %}
+        <!--<div class="col-md-12 clearfix text-center" style="padding-top: 40px;"><button type="submit" class="btn btn-default bg_ccc p_lr_60 bg_d0d0d0">Delete Selected Photos</button></div>-->
+
+</form>
+{% else %}
+<div>No Image Found</div>
+{% endif %}
+</form>
+{#    <div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">#}
+{#<em><input type="checkbox" id="custom_checkbox" class="custom_position">#}
+{#<label for="custom_checkbox" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="http://southsimcoephysio.ca/wp-content/uploads/2014/03/Medical.jpg" alt="Image" title="Image">#}
+{#</div>#}
+{#    <div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">#}
+{#<em><input type="checkbox" id="custom_checkbox" class="custom_position">#}
+{#<label for="custom_checkbox" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="http://southsimcoephysio.ca/wp-content/uploads/2014/03/Medical.jpg" alt="Image" title="Image">#}
+{#</div>#}
+{#    <div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">#}
+{#<em><input type="checkbox" id="custom_checkbox" class="custom_position">#}
+{#<label for="custom_checkbox" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="http://southsimcoephysio.ca/wp-content/uploads/2014/03/Medical.jpg" alt="Image" title="Image">#}
+{#</div>#}
+{#    <div class="col-md-3 col-sm-4 col-xs-6 for select_delete position_relative">#}
+{#<em><input type="checkbox" id="custom_checkbox" class="custom_position">#}
+{#<label for="custom_checkbox" class="custom_img"></label>#}
+{#</em>#}
+{#<img class="img-responsive center-block img-thumbnail" src="http://southsimcoephysio.ca/wp-content/uploads/2014/03/Medical.jpg" alt="Image" title="Image">#}
+{#</div>#}
+
+
+
+</div>
+<p>&nbsp;</p>
+
+
+<form action="{% url 'upload_gallery_pic' doctor_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<div class="col-md-4 col-sm-4">
+<!--<h5 class="font_weight_600">Upload Gallery Image</h5>-->
+<div class="m_tb_10"></div>
+<!--<input id="galleryrImage" type="file" class="" name="galleryrImage">
+<button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload</button>-->
+<p>&nbsp;</p>
+</p>
+</div>
+
+</form>
+
+
+
+
+</div>
+
+{# -----------------upload_photos Tab start---2----------------------- #}
+
+            <!--TAB END-->
+
+            <!--TAB START-->
+
+{# -----------------education_and_registration Tab start---3----------------------- #}
+
+<div class="tab-pane {% if tab  == '3' %}in active{% else %}fade{% endif %}" id="education_and_registration">
+
+
+<p>&nbsp;</p>
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Education</span></h1>
+<p>&nbsp;</p>
+<hr class="hr_modify">
+<!--<button type="button" class="btn btn-link btn_link_modify" data-toggle="collapse" data-target="#add_new"><i class="fa fa-plus fa-fw"></i> Add New</button>-->
+
+<div class="collapse" id="add_new">
+<!<form action="{% url 'live_doctor_listing_edit' doctor_id %}?tab=3" method="post" class="m_t_15">
+<div class="overflow_hidden">
+<div class="col-md-4"><div class="form-group"><input type="text" class="form-control " placeholder="Degree" name="degree" pattern=".{3,150}"  title="3 to 150 characters" readonly disabled></div></div>
+    <div class="col-md-4"><div class="form-group"><input type="text" class="form-control " placeholder="Collages" name = "college" pattern=".{3,200}"  title="3 to 200 characters" readonly disabled></div></div>
+    <div class="col-md-4">
+    <div class="form-group">
+        <select id="year" class="form-control" name = "year" disabled>
+        <option  value="">--Select year--</option>
+    </select>
+    </div>
+    </div>
+    <div class="col-md-4"><div class="form-group"><input type="text" class="form-control "  maxlength="4" minlength="4" pattern="[0-9]*" placeholder="Year" name = "year" readonly disabled></div></div>-->
+<div class="col-md-6 col-sm-6">
+<!--<button type="submit" class="btn btn-success ">Add</button> &nbsp; <button type="button" class="btn btn-default bg_d0d0d0 ">Cancel</button>-->
+</div>
+</div>
+</form>-->
+</div>
+<hr class="hr_modify">
+<p>&nbsp;</p>
+<div class="table-responsive education_table">
+<table class="table table-bordered">
+<thead class="bg_ededed">
+<tr>
+<th>Sr. No.</th>
+<th>Degree</th>
+<th>Collage</th>
+<th>Year</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+{% if live_doc_education_list %}
+    {% for i in live_doc_education_list %}
+
+        <tr>
+    <form action="{% url 'live_doctor_update_education' doctor_id i.id %}" method="post">
+        <td>{{ forloop.counter }}</td>
+        <!--<td>{{ i.degree }}</td>-->
+        <!--<td>{{ i.college }}</td>-->
+        <!--<td>{{ i.year }}</td>-->
+
+            <div class="row">
+                <td> <div class="col-md-6"><input type="text" class="form-control" name="edudegree" value={{i.degree}} readonly ></div></td>
+                <td>  <div class="col-md-6"><input type="text" class="form-control" name="educollege" value={{i.college}} readonly  ></div></td>
+                <td> <div class="col-md-6"><input type="text" class="form-control" name="eduyear" value={{i.year}} readonly ></div></td>
+
+    </div>
+                <!--<td> <div class="col-md-6"> <button type="submit" class="btn btn-success  p_lr_30">Update</button></div></td>-->
+            </div>
+    </form>
+</td>
+
+        <td>
+            <!--<a class="text_blue" href="{% url 'live_doctor_delete_education' doctor_id i.id %}"  title="" data-original-title="Delete"><i class="fa fa-trash-o text-danger fa-fw"></i></a>&nbsp;  &nbsp;-->
+
+        </td>
+
+        </tr>
+
+    {% endfor %}
+{% endif %}
+
+
+
+
+</tbody>
+</table>
+</div>
+
+<p>&nbsp;</p>
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Registration</span></h1>
+<p>&nbsp;</p>
+
+<form action="{% url 'live_doctor_update_registration' doctor_id %}" method="post">
+<div class="row">
+
+<div class="col-md-6 col-sm-6">
+    <div class="form-group "><label>MCI Number</label></label><input type="text" class="form-control" name="mci" value = "{{ live_doctor.mciRegistrationNo }}" required  minlength="1" maxlength="50" disabled></div>
+</div>
+
+<div class="col-md-6 col-sm-6">
+<div class="form-group "><label>Registration Board</label><input type="text" class="form-control" name="board" value = "{{ live_doctor.registrationBoard }}" required  minlength="1" maxlength="50" disabled></div>
+</div>
+
+<div class="col-md-6 col-sm-6">
+<div class="form-group ">
+
+    <!--<select class="form-control" name="year">-->
+        <!--<option disabled>Registration Year</option>-->
+        <!--{% for i in year_list %}-->
+            <!--{% if live_doctor.registrationYear|slugify == i %}-->
+                <!--<option selected value="{{ i }}">{{ i }}</option>-->
+            <!--{% else %}-->
+                 <!--<option  value="{{ i }}">{{ i }}</option>-->
+            <!--{% endif %}-->
+
+
+        <!--{% endfor %}-->
+    <!--</select>-->
+
+
+            <label>Year</label>
+            <select id="year1" class="form-control" name = "year" disabled >
+            <option  value="">--Select year--</option>
+            </select>
+
+
+</div>
+</div>
+
+<!--<div class="col-md-9 col-sm-9"><button type="submit" class="btn btn-success  p_lr_30">Save</button></div>-->
+
+</div>
+</form>
+<p>&nbsp;</p>
+
+<div class="row">
+<!--left start-->
+
+<form action="{% url 'upload_registration_pic' doctor_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<div class="col-md-6 col-sm-6" style="border-right: 1px dashed #000000;">
+<h5 class="font_weight_600">Upload your Degree Cartificate</h5>
+<div class="m_tb_10"><img class="img-thumbnail" src="{{ hostport }}{{ live_doctor.degreeCertImage }}" style="width: 200px; height: 180px;"> </div>
+<!--<input id="DegreeImage" type="file" class="" name="DegreeImage">
+<button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload</button>-->
+<p>&nbsp;</p>
+</div>
+</form>
+
+<!--left end-->
+
+<!--right start-->
+
+<form action="{% url 'upload_aadhar_pic' doctor_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<div class="col-md-6 col-sm-6">
+<h5 class="font_weight_600">Upload your Passport or Aadhar Card Copy</h5>
+<div class="m_tb_10"><img class="img-thumbnail" src="{{ hostport }}{{ live_doctor.aadhaarCardImage }}" style="width: 200px; height: 180px;"></div>
+<!--<input id="aadharImage" type="file" class="" name="aadharImage">
+<button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload</button>-->
+<p>&nbsp;</p>
+{% comment %}<p class=" text-right">
+<a href="my_profile.html" class="btn btn-info  p_lr_60">Submit</a>
+</p>{% endcomment %}
+</div>
+<!--right end-->
+</form>
+</div>
+
+</div>
+
+
+
+{# -----------------education_and_registration Tab end---3----------------------- #}
+
+
+            <!--TAB END-->
+
+            <!--TAB START-->
+
+{# -----------------Experience Tab start---4----------------------- #}
+
+<div class="tab-pane {% if tab == '4' %}in active{% else %}fade{% endif %}" id="experience">
+<p>&nbsp;</p>
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Experience</span></h1>
+<p>&nbsp;</p>
+
+<form action="{% url 'live_doctor_listing_edit' doctor_id %}?tab=4" method="post">
+<div class="row">
+
+    <div class="col-md-2"><input type="text" class="form-control" placeholder="Clinic/Hospital" name="experience" pattern=".{3,200}"  title="3 to 200 characters" disabled></div>
+    <div class="col-md-2" >
+    <select id="fromYear" class="form-control" name="fromYear" onchange="gettoyear()" disabled>
+    <option  value="">--From Year--</option>
+    </select>
+    </div>
+    <!--<div class="col-md-2"><input type="text" class="form-control" placeholder="To Year" name="Year" ></div>-->
+    <div class="col-md-2" >
+    <select id="toYear" class="form-control" name="toYear" disabled >
+        <option  value="">--to Year--</option>
+    </select>
+    </div>
+    <div class="col-md-2"><input type="text" class="form-control" placeholder="designation" name="designation" pattern=".{3,100}"  title="3 to 100 characters" readonly></div>
+    <div class="col-md-2"><input type="text" class="form-control" placeholder="city" name="city" readonly ></div>
+
+<!--<div class="col-md-2"><button type="submit" class="btn btn-info p_lr_30">Add</button></div>-->
+</div>
+</form>
+
+<div class="row  m_0">
+<p>&nbsp;</p>
+
+
+<div class="table-responsive m_tb_10">
+    <table class="table table-bordered text-center">
+        <thead class="bg_ededed">
+        <tr>
+            <th class="text-center font_weight_400 font_size_16">Sr. No.</th>
+            <th class="text-center font_weight_400 font_size_16">Experience</th>
+            <th class="text-center font_weight_400 font_size_16">From Year</th>
+            <th class="text-center font_weight_400 font_size_16">To Year</th>
+            <th class="text-center font_weight_400 font_size_16">Designation</th>
+            <th class="text-center font_weight_400 font_size_16">City</th>
+            <th class="text-center font_weight_400 font_size_16">Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% if live_doc_exp_list %}
+            {% for i in live_doc_exp_list %}
+            <tr>
+                <!--<td>{{ forloop.counter }}</td>-->
+                <!--<td>{{ i.name }}</td>-->
+                <!--<td>{{ i.fromYear }}</td>-->
+                <!--<td>{{ i.toYear }}</td>-->
+                <!--<td>{{ i.designation }}</td>-->
+                <!--<td>{{ i.city }}</td>-->
+
+                <form action="{% url 'live_doctor_update_experience' doctor_id i.id %}" method="post">
+                <td>{{ forloop.counter }}</td>
+
+                <div class="row">
+                <td> <div class="col-md-10"><input type="text" class="form-control" name="expname" value={{i.name}} disabled ></div></td>
+                <td>  <div class="col-md-10"><input type="text" class="form-control" name="expfromYear" value={{i.fromYear}} disabled ></div></td>
+                <td> <div class="col-md-10"><input type="text" class="form-control" name="exptoYear" value={{i.toYear}} disabled ></div></td>
+                <td> <div class="col-md-10"><input type="text" class="form-control" name="expdesignation" value={{i.designation}} disabled ></div></td>
+                <td> <div class="col-md-10"><input type="text" class="form-control" name="expcity" value={{i.city}} disabled ></div></td>
+                </div>
+                <td> <!--<div class="col-md-6"> <button type="submit" class="btn btn-success  p_lr_30">Update</button></div></td>-->
+                </div>
+                </form>
+                </td>
+                <!--<td>|<a class="text_blue" href="{%  url 'delete_live_doctor_experience' doctor_id i.id %}" title="Delete"  ><i class="fa fa-trash-o text-danger fa-fw"></i></a></td>-->
+                </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+</div>
+</div>
+
+{# -----------------Experience Tab end-----4--------------------- #}
+            <!--TAB END-->
+
+            <!--TAB START-->
+
+{# -----------------work_schedule Tab start---5----------------------- #}
+
+<div class="tab-pane {% if tab == '5' %}in active{% else %}fade{% endif %}" id="work_schedule">
+
+<form method="post" action="{% url 'live_doctor_listing_edit' doctor_id %}?tab=5">
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Add New Work Schedule</span></h1>
+<input type="hidden" value="{{ time_type }}" name = "time_type">
+
+<p>&nbsp;</p>
+
+<div class="row">
+<div class="col-md-6">
+
+{#    <select class="form-control" name="hospital">#}
+{#        <option value = "" >Please Select Clinic/Hospitals</option>#}
+{#        {% for i in organisation_all %}#}
+{##}
+{#            <option value="{{ i.id }}">{{ i.name }}|{{ i.street}}|{{ i.locality.name }}</option>#}
+{##}
+{#        {% endfor %}#}
+{#    </select>#}
+
+{#  ----------------  #}
+{#                <div class="form-group">#}
+{#                        <label>Country</label>#}
+{#                        <select id="zone" class="chosen-select" name="country_id">#}
+{#                            <option value="">--Select Country--</option>#}
+{#                            {% for i in country_obj %}#}
+{##}
+{#                                <option value="{{ i.id }}">{{ i.name | capfirst}}</option>#}
+{##}
+{#                            {% endfor %}#}
+{#                        </select>#}
+{#                  </div>#}
+
+
+                    <div class="form-group">
+                        <label>State</label>
+                        <select id="state" class="chosen-select" name="state_id_live" disabled>
+                            <option value="">--Select State--</option>
+                            {% for i in state_obj %}
+
+                                <option value="{{ i.id }}">{{ i.name | capfirst}}</option>
+
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>City</label>
+                        <select id="city" class="chosen-select" name="city_id_live" disabled>
+                            <option value="">--Select City--</option>
+                            {% for cityc in city %}
+
+                                    <option value="{{ cityc.id }}" >{{ cityc.name | capfirst}}</option>
+
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <select id="locality" class="chosen-select" name="locality_id_live_doc" disabled>
+                            <option value="">--Select Locality--</option>
+                            {% for loc in locality %}
+
+                             <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+
+                            {% endfor %}
+                        </select>
+                    </div>
+                    </div>
+                    <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Organisation</label>
+                        <select id="diet_org" class="chosen-select" name="diet_org_id" disabled>
+                            <option value="">--Select Organisation--</option>
+                        </select>
+                    </div>
+
+{#  ----------------- #}
+
+</div>
+<div class="col-md-6">
+<div class="form-group ">
+<input type="text" class="form-control" name="designation" placeholder="Designation" pattern=".{3,100}"  title="3 to 100 characters" readonly ></div>
+</div>
+</div>
+<div class="clearfix"></div>
+
+<div class="row clearfix m_tb_20">
+
+<div class="col-md-6">
+<div class="form-group">
+    <label>DID</label>
+    <input type="text" maxlength="11" class="form-control" name="live_schedule_did" placeholder="DID" readonly>
+</div>
+
+<div class="form-group">
+    <label>Extension</label>
+    <input type="text" maxlength="4" class="form-control" name="live_schedule_extension" placeholder="Extension" readonly>
+</div>
+</div>
+
+<div class="col-md-4 col-lg-2 m_tb_20 font_size_17 p_r_0 font_weight_600 p_t_10">Appointment Minutes:</div>
+<div class="col-md-2 m_tb_20">
+    <select class="form-control" name="app_minutes" disabled>
+        <option value ="">Time Slot</option>
+        {% for i in appointment_minutes %}
+            <option value ="{{ i }}">{{ i }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="col-lg-4 col-md-4 col-sm-6 m_tb_20">
+    <input type="text" class="form-control " placeholder = "Consultation Charges"  name = "consultation_charges" pattern="[0-9]{1,5}"  title="1 to 5 characters" readonly></div>
+</div>
+
+<div class="row">
+<div class="col-lg-2 col-md-3"><h1>Visiting Hours:</h1></div>
+<div class="col-lg-10 col-md-9">
+
+<!--one start-->
+<label><input type="radio" name="schedule" checked="checked" value = "single" disabled/>Clinic Hours  are same for the whole week</label>
+<table class="table table-bordered">
+<tbody>
+<tr>
+<td><strong>Days</strong></td>
+<td>
+<label class="checkbox-inline"><input type="checkbox" name = "single1" disabled>Mon</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single2" disabled>Tue</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single3" disabled >Wed</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single4" disabled>Thu</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single5" disabled>Fri</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single6" disabled>Sat</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single7" disabled>Sun</label>
+</td>
+</tr>
+<tr>
+<td><strong>Timing</strong></td>
+<td>
+<div class="col-md-4">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "singleFromtime" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+</div>
+
+
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-4">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "singleTotime" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+</td>
+</tr>
+</tbody>
+</table>
+<!--one end-->
+
+<!--two start-->
+<label><input type="radio" name="schedule" value = "single_double" disabled />Clinic Hours in two sessions</label>
+<table class="table table-bordered">
+<tbody>
+<tr>
+<td><strong>Days</strong></td>
+<td>
+<label class="checkbox-inline"><input type="checkbox" name = "single_double1" disabled>Mon</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single_double2" disabled >Tue</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single_double3" disabled >Wed</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single_double4" disabled >Thu</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single_double5" disabled >Fri</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single_double6" disabled >Sat</label>
+<label class="checkbox-inline"><input type="checkbox" name = "single_double7" disabled >Sun</label>
+</td>
+</tr>
+<tr>
+<td><strong>Session 1</strong></td>
+<td>
+<div class="col-md-4">
+ <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "single_double_sess1_Fromtime" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-4">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "single_double_sess1_Totime" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+</td>
+</tr>
+
+<tr>
+<td><strong>Session 2</strong></td>
+<td>
+<div class="col-md-4">
+ <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "single_double_sess2_Fromtime" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-4">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "single_double_sess2_Totime" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+</td>
+</tr>
+</tbody>
+</table>
+<!--two end-->
+
+<!--three start-->
+<label><input type="radio" name="schedule" value = "multi_double" disabled/>Clinic Hours  are not same for the whole week</label>
+<table class="table table-bordered">
+<tbody>
+<tr class="text-center">
+<td><strong>Days</strong></td>
+<td><strong>Session 1</strong></td>
+<td><strong>Session 2</strong></td>
+</tr>
+
+<tr>
+<td><input type="checkbox" name="Moncheck" value="Monyes" disabled > Mon</td>
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "monFROM1" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "monTO1" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "monFROM2" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "monTO2" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+  </tr>
+
+<tr>
+<td><input type="checkbox" name="Tuecheck" value="Tueyes" disabled>Tue</td>
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "tueFROM1" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "tueTO1" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "tueFROM2" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "tueTO2" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+  </tr>
+
+<tr>
+<td><input type="checkbox" name="Wedcheck" value="Wedyes" disabled>Wed</td>
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control"  name = "wedFROM1" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "wedTO1" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "wedFROM2" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control"   name = "wedTO2" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+  </tr>
+
+<tr>
+<td><input type="checkbox" name="Thucheck" value="Thuyes" disabled> Thu</td>
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "thuFROM1" disabled  />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "thuTO1" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "thuFROM2" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control"  name = "thuTO2" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+  </tr>
+
+<tr>
+<td><input type="checkbox" name="Fricheck" value="Friyes" disabled> Fri</td>
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "friFROM1" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control"  name = "friTO1" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "friFROM2"  disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control"  name = "friTO2" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+  </tr>
+
+<tr>
+<td><input type="checkbox" name="Satcheck" value="Satyes" disabled> Sat</td>
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control"  name = "satFROM1"  disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "satTO1" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "satFROM2" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control"  name = "satTO2" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+  </tr>
+
+<tr>
+<td><input type="checkbox" name="Suncheck" value="Sunyes" disabled> Sun</td>
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "sunFROM1" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "sunTO1" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+
+<td>
+<div class="col-md-5">
+<div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control" name = "sunFROM2" disabled/>
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  <div class="col-md-1 text-center p_t_10">To</div>
+
+  <div class="col-md-5">
+  <div class="form-group">
+                <div class='input-group date datetimepicker3'>
+                    <input type='text' class="form-control"  name = "sunTO2" disabled />
+                    <span class="input-group-addon">
+                        <span class="fa fa-clock-o"></span>
+                    </span>
+                </div>
+            </div>
+  </div>
+
+  </td>
+  </tr>
+
+</tbody>
+</table>
+<!--three end-->
+
+</div>
+
+</div>
+
+<!--<p class="text-right"><button type="submit" class="btn btn-info  m_t_15">Save</button></p>-->
+
+<p>&nbsp;</p>
+</form>
+
+<!-- HOSPITAL DETAILS START-->
+<div class="row m_0 p_lr_20 bg_f3f3f3">
+<p>&nbsp;</p><p>&nbsp;</p>
+{#{{ list_of_schedules }}#}
+<!--One thumbnail Start-->
+<!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
+
+{% for sch in list_of_schedules %}
+
+
+<div class="thumbnail alert p_tb_8_lr_60">
+<form method="post" action="{% url 'update_did_extension_live_doc_schedule' sch.schedule_id %}">
+{% csrf_token %}
+
+<div class="form-group col-md-4" >
+<label>Departments</label>
+<select id="h" class="chosen-select" name="Departments_add_org" multiple disabled>
+{% if org_with_current_dep %}
+    {% if sch.clinic_id in org_with_current_dep.keys %}
+        <option value="">--Select Departments--</option>
+            {% for koid,vdeps in org_with_current_dep.items %}
+                {% if koid == sch.clinic_id %}
+                    {% for i in all_departments %}
+                         {% if i.id|slugify in vdeps %}
+                                <option value="{{ i.id }}" selected>{{ i.name }}</option>
+                         {% else %}
+                                <option value="{{ i.id }}">{{ i.name }}</option>
+                         {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
+
+    {% else %}
+        <option value="">--Select Departments--</option>
+        {% if all_departments %}
+            {% for i in all_departments %}
+                      <option value="{{ i.id }}">{{ i.name }}</option>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+{% else %}
+<option value="">--Select Departments--</option>
+    {% if all_departments %}
+        {% for i in all_departments %}
+             <option value="{{ i.id }}">{{ i.name }}</option>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+</select>
+</div>
+
+<div class="form-group col-md-4" >
+<label>DID</label>
+<input type="text" name = "sch_did" maxlength="11" class="form-control"  value="{{ sch.did }}" readonly>
+</div>
+<div class="form-group col-md-4" >
+<label>Extension</label>
+<input type="text" name = "sch_extension"  maxlength="4" class="form-control" value="{{ sch.extension}}" readonly>
+</div>
+<div class="clearfix"></div>
+<!--<div class="col-md-12"><button type="submit" class="btn btn-info"> Update</button></div>-->
+{#      DID : {{ sch.did }}#}
+{#Extension : {{ sch.extension  }}#}
+</form>
+<!--line start-->
+<div class="row">
+<div class="col-md-10">
+
+{% for i in organisation_all %}
+        {% if i.id|slugify == sch.clinic_id|slugify  %}
+            <h3><i class="fa fa-map-marker text_blue font_size_32"></i> {{i.name}}</h3>
+            <p class="text_666 p_l_10">{{ i.street}}&nbsp;,&nbsp;{{ i.locality.name}}&nbsp;,&nbsp;{{ i.city.name}}&nbsp;,&nbsp;{{ i.state.name}}&nbsp;–&nbsp;{{ i.pincode}}</p>
+        {% endif %}
+{% endfor %}
+
+
+</div>
+<div class="col-md-2 p_t_20 text-center"><span class="label label-warning font_size_18"><i class="fa fa-rupee"></i> {{ sch.consultingCharge }}/-</span></div>
+</div>
+<!--line end-->
+
+<!--line start-->
+<div class="clearfix"></div>
+<table class="table m_tb_30">
+<tbody>
+<b class="text-muted" style="font-size: 19px;">{{ sch.clinic_details }}</b>
+<!-- %%%%%%%%%%%%%% -->
+
+{% if sch.time_type == 'single' %}
+{% for key,value in sch.items %}
+{% if key == 'day' %}
+{% for key2, value2 in value.items %}
+{% if value2 == True %}
+<tr>
+<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>{{ key2 }}</strong></td>
+<td><i class="fa fa-clock-o text_blue fa-fw"></i>
+    {% for kkk, vvv in sch.items %}
+        {% if kkk == 'session1' %}
+            {% for kkk2,vvv2 in vvv.items  %}
+                 {% if kkk2 == 'from' %}{{ vvv2 }}{% endif %}
+            {% endfor %}
+            TO
+            {% for kkk2,vvv2 in vvv.items  %}
+                 {% if kkk2 == 'to'%} {{vvv2}}{% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</td>
+</tr>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+
+<!-- %%%%%%%%%%%%%% -->
+
+<!-- %%%%%%%%%%%%%% -->
+
+{% if sch.time_type == 'single_double' %}
+{% for key,value in sch.items %}
+{% if key == 'day' %}
+{% for key2, value2 in value.items %}
+{% if value2 == True %}
+<tr>
+<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>{{ key2 }}</strong></td>
+<td><label>Session 1</label>
+    <i class="fa fa-clock-o text_blue fa-fw"></i>
+    {% for kkk, vvv in sch.items %}
+        {% if kkk == 'session1' %}
+            {% for kkk2,vvv2 in vvv.items  %}
+                 {% if kkk2 == 'from' %}{{ vvv2 }}{% endif %}
+            {% endfor %}
+            TO
+            {% for kkk2,vvv2 in vvv.items  %}
+                 {% if kkk2 == 'to'%} {{vvv2}}{% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</td>
+<td><label>Session 2</label>
+    <i class="fa fa-clock-o text_blue fa-fw"></i>
+    {% for kkk, vvv in sch.items %}
+        {% if kkk == 'session2' %}
+            {% for kkk2,vvv2 in vvv.items  %}
+                 {% if kkk2 == 'from' %}{{ vvv2 }}{% endif %}
+            {% endfor %}
+            TO
+            {% for kkk2,vvv2 in vvv.items  %}
+                 {% if kkk2 == 'to'%} {{vvv2}}{% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</td>
+</tr>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+<!-- %%%%%%%%%%%%%% -->
+<!-- %%%%%%%%%%%%%% -->
+
+{% if sch.time_type == 'multi_double' %}
+{% for key,value in sch.items %}
+{% if key == 'Mon' or key == 'Tue' or key == 'Wed' or key == 'Thu' or key == 'Fri' or key == 'Sat' or key == 'Sun' %}
+{% for key2, value2 in value.items %}
+{% if key2 == 'value' %}
+{% if value2 == True %}
+<tr>
+<td class="col-lg-1"><i class="fa fa-calendar text_blue fa-fw"></i> <strong>{{ key }}</strong></td>
+<td><label>Session 1</label>
+    <i class="fa fa-clock-o text_blue fa-fw"></i>
+    {% for kkk, vvv in value.items %}
+        {% if kkk == 'session1' %}
+            {% for kkk2,vvv2 in vvv.items  %}
+                 {% if kkk2 == 'from' %}{{ vvv2 }}{% endif %}
+            {% endfor %}
+            TO
+            {% for kkk2,vvv2 in vvv.items  %}
+                 {% if kkk2 == 'to'%} {{vvv2}}{% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</td>
+<td><label>Session 2</label>
+    <i class="fa fa-clock-o text_blue fa-fw"></i>
+    {% for kkk, vvv in value.items %}
+        {% if kkk == 'session2' %}
+            {% for kkk2,vvv2 in vvv.items  %}
+                 {% if kkk2 == 'from' %}{{ vvv2 }}{% endif %}
+            {% endfor %}
+            TO
+            {% for kkk2,vvv2 in vvv.items  %}
+                 {% if kkk2 == 'to'%} {{vvv2}}{% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</td>
+</tr>
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+<!-- %%%%%%%%%%%%%% -->
+</tbody>
+
+</table>
+<!--line end-->
+
+<p class="font_size_16">Appointment Minutes  : <span class="text-muted">{{ sch.appointmentMinute }} Minutes</span> <span class="close font_weight_400  font_size_14" style="color: firebrick;"><!--<i class="fa fa-trash-o fa-fw"></i><a href = "{%  url 'live_doctor_delete_schedule' doctor_id sch.schedule_id %}" style="color: firebrick;"> Delete Schedule</a>--></span>
+</p>
+<p>&nbsp;</p>
+</div>
+{% endfor %}
+<!--  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
+<!--One thumbnail End-->
+
+
+
+</div>
+</div>
+{# -----------------work_schedule Tab end---5---------------------- #}
+    <!--TAB END-->
+
+
+
+            <!--TAB START-->
+{# -----------------rewardRecognization Tab start---6----------------------- #}
+
+<div class="tab-pane {% if tab == '6' %}in active{% else %}fade{% endif %} " id="rewardRecognization">
+
+<p>&nbsp;</p>
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Rewards &amp; Recognization</span></h1>
+<p>&nbsp;</p>
+<hr class="hr_modify">
+<!--<button type="button" class="btn btn-link btn_link_modify" data-toggle="collapse" data-target="#add_newagain"><i class="fa fa-plus fa-fw"></i> Add New</button>-->
+<div class="collapse" id="add_newagain">
+<form action="{% url 'live_doctor_listing_edit' doctor_id %}?tab=6" class="m_t_15" method="post">
+<div class="row">
+<!--<div class="col-sm-4"><div class="form-group"><input type="text" class="form-control" placeholder="Reward" name="name" pattern=".{3,150}"  title="3 to 150 characters"></div></div>-->
+
+<div class="col-md-4" >
+    <div class="form-group">
+    <select id="rewardYear" class="form-control" name="year" disabled>
+    <option value="">--Select Year--</option>
+    </select>
+    </div>
+</div>
+<!--<div class="col-sm-4"><div class="form-group"><input type="text" class="form-control"  maxlength="4" minlength="4" pattern="[0-9]*" placeholder="Year" name="year"></div></div>-->
+
+<div class="col-sm-4">
+<!--<button type="submit" class="btn btn-success ">Add</button>-->
+</div>
+</div>
+</form>
+</div>
+<hr class="hr_modify">
+<p>&nbsp;</p>
+<div class="table-responsive education_table">
+<table class="table table-bordered">
+<thead class="bg_ededed">
+<tr>
+<th>Sr. No.</th>
+<th>Rewards</th>
+<th>Year</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+{% if live_doc_rewardrecog_list %}
+    {% for i in live_doc_rewardrecog_list %}
+        <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ i.name }}</td>
+        <td>{{ i.year }}</td>
+
+        <!--<td><a class="text_blue" href="{% url 'delete_live_doctor_reward_recog' doctor_id i.id %}?tab=6 " data-toggle="tooltip" title="" data-original-title="Delete"><i class="fa fa-trash-o text-danger fa-fw"></i></a></td>-->
+        </tr>
+    {% endfor %}
+{% endif %}
+
+</tbody>
+</table>
+</div>
+</div>
+{# -----------------rewardRecognization Tab end---6----------------------- #}
+
+            <!--TAB END-->
+
+            <!--TAB START-->
+
+{# -----------------Membership Tab start---7----------------------- #}
+
+<div class="tab-pane {% if tab == '7' %}in active{% else %}fade{% endif %}" id="Membership">
+<p>&nbsp;</p>
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Membership</span></h1>
+<p>&nbsp;</p>
+<hr class="hr_modify">
+<!--<button type="button" class="btn btn-link btn_link_modify m_tb_10" data-toggle="collapse" data-target="#add_newagain_again"><i class="fa fa-plus fa-fw"></i> Add New</button>-->
+<div class="collapse" id="add_newagain_again">
+
+<!--<form method="post" action="{% url 'live_doctor_listing_edit' doctor_id %}?tab=7">
+    <div class="row">
+    <div class="col-sm-9">
+        <input type="text" class="form-control" placeholder="Membership" name="membership" pattern=".{3,150}"  title="3 to 150 characters">
+    </div>
+
+    <div class="col-sm-3">
+    <button type="submit" class="btn btn-success ">Add</button>
+    </div>
+    </div>
+</form>-->
+
+
+</div>
+<hr class="hr_modify">
+<p>&nbsp;</p>
+<div class="table-responsive education_table">
+<table class="table table-bordered">
+<thead class="bg_ededed">
+<tr>
+<th>Sr. No.</th>
+<th>Membership</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+{% if live_doc_memb_list %}
+    {% for i in live_doc_memb_list %}
+        <tr>
+        <!--<td>{{ forloop.counter }}</td>-->
+        <!--<td>{{ i.name }}</td>-->
+
+        <form action="{% url 'live_doctor_update_membership' doctor_id i.id %}" method="post">
+                <td>{{ forloop.counter }}</td>
+
+                <div class="row">
+                <td> <div class="col-md-10"><input type="text" class="form-control" name="memname" value="{{i.name}}" disabled ></div></td>
+                <!--<td> <div class="col-md-6"> <button type="submit" class="btn btn-success  p_lr_30">Update</button></div>-->
+                </div>
+        </form><!--|<a class="text_blue" href="{% url 'delete_live_doctor_membership' doctor_id i.id %}" title="" ><i class="fa fa-trash-o text-danger fa-fw"></i></a></td>-->
+        </tr>
+    {% endfor %}
+{% endif %}
+
+</tbody>
+</table>
+</div>
+</div>
+
+{# -----------------Membership Tab end---7----------------------- #}
+
+
+<!--TAB START-->
+
+{# -----------------Manage Account Tab start---8----------------------- #}
+
+<div class="tab-pane {% if tab == '8' %}in active{% else %}fade{% endif %}" id="manageAccount">
+<p>&nbsp;</p>
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_666">Manage Account</span></h1>
+<p>&nbsp;</p>
+{#{% if live_doctor.activate == true %}<p>activate</p>{% endif %}#}
+{#{% if live_doctor.activationStatus == True %}<p>activationStatus</p>{% endif %}#}
+{#{% if live_doctor.activationStatus == False %}<p>activationStatusfalse</p>#}
+{#{% endif %}#}
+
+    <span>
+        {% if live_doctor.activationStatus == False %}
+            <!--<a type="button"
+
+      href="{% url 'activate_doctor_account' doctor_id%}" class="btn btn-info">Activate</a> {% endif %}&nbsp;&nbsp;&nbsp;{% if live_doctor.activationStatus == True %}<a type="button" class="btn btn-warning" href="{% url 'deactivate_doctor_account' doctor_id %}">Deactivate User</a>{% endif %}</span>-->
+
+<hr class="hr_modify">
+{#{% if live_doctor.accountCreated == False %}#}
+    <!--<button type="button" class="btn btn-link btn_link_modify m_tb_10" data-toggle="collapse" data-target="#add_new_user"><i class="fa fa-plus fa-fw"></i>Create Login Account</button>-->
+{#{% endif %}#}
+<div class="collapse" id="add_new_user">
+
+    <form action="{% url 'create_user_account' doctor_id %}?tab=8" method="post">
+<div class="form-group form-group-lg"><input type="text" class="form-control" value= "{{ live_doctor.firstName }}" name="firstName" disabled></div>
+<div class="form-group form-group-lg"><input type="text" class="form-control" value= "{{ live_doctor.lastName }}" name="lastName" disabled></div>
+
+
+    <div class="form-group">
+    <label>Email *</label>
+    <input type="text" class="form-control" value = "{{ live_doctor.email }}" name ="email" disabled>
+</div>
+
+<div class="form-group">
+   <label>Gender: &nbsp; &nbsp; &nbsp; </label>
+    <label class="radio-inline" style="padding-top: 0;">
+        <input type="radio" id="male" value="male" name="gender" {% if live_doctor.gender == 'male' %}checked="checked"{% endif %} disabled> Male
+    </label>
+    <label class="radio-inline" style="padding-top: 0;">
+        <input type="radio" id="female" value="female" name="gender" {% if live_doctor.gender == 'female' %}checked="checked"{% endif %} disabled>
+        Female
+    </label></div>
+
+<div class="form-group">
+    <label>Set Password *</label>
+    <input type="password" name="setp" class="form-control" placeholder="Set Password" required>
+</div>
+
+<div class="form-group">
+    <label>Confirm Password *</label>
+    <input type="password" name="confpa" class="form-control" placeholder="Confirm Password" required>
+</div>
+
+<div class="form-group">
+    <label>Mobile Number *</label>
+    <input type="text" class="form-control" value = "{{live_doctor.mobileNo}}" name = "mobile" disabled>
+</div>
+
+<div class="form-group form-group-lg text-right">
+    <button type="submit" class="btn btn-info waves-effect border_radius_none p_lr_60">Submit</button>
+</div>
+</form>
+</div>
+
+<hr class="hr_modify">
+<p>&nbsp;</p>
+</div>
+
+{# -----------------Manage Account Tab end---8----------------------- #}
+
+            <!--TAB END-->
+
+<!--TAB START-->
+
+{# -----------------AQdditional Data Tab start---9----------------------- #}
+
+<div class="tab-pane {% if tab == '9' %}in active{% else %}fade{% endif %}" id="AdditionalData">
+<p>&nbsp;</p>
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_222">Qualification</span></h1>
+<form method="post" action="{% url 'live_doctor_add_qualification' doctor_id %}">
+    <div class="row">
+    <div class="col-sm-9">
+        <input type="text" class="form-control" {% if qualification and qualification != '' %}value ="{{ qualification }}" {% endif %}placeholder="qualification" name="qualification" disabled>
+    </div>
+
+    <div class="col-sm-3">
+    <!--<button type="submit" class="btn btn-success ">{% if qualification and qualification != '' %}Update{% else %}Add{% endif %}</button>-->
+    </div>
+    </div>
+</form>
+
+
+<p>&nbsp;</p>
+<hr class="hr_modify">
+<p>&nbsp;</p>
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_222">Talk To Doc</span></h1>
+<div class="clearfix"></div>
+<div class="form-group">
+<label class="checkbox-inline">
+<form method="post" action="{% url 'live_doctor_talk_to_doc' doctor_id %}">
+    <input style="width: 20px; height:20px;" type="checkbox" name="talk_to_doc" id ="talk_to_doc"
+               {% if talk_to_doc %}value="1" checked {% else %}value="0"
+        {% endif %}
+        onclick="$(this).attr('value', this.checked ? 1 : 0)" disabled>
+    <span class="p_l_15">Talk to Doc Services Available</span>
+    </label>
+</div>
+
+<div id="talk_to_doc_details" {% if not talk_to_doc %}class="collapse"{% endif %}>
+<label style="color:red;">**The Information filled below DOES NOT GET SAVED if the box above is UN-CHECKED  </label>
+        <div class="form-group">
+              <label>Talk To Doc Fee</label>
+              <input type="text" class="form-control" value = "{{ talk_fee}}" name="talk_fee" disabled>
+        </div>
+</div>
+<!--<button type="submit" class="btn btn-success ">Submit</button>-->
+
+</form>
+
+
+
+<p>&nbsp;</p>
+<hr class="hr_modify">
+
+<h1 class="login_detils position_relative"><span class="font_weight_700 text_222">Emergency Services</span></h1>
+<div class="clearfix"></div>
+<div class="checkbox-inline">
+<form method="post" action="{% url 'live_doctor_emergency' doctor_id %}">
+
+<div class="clearfix"></div>
+    <div class="form-group">
+    <div class="checkbox-inline">
+
+    <input style="width: 20px; height:20px;" type="checkbox" name="is_emergency" id="is_emergency"
+               {% if asso_obj.is_emergency %}value="1" checked {% else %}value="0"
+        {% endif %}
+        onclick="$(this).attr('value', this.checked ? 1 : 0)" disabled>
+        <span class="p_l_15"> Emergency Services Available</span>
+        </div>
+    </div>
+
+
+<div id="is_emergency_details" {% if not  asso_obj.is_emergency %}class="collapse"{% endif %}>
+        <label style="color:red;">**The Information filled below DOES NOT GET SAVED if the box above is UN-CHECKED  </label>
+                      <div class="form-group">
+                          <label>Emergency Fee</label>
+                          <input type="text" class="form-control" value = "{{ asso_obj.emergency_fee }}"  name="emergency_fee" disabled>
+                        </div>
+
+                      <div class="form-group">
+                        <label>Country</label>
+                        <select class="chosen-select" name="country_id" disabled >
+                            <option value="">--Select Country--</option>
+                            {% for country in country_obj %}
+                                {% if asso_obj.country.id == country.id %}
+                                    <option value="{{ country.id }}" selected>{{ country.name | capfirst }}</option>
+                                {% else %}
+                                    <option value="{{ country.id }}">{{ country.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <select  class="chosen-select" name="state_id" disabled>
+                            <option value="">--Select State--</option>
+                            {% for state in state_obj %}
+                                {% if asso_obj.state.id == state.id %}
+                                    <option value="{{ state.id }}" selected>{{ state.name | capfirst}}</option>
+                                {% else %}
+                                    <option value="{{ state.id }}">{{ state.name | capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <select  class="chosen-select" name="city_id" disabled>
+                            <option value="">--Select City--</option>
+                            {% for cityc in city %}
+                                {% if asso_obj.city.id == cityc.id %}
+                            <option value="{{ cityc.id }}" selected>{{ cityc.name | capfirst}}</option>
+                            {% else %}
+                            <option value="{{ cityc.id }}" >{{ cityc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+                    <p>&nbsp;</p>
+                    <hr class="hr_modify">
+                    <div class="form-group">
+                        <label>Emergency Locality (Multiselect)</label>
+                        <select  class="chosen-select" name="locality_id" multiple disabled>
+                            <option value="">--Select Locations--</option>
+                              {% for loc in locality %}
+                            {% if loc.id|slugify  in emer_localities_list %}
+                             <option value="{{ loc.id }}" selected>{{loc.name | capfirst}}</option>
+                            {% else %}
+                            <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+        </div>
+
+
+<!--<button type="submit" class="btn btn-success ">Submit</button>-->
+
+</form>
+</div>
+{# -----------------Additinal data Tab end---9----------------------- #}
+
+        </div>
+
+    </div>
+
+     <script type="text/javascript">
+        $('#talk_to_doc').change(function() {
+            $('#talk_to_doc_details').toggle();
+        });
+     </script>
+
+    <script type="text/javascript">
+    $('#is_emergency').change(function() {
+        $('#is_emergency_details').toggle();
+    });
+    </script>
+
+          <script type="text/javascript">
+        $(document).ready(function () {
+            $('#zone').change(function () {
+                var zone = $('#zone').val();
+                var DOMAIN = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                $.ajax({
+                    type: 'post',
+                    url: DOMAIN + '/doctor/zone_location/',
+                    data: {action: "get_filter", zone_id: zone},
+                    beforeSend: function () {
+                        var text = 'getting zone location  of ' + zone + ' . please wait..';
+                        ajaxindicatorstart(text);
+                    },
+                    success: function (data) {
+                        ajaxindicatorstop();
+                        var obj = JSON.parse(data);
+
+                        if (obj.length != 0) {
+                            $("#zone_location option").remove();
+                            $("#zone_location").trigger("chosen:updated");
+                            var key_sel = "";
+                            var value_sel = 'Select Zone Location';
+                            var select = '<option value=' + key_sel + '>' + value_sel + '</option>';
+                            $("#zone_location").append(select);
+                            $("#zone_location").val(key_sel);
+                            $("#zone_location").trigger("chosen:updated");
+                            for (var i = 0; i < obj.length; i++) {
+                                var option = '<option value=' + obj[i].id + '>' + obj[i].name + '</option>';
+                                $("#zone_location").append(option);
+                                $("#zone_location").trigger("chosen:updated")
+
+                            }
+
+                        }
+                    },
+                    error: function (jqXHR, ex) {
+                    }
+                });
+            });
+
+
+        });
+    </script>
+
+
+    <script type="text/javascript">
+        function ValidateMobileCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{10},)*\d{10}$/.test(value));
+            if (!check) {
+                alert("Please put correct Mobile No");
+
+            }
+            return check
+
+        }
+        function ValidatePhoneCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8},)*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct Phone No");
+
+            }
+            return check
+
+        }
+        function eitherMobileAndTelephone(mobile, telephone) {
+            if (mobile != '' || telephone != '') {
+                return true;
+            }
+            alert("Please either mobile no or telephone no");
+            return false
+
+        }
+
+        function checkcategory(category) {
+            if (category != '') {
+                return true;
+            }
+
+            alert("Please put category value");
+            return false;
+
+        }
+
+        function validateMyForm() {
+            var mobile_val = document.getElementById('mobile').value;
+            var phone_val = document.getElementById('phone').value;
+            var category_val = document.getElementById("category").value;
+            var mobile = ValidateMobileCSV(document.getElementById('mobile').value);
+            var phone = ValidatePhoneCSV(document.getElementById('phone').value);
+            var eitherMobile = eitherMobileAndTelephone(mobile_val, phone_val)
+            var category = checkcategory(category_val);
+            if (mobile && phone && eitherMobile && category) {
+                return true
+            }
+            return false
+        }
+          $(document).ready(function () {
+            $('#datePicker')
+                    .datepicker({
+                        format: 'dd/mm/yyyy'
+                    })
+                    .on('changeDate', function (e) {
+                        // Revalidate the date field
+                        $('#eventForm').formValidation('revalidateField', 'date');
+                    });
+        });
+    </script>
+
+    <script type="text/javascript">
+
+        $( document ).ready(getfromyear()
+        );
+        function getfromyear()
+        {
+            var j=0;
+            var listfromyear,i,year;
+            var d = new Date();
+            var dat = d.getFullYear();
+            var dob =document.getElementById("datePicker").value;
+
+            if (dob){
+            year =dob.split("/")[2];
+             }
+
+            listfromyear = [];
+            for (i = year; i <= dat; i++) {
+                i = parseInt(i);
+                listfromyear.push(i);
+            }
+            console.log(listfromyear);
+
+
+
+            var select = document.getElementById("fromYear");
+            for(i in listfromyear) {
+                select.options[select.options.length] = new Option(listfromyear[i], listfromyear[i]);
+            }
+        }
+
+        function gettoyear()
+        {
+            var fromyear = document.getElementById("fromYear").value;
+            var listoyear,i;
+            listoyear=[];
+            $('#toYear').children().remove().end() ;
+            $('selectaa option').remove();
+            var r =document.getElementById("toYear");
+            var d = new Date();
+            var dat=d.getFullYear();
+            for (i = fromyear; i <= dat; i++) {
+                i = parseInt(i);
+                listoyear.push(i);
+            }
+            console.log(listoyear);
+            var select = document.getElementById("toYear");
+            for(i in listoyear) {
+                select.options[select.options.length] = new Option(listoyear[i],listoyear[i]);
+            }
+        }
+
+    </script>
+    <script type="text/javascript">
+
+        $( document ).ready(getyear()
+        );
+        function getyear()
+        {
+            var j=0;
+            var listfromyear,i,year;
+            var d = new Date();
+            var dat = d.getFullYear();
+            var dob =document.getElementById("datePicker").value;
+
+            if (dob){
+            year =dob.split("/")[2];
+             }
+
+            listfromyear = [];
+            for (i = year; i <= dat; i++) {
+                i = parseInt(i);
+                listfromyear.push(i);
+            }
+            console.log(listfromyear);
+
+
+
+            var select = document.getElementById("year");
+            for(i in listfromyear) {
+                select.options[select.options.length] = new Option(listfromyear[i], listfromyear[i]);
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        $( document ).ready(getyear1()
+        );
+        function getyear1()
+        {
+            var j=0;
+            var listfromyear,i,year;
+            var d = new Date();
+            var dat = d.getFullYear();
+            var dob =document.getElementById("datePicker").value;
+
+            if (dob){
+            year =dob.split("/")[2];
+             }
+
+            listfromyear = [];
+            for (i = year; i <= dat; i++) {
+                i = parseInt(i);
+                listfromyear.push(i);
+            }
+            console.log(listfromyear);
+
+
+
+            var select = document.getElementById("year1");
+            for(i in listfromyear) {
+                select.options[select.options.length] = new Option(listfromyear[i], listfromyear[i]);
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        $( document ).ready(getrewardYear()
+        );
+        function getrewardYear()
+        {
+            var j=0;
+            var listfromyear,i,year;
+            var d = new Date();
+            var dat = d.getFullYear();
+            var dob =document.getElementById("datePicker").value;
+
+            if (dob){
+            year =dob.split("/")[2];
+             }
+
+            listfromyear = [];
+            for (i = year; i <= dat; i++) {
+                i = parseInt(i);
+                listfromyear.push(i);
+            }
+            console.log(listfromyear);
+
+
+
+            var select = document.getElementById("rewardYear");
+            for(i in listfromyear) {
+                select.options[select.options.length] = new Option(listfromyear[i], listfromyear[i]);
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+
+        $( document ).ready(geteduYear()
+        );
+        function geteduYear()
+        {
+            var j=0;
+            var listfromyear,i,year;
+            var d = new Date();
+            var dat = d.getFullYear();
+            var dob =document.getElementById("datePicker").value;
+
+            if (dob){
+            year =dob.split("/")[2];
+             }
+
+            listfromyear = [];
+            for (i = year; i <= dat; i++) {
+                i = parseInt(i);
+                listfromyear.push(i);
+            }
+            console.log(listfromyear);
+
+
+
+            var select = document.getElementById("eduyear");
+            for(i in listfromyear) {
+                select.options[select.options.length] = new Option(listfromyear[i], listfromyear[i]);
+            }
+        }
+    </script>
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    </script>
+
+     <script type="text/javascript">
+            $(function () {
+                $('.datetimepicker3').datetimepicker({
+                    format: 'LT'
+                });
+            });
+        </script>
+
+    <style>
+    .fileUpload {
+    position: relative;
+    overflow: hidden;
+    background: url(../images/upload_img.png) no-repeat 0 0;
+    width: 70%;
+    height: 105px;}
+
+
+
+.fileUpload input.upload {
+    position: absolute;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    filter: alpha(opacity=0);}
+.select_delete{margin-bottom:5px;}
+.select_delete em {
+    position: absolute;
+    top: 4px;
+    right: 14px;
+    width: 24px;}
+
+    .close,.close:hover,.close:focus{opacity: 1;}
+    </style>
+
+
+{% endblock %}
+

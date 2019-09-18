@@ -1,0 +1,171 @@
+{% extends 'data_management/doctor_data/edit_doctor_data.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block doctor_data %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <fieldset {% if request.user|can_view_review %}{% endif %}>
+        <div class="border_5_light_white p_10">
+            <h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Reward &amp;
+                Recognization</h4>
+            <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#add_new"><i
+                    class="fa fa-plus fa-fw"></i> Add New <span class="caret"></span></button>
+
+            <!--COLLAPSE START-->
+            <div class="collapse" id="add_new">
+                <form method="post" action="{% url 'doctor-reward' i.id %}">
+                    {% csrf_token %}
+
+                    <div class="form-group m_t_10">
+                        <input type="hidden" value="reward" class="form-control" name="type">
+                        <input type="text" placeholder="Reward &amp; Recognisation" class="form-control"
+                               name="reward_name">
+                    </div>
+                    <p class="m_t_10">
+                        <button type="submit" class="btn btn-primary"><i></i> Save</button>
+                    </p>
+
+                </form>
+            </div>
+            <!--COLLAPSE END-->
+            <div class="table-responsive table_modify_for_all p_tb_10">
+                <table class="table table-bordered m_b_0">
+                    <thead class="bg_ededed">
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Reward &amp; Recognization</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in reward_data %}
+                        <tr>
+
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.reward_data }}</td>
+                            <td>{{ i.created_at }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                            <td>
+                                <button class="btn btn-default btn-sm p_0" type="button" data-toggle="modal"
+                                        data-target="#{{ i.id }}"><i
+                                        class="fa fa-pencil-square-o fa-fw"></i></button>
+                                | <a class="btn btn-danger btn-sm p_0"
+                                     href="{% url 'delete-reward' i.id %}"><i
+                                    class="fa fa-trash-o text-danger fa-fw text_333"></i></a></td>
+
+
+                        </tr>
+                        <div class="modal fade" id="{{ i.id }}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+
+                                        <form role="form" method="post" action="{% url 'edit-reward-data' %}">
+                                            <div class="form-group m_t_10">
+                                                <input type="hidden" value="{{ i.id }}" class="form-control"
+                                                       name="reward_id">
+                                                <input type="text" placeholder="Reward &amp; Recognisation"
+                                                       class="form-control" value="{{ i.reward_data }}"
+                                                       name="reward_name">
+                                            </div>
+                                            <p class="m_t_10">
+                                                <button type="submit" class="btn btn-primary"><i></i> Update</button>
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                                    <i></i> Cancel
+                                                </button>
+                                            </p>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <div class="border_5_light_white p_10">
+            <h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Membership</h4>
+            <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#memberships"><i
+                    class="fa fa-plus fa-fw"></i> Add New <span class="caret"></span></button>
+
+            <!--COLLAPSE START-->
+            <div class="collapse" id="memberships">
+                <form action="{% url 'doctor-reward' i.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="membership" class="form-control" name="type">
+                    <div class="form-group m_t_10">
+
+                        <input type="text" placeholder="Membership" class="form-control" name="membership_data">
+                    </div>
+                    <p class="m_t_10">
+                        <button type="submit" class="btn btn-primary"><i></i> Save</button>
+                    </p>
+                </form>
+            </div>
+            <!--COLLAPSE END-->
+            <div class="table-responsive table_modify_for_all p_tb_10">
+                <table class="table table-bordered m_b_0">
+                    <thead class="bg_ededed">
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Membership</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for k in membership_data %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ k.name }}</td>
+                            <td>
+                                <button class="btn btn-default btn-sm p_0" type="button" data-toggle="modal"
+                                        data-target="#m{{ k.id }}"><i
+                                        class="fa fa-pencil-square-o fa-fw"></i></button>
+                                |<a class="btn btn-default btn-sm p_0"
+                                    href="{% url 'delete-member' k.id %}"><i
+                                    class="fa fa-trash-o text-danger fa-fw text_333"></i></a></td>
+                        </tr>
+                        <div class="modal fade" id="m{{ k.id }}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+
+                                        <form role="form" action="{% url 'edit-member-data' %}" method="post">
+                                            <div class="form-group m_t_10">
+                                                <input type="hidden" value="{{ k.id }}" class="form-control"
+                                                       name="member_id">
+                                                <input type="text" placeholder="Membership" class="form-control"
+                                                       value="{{ k.name }}" name="membership_data">
+                                            </div>
+                                            <p class="m_t_10">
+                                                <button type="submit" class="btn btn-primary"><i></i> Update</button>
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                                    <i></i> Cancel
+                                                </button>
+                                            </p>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </fieldset>
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    </script>
+{% endblock %}

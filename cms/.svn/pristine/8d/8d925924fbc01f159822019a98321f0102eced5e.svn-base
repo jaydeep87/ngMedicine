@@ -1,0 +1,28 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'live_doctor_rank_module' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Live Doctors</h3>
+</a>
+</div>
+
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'old_doctor_rank_module' %}">
+<figure><img src="{% static 'images/doctor.png' %}"></figure>
+<h3>Doctors</h3>
+</a>
+</div>.
+<!-- see admin/live_doctor/rank_notifications.hrml'-->
+
+</div>
+
+</div>
+{% endblock %}

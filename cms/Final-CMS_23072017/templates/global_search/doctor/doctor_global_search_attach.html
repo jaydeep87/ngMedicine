@@ -1,0 +1,84 @@
+{% extends 'global_search/doctor/doctor_global_search.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block doctor_data %}
+    <!--ONE START-->
+
+    <div class="border_5_light_white p_10" style="background:rgba(0,0,0,0.3);">
+        <fieldset {% if request.user|can_view_review %}{% endif %}>
+            <h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Organisation</h4>
+        </fieldset>
+
+        <!--COLLAPSE START-->
+        <!--COLLAPSE END-->
+
+        <div class="table_modify_for_all p_tb_10">
+            <table class="table table-bordered">
+                <thead class="bg_ededed">
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Organisation</th>
+                    <th>Address</th>
+                    <th>Type</th>
+                    <th>Locality</th>
+                    <th>Selected Departments</th>
+                    <th>Fee</th>
+                    <th>DID</th>
+                    <th>Extension</th>
+                    <th>Department</th>
+                    <th>Current User</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    {#                    <th>Email ID</th>#}
+                    {#                    <th>Emergency No</th>#}
+                </tr>
+                </thead>
+                <tbody>
+                {% for j in organisation_doctor %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ j.organisation.name }}</td>
+                        <td>{{ j.organisation.street }}</td>
+                        <td>{% if j.organisation.is_hospital %}Hospital{% elif j.organisation.is_clinic %}
+                            Clinic{% endif %}</td>
+                        <td>{{ j.organisation.locality.name|capfirst }}</td>
+
+                        <td>
+
+                            <div class="form-group m_t_10">
+                                    <select id="h" class="chosen-select" name="Departments" multiple disabled >
+                                        <option value="">--Select Organisation--</option>
+                                        {% if department_obj %}
+                                            {% for i in department_obj %}
+                                                {% if i in j.department|get_current_departments %}
+                                                    <option value="{{ i.id }}"selected >{{ i.name }}</option>
+                                                {% else %}
+                                                    <option value="{{ i.id }}">{{ i.name }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                            </div>
+                        </td>
+
+
+                        <td>{{ j.consultancy_fee }}</td>
+                        <td>{{ j.did }}</td>
+                        <td>{{ j.extension }}</td>
+                        <td>{{ j.department.name }}</td>
+                        <td>{{ j.organisation.current_user.username|capfirst }}</td>
+                        <td>{{ j.createdAt }}</td>
+                        <td>{{ j.updatedAt }}</td>
+                        {#                        <td style=" word-break: break-all;">{{ j.organisation.email }}</td>#}
+                        {#                        <td>{{ j.organisation.emergency_no }}</td>#}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+    <!--ONE END-->
+{% endblock %}

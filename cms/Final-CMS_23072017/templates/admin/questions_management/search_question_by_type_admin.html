@@ -1,0 +1,188 @@
+<div class="table-responsive table_modify_for_all p_tb_10">
+      <table class="table table-bordered m_b_0">
+
+         <tbody>
+         {% if question_obj %}
+
+                                     {% for i in question_obj %}
+                            <tr>
+                                <td style="background: #fff;">
+<style>.table_modify_for_all .table > tbody > tr > td{color:inherit;}</style>
+                                    <div class="row m_0">
+                                        <div class="row m_tb_30">
+                                              <div class="col-xs-12 border_bottom_1_ccc"> <a class="pull-left media_circle" style="padding-left:0;">Q</a>
+                                                    <div class="media-body p_b_5 text-left">
+
+                                                      <p><h5 class="media-heading font_size_16 text_blue"><label style="color: blue;">Patient Name : </label >&nbsp;{{ i.patient_name | capfirst}} </h5>    {% if i.doctor_id %}<i class="fa fa-check-square-o" style="color: #3c763d ;font-size:large;">Assigned</i>{% else %}<i class="fa fa-close" style="color: red ;font-size:large;">Not Assigned</i>{% endif %}</p>
+                                                      {% if i.questionFor  == 'some_one' %}<h5 class="media-heading font_size_16 text_blue"><label>User Name : </label>&nbsp;{{ i.firstName | capfirst}}&nbsp; {{ i.lastName | capfirst}}</h5>{% endif %}
+                                                      <p class="m_0"><span><label>Gender : </label>&nbsp;{{ i.gender | capfirst }}, <label>Age:</label>&nbsp;{{ i.age | capfirst }},{% if i.questionFor  == 'some_one' %} <label>Relation:</label>&nbsp;{{ i.relation | capfirst }}{% endif %}</span></p>
+                                                      <p><i class="fa fa-clock-o fa-fw"></i> {{ i.createdAt }}</p>
+                                                      <p class="text-muted"><label style="font-size: larger;">Question Description : </label>{{ i.questionDescription }}</p>
+
+
+                                                      <p class="text-muted m_0 font_weight_600">Additional Details</p>
+                                                      <p class="font_size_14 m_0"><label>Question :</label>Do you have any presents or previous medical condition.?</p>
+                                                      <p class="font_size_14 m_0"><label>Answer :</label>{{ i.questionDetail1 | capfirst}}</p>
+
+                                                       <p class="font_size_14 m_0 text-muted font_weight_600"><label>Question :</label>Do you have any presents or previous medical?</p>
+                                                       <p class="font_size_14 m_0"><label>Answer :</label>{{ i.questionDetail2 | capfirst }}</p>
+
+                                                       <p class="font_size_14 m_0 text-muted font_weight_600"><label>Question :</label>Do you have any presents or previous medical?</p>
+                                                       <p class="font_size_14 m_0"><label>Answer :</label>{{ i.questionDetail3 | capfirst }}</p>
+
+
+                                                        <p class="text-right col-md-12 m_t_20"> <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#dd_answer{{i.id}}">Select <span class="caret"></span></button></p>
+                                                        <div class="clearfix"></div>
+                                                        <div class="collapse position_relative m_t_20" id="dd_answer{{ i.id }}">
+                                                        <div class="thumbnail bg_f9f9f9">
+                                                        <form method="post" action="{% url 'associate_live_doc_with_question' i.id %}">
+                                                        {% csrf_token %}
+                                                            <div class="form-group">
+                                                                <div class="form-group">
+                                                                <label>Category</label>
+                                                                <select name="{{ i.id }}" class="chosen-select" onchange="getcatlist(value,name)">
+                                                                    <option value="">--Select Category--</option>
+                                                                    {% for c in cat_list %}
+                                                                            <option value="{{c.id}}" >{{c.name}}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                            <label class="text_666">Select your doctor</label>
+                                                            <!--<p id ="{{ i.id }}" > this is the doctor </p>-->
+                                                            <div class="form-group" name = "">
+                                                                <label>Doctor</label>
+                                                                <select id="a{{ i.id }}a" class="chosen-select" name="livedoc">
+                                                                </select>
+                                                            </div></div>
+                                                            <div class="form-group row m_0">
+                                                                <div class="col-xs-12 text-right"><button type="submit" class="btn btn-info">Assign</button></div>
+                                                            </div>
+                                                            <!--<div class="form-group">-->
+                                                                <!--<label class="text_666">Select your doctor</label>-->
+                                                                <!--<select class="form-control" name = "livedoc">-->
+                                                                    <!--<option  value="0">-&#45;&#45;&#45;&#45;Select a Doctor-&#45;&#45;&#45;&#45;</option>-->
+                                                                    <!--{% if live_doc_list %}-->
+                                                                        <!--{% for iii in live_doc_list %}-->
+                                                                            <!--{% if i.doctor_id and i.doctor_id != '' and i.doctor_id != 0 %}-->
+                                                                                <!--{% if i.doctor_id == iii.id|slugify %}-->
+                                                                                    <!--<option  value="{{ iii.id }}" selected>{{ iii.firstName }}{{ iii.lastName }}</option>-->
+                                                                                <!--{% else %}-->
+                                                                                    <!--<option  value="{{ iii.id }}">{{ iii.firstName }}{{ iii.lastName }}</option>-->
+                                                                                <!--{% endif %}-->
+
+                                                                            <!--{% else %}-->
+                                                                                <!--<option  value="{{ iii.id }}">{{ iii.firstName }}{{ iii.lastName }}</option>-->
+                                                                            <!--{% endif %}-->
+                                                                        <!--{% endfor %}-->
+                                                                    <!--{% endif %}-->
+                                                                <!--</select>-->
+                                                            <!--</div>-->
+
+                                                            <!--<div class="form-group row m_0">-->
+                                                                <!--<div class="col-xs-12 text-right"><button type="submit" class="btn btn-info">Assign</button></div>-->
+                                                            <!--</div>-->
+                                                        </form>
+                                                        </div>
+
+                                                        </div>
+                                                        </div>
+
+                                              </div>
+
+                                        </div>
+
+
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+
+         {% else %}
+             <tr><td>No Question Found</td></tr>
+         {% endif %}
+         </tbody>
+      </table>
+      {% if lab %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if lab.has_previous %}
+            <li class="prev"><a href="?page={{ lab.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Prev</a> </li>
+            {% endif %}
+            <li><a href="">Page {{ lab.number }} of {{ lab.paginator.num_pages }}</a> </li>
+            {% if lab.has_next %}
+            <li class="next"><a href="?page={{ lab.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+
+<script>
+   $("#checkAll").change(function () {
+       $("input:checkbox").prop('checked', $(this).prop("checked"));
+   });
+   var $rows = $('#table tr');
+   $('#search').keyup(function () {
+       var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+       $rows.show().filter(function () {
+           var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+           return !~text.indexOf(val);
+       }).hide();
+   });
+   $('#alert').fadeIn().delay(2000).fadeOut('slow');
+   /**
+    * publisher
+     * @constructor
+    */
+   function PublishForPublisher(type,data_type){
+       var checkedValues = $('input:checkbox:checked').map(function () {
+           return this.value;
+       }).get();
+       var formDATA = {};
+       checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+       if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+           alert("Please select value....");
+           return false;
+       }
+       formDATA.checkedValues = checkedValues;
+       formDATA.type = type;
+       formDATA.data_type = data_type;
+       if (formDATA.checkedValues != '') {
+           $.ajax({
+               type: 'POST', url: Domain + '{% url 'data-publish' %}', data: formDATA, beforeSend: function () {
+                   var text = 'Please wait....';
+                   ajaxindicatorstart(text);
+               },
+               success: function (resData) {
+                   ajaxindicatorstop();
+                   resData = JSON.parse(resData);
+                   if (resData.Redirect == true) {
+                       alert(resData.Message);
+                       window.location = resData.RedirectUrl;
+                   }
+                   else {
+
+                       alert(resData.Message);
+                       window.location.reload(true);
+                   }
+               },
+               error: function(data){
+                   alert('Something Bad Happened');
+                   location.reload();
+               }
+           });
+       }
+       else
+       {
+           alert("Please select labs.")
+       }
+
+   }
+
+
+</script>
+
+   </div>

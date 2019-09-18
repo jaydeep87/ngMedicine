@@ -1,0 +1,122 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+        <div class="row m_0">
+            <div class="col-sm-12 m_b_10 p_l_0">
+                <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#filters"><i
+                        class="fa fa-filter fa-fw"></i> Apply Filters
+                </button>
+            </div>
+
+            <div class="collapse col-md-12" id="filters">
+                <div class="thumbnail p_t_15 row">
+                    <div class="col-sm-4">
+                        <div class="form-group"><select class="form-control" id="stage_data">
+                            <option>----Select Stage---</option>
+                            {% for c in stage_data %}
+                                <option value="{{ c.id }}">{{ c.stage_name }}</option>
+
+                            {% endfor %}
+                        </select></div>
+
+                    </div>
+                    <div class="col-md-8">
+                        <button type="button" class="btn btn-info" onclick="SearchLabAdminStage()">Search</button>
+                    </div>
+                    {#<form role="form">#}
+                    {#<label class="radio-inline">#}
+                    {#    #}
+                    {#    #}
+                    {#    #}
+                    {#    <input type="checkbox" name="caller_user">Caller User Type</label>#}
+                    {#<label class="radio-inline"><input type="checkbox" name="reviewer_user"> Reviewer User Type</label>#}
+                    {#<p class="m_t_15">#}
+                    {#<button type="reset" class="btn btn-danger btn-sm">Reset</button>#}
+                    {#<button type="button" class="btn btn-info btn-sm">Apply</button>#}
+                    {#</p>#}
+                    {#</form>#}
+
+                </div>
+
+            </div>
+            {% if request.user|can_view_admin %}
+                <div class="row m_b_10">
+                    <div class="col-sm-4">
+                        <div class="input-group">
+                            <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                            <span class="input-group-btn"> <button class="btn btn-default"
+                                                                   onclick="SearchLabOnByStageByUser()"> Search</button></span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+
+        <div class="table-responsive table_modify_for_all">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Lab Name</th>
+                    <th>City</th>
+                    <th>Location</th>
+                    <th>Stage</th>
+                    <th>Current User</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in lab_all_data %}
+                    <tr>
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>{{ i.name | capfirst}}</td>
+                    <td>{{ i.city.name | capfirst }}</td>
+                    <td>{{ i.locality.name | capfirst }}</td>
+                    <td>{{ i.stage.stage_name | capfirst}}</td>
+                    <td>{{ i.current_user.username | capfirst}}</td>
+                    <td>{{ i.createdAt }}</td>
+                    <td>{{ i.updatedAt }}</td>
+                    <td><a class="btn btn-default btn-sm p_0" href="{% url 'time-schedule-lab' i.id %}"><i class="fa fa-clock-o fa-fw text_333"></i></a>
+                       <a class="btn btn-default btn-sm p_0" href="{% url 'lab-listing-edit' i.id %}?tab=1"><i
+                              class="fa fa-pencil-square-o fa-fw"></i></a> | <a href="{% if i.is_disable %}{% url 'any-master-object-activate' i.id  17%}?tab=1{% else %}{% url 'any-master-object-deactivate' i.id 17 %}{% endif %}"
+                                                                                      class="btn btn-default btn-sm">
+                                {% if i.is_disable %}Enable {% else %}Disable {% endif %}
+                    </td>
+                {% endfor %}
+                </tr>
+                </tbody>
+            </table>
+
+            {% if lab_all_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if lab_all_data.has_previous %}
+                            <li class="prev"><a href="?page={{ lab_all_data.previous_page_number }}{% if stage_no %}&stage_id={{stage_no}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ lab_all_data.number }} of {{ lab_all_data.paginator.num_pages }}</a></li>
+                        {% if lab_all_data.has_next %}
+                            <li class="next"><a href="?page={{ lab_all_data.next_page_number }}{% if stage_no %}&stage_id={{stage_no}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+<script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function(e){
+        if(e.keyCode == 13){
+           SearchLabOnByStageByUser()
+        }
+        }
+    </script>
+
+{% endblock %}

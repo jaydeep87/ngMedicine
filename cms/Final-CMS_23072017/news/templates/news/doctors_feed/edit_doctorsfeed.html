@@ -1,0 +1,177 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block js %}
+ <script type="text/javascript" src="{% static 'js/chosen.jquery.min.js' %}"></script>
+{#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+<script>
+tinymce.init({
+  selector: "textarea",  // change this value according to your html
+  plugins: "textcolor advlist autolink lists link image charmap print image imagetools preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template paste textcolor colorpicker textpattern",
+  automatic_uploads: true,
+  images_upload_url:"/tinymice/image-upload/",
+  toolbar: "forecolor backcolor textcolor advlist autolink lists link image imagetools charmap print preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template paste textcolor textpattern bullist numlist outdent indent | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+  height : 750,
+});
+</script>
+{% endblock %}
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+        <div class="m_tb_10">
+            <h4 class="font_weight_600">{{ doctors_feed.topic_title }}<span class="pull-right"></span>
+        </div>
+        <div class="m_tb_10">
+            <form role="form" action="{% url 'edit_doctors_feed' doctors_feed.id %}" method="post"
+                  enctype="multipart/form-data">
+                <div class="row">
+                    {% csrf_token %}
+                    <div class="col-md-12">
+
+                    <div class="form-group">
+                        <label style="color:black;">Topic Title</label>
+                        <input type="text"  class="form-control" name="topic_title" value= "{{ doctors_feed.topic_title }}">
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label style="color:black;">News Type</label>
+                        <select id="news_type" name="news_type" class="chosen-select">
+                            <option vlue="" disable>Select News Type</option>
+                            {% for typ in news_type_obj %}
+                                {% if typ.id == doctors_feed.news_type.id%}
+                                 <option style="word-break:break-all!important;" value="{{ typ.id }}" selected>{{ typ.name| capfirst}}</option>
+                                {% else %}
+                                <option value="{{ typ.id }}" >{{ typ.name| capfirst}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;" >Small Description</label>
+                        <input type="text"  class="form-control" name="small_description" value = "{{ doctors_feed.small_description }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;" >Publish Date Ex:(April 2,2017)</label>
+                        <input type="text"  class="form-control MyDatePicker" name="publish_date" value= "{{ doctors_feed.publish_date }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Title</label>
+                        <input type="text"  class="form-control"  value= "{{ doctors_feed.page_title }}" name="page_title">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Keywords</label>
+                        <input type="text"  class="form-control" value= "{{ doctors_feed.page_keywords }}" name="page_keywords">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Description</label>
+                        <input type="text"  class="form-control" value= "{{ doctors_feed.page_description }}" name="page_description">
+                    </div>
+
+{#                    <div class="form-group">#}
+{#                        <label  style="color:black;">Doctor's Category</label>#}
+{#                        <input type="text"  class="form-control" name="doctors_category" value= "{{ doctors_feed.doctors_category }}">#}
+{#                    </div>#}
+
+                    <!--<div class="form-group">-->
+                     <!--<label>Category</label>-->
+                        <!--<select id="doccategory" class="chosen-select" name="category"  multiple>-->
+                                <!--<option value="">&#45;&#45;Select Doctor's Categories&#45;&#45;</option>-->
+                                <!--{% if category_obj %}-->
+                                    <!--{% for u in category_obj %}-->
+                                        <!--{% if u.id|slugify in current_cats %}-->
+                                            <!--<option value="{{ u.id }}" selected >{{ u.name }}</option>-->
+                                        <!--{% else %}-->
+                                            <!--<option value="{{ u.id }}">{{ u.name }}</option>-->
+                                        <!--{% endif %}-->
+                                    <!--{% endfor %}-->
+                                <!--{% endif %}-->
+                        <!--</select>-->
+                    <!--</div>-->
+
+                    <div class="form-group">
+                        <label  style="color:black;">Tag String</label>
+                        <input type="text"  class="form-control" name="tag_string" value= "{{ doctors_feed.tag_string }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Related Topics</label>
+                        <select id="related_topics" class="chosen-select" name="related_topics" multiple>
+                            <option value="" style="color: #761c19;" disabled>----------------------------SELECT ARTICLES----------------------</option>
+                            {% for article in other_articles %}
+                                {% if article.id|article_exist%}
+                                 <option style="word-break:break-all!important;" value="{{ article.id }}" selected>{{ article.topic_title| capfirst}}</option>
+                                {% else %}
+                                <option value="{{ article.id }}" >{{ article.topic_title | capfirst}}</option>
+                                {% endif %}
+                                <option value=""  style="color: #761c19;" disabled>--------------------------------------------------------------------</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label  style="color:black;">Converted HTML</label>
+                        <textarea rows="4" cols="50" id="textarea" name = "newsfeed_html_refined">{{doctors_feed.newsfeed_html_refined}}</textarea>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="clearfix col-md-12 text-right">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                  </div>
+                </div>
+            </form>
+        </div>
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        function readURL(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah').attr('src', e.target.result);
+
+                    $('#blah').hide();
+                    $('#blah').fadeIn(650);
+
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#imgInp").change(function () {
+            readURL(this);
+        });
+        var clone_index = $("#app").length;
+
+        $("#btn1").click(function () {
+            $("#sss").append('<div id="app"><div class="form-group col-md-6"><textarea class="form-control" name="bullet_header"></textarea> </div> <div class="form-group col-md-6"><textarea class="form-control" name="bullet_body"></textarea> </div></div></div>');
+            clone_index++;
+        });
+        $("#btn2").click(function () {
+            if (clone_index > 1) {
+                $("#app").remove();
+                clone_index--;
+            }
+        });
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,134 @@
+<{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+
+        {% block table %}
+            <div class="col-md-6 text-right" style="width: 350px;" >
+                <button class="btn btn-success" type="button" onclick="PublishForMaster('publish','organisation_types')">Publish</button>
+                <button class="btn btn-danger" type="button" onclick="PublishForMaster('un-publish','organisation_types')">Un publish</button>
+                <button class="btn btn-warning" type="button" onclick="PublishForMaster('publish','organisation_types')">Re publish</button>
+            </div>
+           <p class="text-right"><a href="{% url 'organisation_types_add' %}" class="btn btn-info"><i class="fa fa-user fa-fw"></i> Add New Organisation Type</a>
+
+           </p>
+            <div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr><th><input id="checkAll" type="checkbox"/></th>
+                        <th>Sr No</th>
+                        <th>Hospital Type</th>
+                        <th>Status</th><th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in org_types %}
+
+                        <tr><td><input type="checkbox" value="{{ i.id }}"></td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.type_name | capfirst }}</td>
+                            <td>{{ i.delete | capfirst}}</td>
+                            <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+
+
+                            <td><a class="text_white" href="{% url 'organisation_types_edit' i.id %}"><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.delete == False %}<a href="{% url 'any-master-object-deactivate' object_id=i.id object_type=24 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'any-master-object-activate' object_id=i.id object_type=24 %}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}</td>
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                {% if org_types %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if org_types.has_previous %}
+                                <li class="prev"><a href="?page={{ org_types.previous_page_number }}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ org_types.number }} of {{ org_types.paginator.num_pages }}</a></li>
+                            {% if org_types.has_next %}
+                                <li class="next"><a href="?page={{ org_types.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        {% endblock %}
+    </div>
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                Searchorg_types({{ request.user.id }})
+            }
+        }
+    </script>
+    <script>
+
+        $("#checkAll").change(function () {
+        $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+
+        function PublishForMaster(action,type){
+               var checkedValues = $('input:checkbox:checked').map(function () {
+                   return this.value;
+               }).get();
+
+               var formDATA = {};
+               checkedValues = (checkedValues).toString().toLowerCase().replace('on,','');
+
+               if(checkedValues =='' || checkedValues ==null || checkedValues ==undefined){
+                   alert("Please select value....");
+                   return false;
+               }
+               formDATA.checkedValues = checkedValues;
+               formDATA.action = action;
+               formDATA.type = type;
+               if (formDATA.checkedValues != '') {
+                   $.ajax({
+                       type: 'POST', url: Domain + '{% url 'publish_unpublish_any_master_two' %}', data: formDATA, beforeSend: function () {
+                           var text = 'Please wait....';
+                           ajaxindicatorstart(text);
+                       },
+                       success: function (resData) {
+                           ajaxindicatorstop();
+                           resData = JSON.parse(resData);
+                           if (resData.Redirect == true) {
+                               alert(resData.Message);
+                               window.location = resData.RedirectUrl;
+                           }
+                           else {
+
+                               alert(resData.Message);
+                               window.location.reload(true);
+                           }
+                       },
+                       error: function(data){
+                           alert('Something Bad Happened');
+                           location.reload();
+                       }
+                   });
+               }
+               else
+               {
+                   alert("Please select Doctors.")
+               }
+
+        }
+    </script>
+{% endblock %}

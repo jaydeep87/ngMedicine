@@ -1,0 +1,41 @@
+[
+  {
+    "model": "hfu_cms.stage",
+    "pk": 1,
+    "fields": {
+      "stage_name": "New"
+    }
+  },
+    {
+    "model": "hfu_cms.stage",
+    "pk": 2,
+    "fields": {
+      "stage_name": "In Curation"
+
+    }
+  },
+  {
+    "model": "hfu_cms.stage",
+    "pk": 3,
+    "fields": {
+      "stage_name": "In Review"
+
+    }
+  },
+   {
+    "model": "hfu_cms.stage",
+    "pk": 4,
+    "fields": {
+      "stage_name": "In Publish"
+
+    }
+  },
+   {
+    "model": "hfu_cms.stage",
+    "pk": 5,
+    "fields": {
+      "stage_name": "Published"
+
+    }
+  }
+]

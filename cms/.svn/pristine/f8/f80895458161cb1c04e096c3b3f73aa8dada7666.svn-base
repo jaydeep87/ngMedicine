@@ -1,0 +1,95 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <div class="m_tb_10">
+        <ul class="nav nav-tabs">
+            <li class="{% if tab == '1' %}active{% endif %}"><a href="#datewisenotification"
+                                                                onclick=""
+                                                                data-toggle="tab">Date wise listing</a></li>
+        </ul>
+
+                <div class="row">
+                    <form action="{% url 'live-organisation-notification-bydate' %}" method="post">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                            <label>From Date</label>
+                            <input type="text" value="" class="form-control"  name="from_date" placeholder="From Date" id="startDatepicker"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                            <label>To Date</label>
+                            <input type="text" value="" class="form-control"  name="to_date" placeholder="To Date" id="endDatepicker"></div>
+                        </div>
+                        <div class="col-md-4">
+                          <button type="submit" class="btn btn-success m_t_30 p_lr_30">Go</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="table-responsive table_modify_for_all">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                        <th>Sr No</th>
+                        <th>Create Date</th>
+                        <th>Type</th>
+                        <th>Doctor Id</th>
+                        <th>Full Name</th>
+                        <th>Update Date</th>
+                        <th>Updated Via</th>
+                        <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if live_organisation %}
+                            {% for i in live_organisation %}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{i.createdAt}}</td>
+                                    <td>Live</td>
+                                    <td>{{i.id}}</td>
+                                    <td>{{i.name}}</td>
+                                    <td>{{i.updatedAt}}</td>
+                                    <td>{{ i.current_user }}</td>
+                                    <td>{{ i.stage.stage_name}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        {% else %}
+                            <tr><td colspan="8">No Live Organisation Found Updated with in these date</td></tr>
+                        {% endif %}
+                    </table>
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if plan_list.has_previous %}
+                                <li class="prev"><a href="?page={{ plan_list.previous_page_number }}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ plan_list.number }} of {{ plan_list.paginator.num_pages }}</a></li>
+                            {% if plan_list.has_next %}
+                                <li class="next"><a href="?page={{ plan_list.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+    </div>
+
+<script type="text/javascript" >
+    $(document).ready(function () {
+        $('#datePicker,#startDatepicker, #endDatepicker')
+                .datepicker({
+                    format: 'yyyy/mm/dd'
+                })
+                .on('changeDate', function (e) {
+                    // Revalidate the date field
+                    $('#eventForm').formValidation('revalidateField', 'date');
+         });
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+[
+  {
+    "model": "hfu_cms.Organisation_categories",
+    "pk": 1,
+    "fields": {
+      "category_name": "Private"
+    }
+  },
+  {
+    "model": "hfu_cms.Organisation_categories",
+    "pk": 2,
+    "fields": {
+      "category_name": "Public"
+    }
+  },
+  {
+    "model": "hfu_cms.Organisation_categories",
+    "pk": 3,
+    "fields": {
+      "category_name": "Nursing Homes"
+    }
+  }
+]
+

@@ -1,0 +1,81 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+            <div class="row m_b_10">
+                <div class="col-sm-4">
+                    <div class="input-group">
+                        <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+                        <span class="input-group-btn"> <button class="btn btn-default"
+                                                               onclick=""> Search</button></span>
+                    </div>
+                </div>
+            </div>
+        <input type="hidden" value="doctorsfeed" id="xx" name ="yy">
+        {% include 'publisher/markascomplete.html' %}
+    </div>
+
+        <div class="table-responsive table_modify_for_all">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th><input id="checkAll" type="checkbox"/></th>
+                    <th>Sr No</th>
+                    <th>Topic title</th>
+                    <th>Tag String</th>
+                    <th>Doctor's Name(category)</th>
+                    <th>free_text</th>
+                    <th>Current User</th>
+                    <th>Stage</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th class="col-md-2">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in doctors_feed %}
+                    <tr>
+                    <td><input type="checkbox" value="{{ i.id }}"></td>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.topic_title | capfirst }}</td>
+                    <td>{{ i.tag_string | capfirst }}</td>
+                    <td>{{i.doctor}}</td>
+                    <td>{{ i.free_text | capfirst }}</td>
+                    <td>{{ i.current_user.username | capfirst }}</td>
+                    <td>{{ i.stage.stage_name | capfirst }}</td>
+                    <td>{{ i.createdAt }}</td>
+                    <td>{{ i.updatedAt }}</td>
+                    <td><a href = "{% url 'edit_doctors_feed' i.id %}" class="text_white" ><i class="fa fa-edit"></i></a></td>
+                </tr>
+                {% endfor %}
+                </tr>
+                </tbody>
+            </table>
+
+            {% if health_all_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if health_all_data.has_previous %}
+                            <li class="prev"><a href="?page={{ health_all_data.previous_page_number }}{% if stage_no %}&stage_id={{stage_no}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ health_all_data.number }} of {{ health_all_data.paginator.num_pages }}</a></li>
+                        {% if health_all_data.has_next %}
+                            <li class="next"><a href="?page={{ health_all_data.next_page_number }}{% if stage_no %}&stage_id={{stage_no}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+<script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function(e){
+        if(e.keyCode == 13){
+           SearchHealthfeedOnByStageByUser
+        }
+        }
+</script>
+{% endblock %}

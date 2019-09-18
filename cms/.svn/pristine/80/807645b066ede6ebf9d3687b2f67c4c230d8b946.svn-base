@@ -1,0 +1,351 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div>
+
+        {#  ---search filter by Nishank----start----- #}
+
+{#        {% if request.user.is_superuser %}#}
+                <div class="row m_0 m_b_10">
+                    <div class="col-sm-4 p_l_0">
+                        <div class="input-group">
+                            <input type="text" placeholder="Search |" class="form-control" id="search"
+                                   autofocus="autofocus">
+                            <input type="hidden" value = {{ user_type }}  id="utype" >
+                            <span class="input-group-btn"> <button class="btn btn-default"
+                                                                   onclick="SearchUserByNameAdmin()"  id = "sbutton" value=> Search</button></span>
+                        </div>
+                    </div>
+                    <div class="col-md-8 text-right">
+                        <a href="
+
+{% if user_type == 'caller' %}{% url 'get-caller-users' %}{% elif user_type == 'reviewer' %}{% url 'get-reviewer-users' %}{% elif user_type == 'admin' %}{% url 'get-admin-users' %}{% elif user_type == 'publisher' %}{% url 'get-publisher-users' %}{% elif user_type == 'news' %}{% url 'get-news-users' %}{% elif user_type == 'service' %}{% url 'get-service-users' %}{% endif %}"
+                                 class="btn btn-info"><i class="fa fa-user fa-fw"></i> Add New User</a>
+                    </div>
+                </div>
+{#        {% endif %}#}
+
+        {# ---search filter by Nishank----end---- #}
+
+
+        <div class="table-responsive table_modify_for_all">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>User Name</th>
+                    <th>Name</th>
+                    <th>Email ID</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if user_type == 'caller' %}
+                    {% for i in caller_user_data %}
+                        <tr>
+                            <td>{{ i.user.username }}</td>
+                            <td>{{ i.user.first_name }} {{ i.user.last_name }}</td>
+                            <td>{{ i.user.email }}</td>
+                            <td>{% if i.user.is_active %}<i class="fa fa-check text-success"></i>{% else %}
+                                <i class="fa fa-close"></i>{% endif %}</td>
+                            <td>{{ i.created_at }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                            <td>
+                                <a href="{% url 'users-edit' i.user_id %}" class="text_white"><i class="fa fa-edit"></i></a>
+                                <span class="p_lr_10">|</span>
+                                {% if not i.user.is_active %}
+                                    <a href="{% url 'user-activate' i.user_id %}" class="text_white"><i
+                                            class="fa fa-check-square-o"></i></a>
+
+                                {% else %}
+                                    <a href="{% url 'user-deactivate' i.user_id %}" class="text_white"><i
+                                            class="fa fa-close"></i></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% elif user_type == 'reviewer' %}
+                    {% for i in reviewer_user_data %}
+                        <tr>
+                            <td>{{ i.user.username }}</td>
+                            <td>{{ i.user.first_name }} {{ i.user.last_name }}</td>
+                            <td>{{ i.user.email }}</td>
+                            <td>{% if i.user.is_active %}<i class="fa fa-check text-success"></i>{% else %}In
+                                active{% endif %}</td>
+                            <td>{{ i.created_at }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                            <td>
+                                <a href="{% url 'users-edit' i.user_id %}" class="text_white"><i class="fa fa-edit"></i></a>
+                                <span class="p_lr_10">|</span>
+                                {% if i.user.is_active %}
+                                    <a href="{% url 'user-deactivate' i.user_id %}" class="text_white"><i
+                                            class="fa fa-close"></i></a>
+                                {% else %}
+                                    <a href="{% url 'user-activate' i.user_id %}" class="text_white"><i
+                                            class="fa fa-check-square-o"></i></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                {% elif user_type == 'publisher' %}
+                    {% for i in publisher_user_data %}
+                        <tr>
+                            <td>{{ i.user.username }}</td>
+                            <td>{{ i.user.first_name }} {{ i.user.last_name }}</td>
+                            <td>{{ i.user.email }}</td>
+                            <td>{% if i.user.is_active %}<i class="fa fa-check text-success"></i>{% else %}In
+                                active{% endif %}</td>
+                            <td>{{ i.created_at }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                            <td>
+                                <a href="{% url 'users-edit' i.user_id %}" class="text_white"><i class="fa fa-edit"></i></a>
+                                <span class="p_lr_10">|</span>
+                                {% if i.user.is_active %}
+                                    <a href="{% url 'user-deactivate' i.user_id %}" class="text_white"><i
+                                            class="fa fa-close"></i></a>
+                                {% else %}
+                                    <a href="{% url 'user-activate' i.user_id %}" class="text_white"><i
+                                            class="fa fa-check-square-o"></i></a>
+                                {% endif %}
+
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% elif user_type == 'news' %}
+                    {% for i in news_user_data %}
+                        <tr>
+                            <td>{{ i.user.username }}</td>
+                            <td>{{ i.user.first_name }} {{ i.user.last_name }}</td>
+                            <td>{{ i.user.email }}</td>
+                            <td>{% if i.user.is_active %}<i class="fa fa-check text-success"></i>{% else %}In
+                                active{% endif %}</td>
+                            <td>{{ i.created_at }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                            <td>
+                                <a href="{% url 'users-edit' i.user_id %}" class="text_white"><i class="fa fa-edit"></i></a>
+                                <span class="p_lr_10">|</span>
+                                {% if i.user.is_active %}
+                                    <a href="{% url 'user-deactivate' i.user_id %}" class="text_white"><i
+                                            class="fa fa-close"></i></a>
+                                {% else %}
+                                    <a href="{% url 'user-activate' i.user_id %}" class="text_white"><i
+                                            class="fa fa-check-square-o"></i></a>
+                                {% endif %}
+
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% elif user_type == 'service' %}
+                    {% for i in service_user_data %}
+                        <tr>
+                            <td>{{ i.user.username }}</td>
+                            <td>{{ i.user.first_name }} {{ i.user.last_name }}</td>
+                            <td>{{ i.user.email }}</td>
+                            <td>{% if i.user.is_active %}<i class="fa fa-check text-success"></i>{% else %}In
+                                active{% endif %}</td>
+                            <td>{{ i.created_at }}</td>
+                            <td>{{ i.updatedAt }}</td>
+                            <td>
+                               <a href="{% url 'users-edit' i.user_id %}" class="text_white"><i class="fa fa-edit"></i></a>
+                                <span class="p_lr_10">|</span>
+                                {% if i.user.is_active %}
+                                    <a href="{% url 'user-deactivate' i.user_id %}" class="text_white"><i
+                                            class="fa fa-close"></i></a>
+                                {% else %}
+                                    <a href="{% url 'user-activate' i.user_id %}" class="text_white"><i
+                                            class="fa fa-check-square-o"></i></a>
+                                {% endif %}
+
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% elif user_type == 'admin' %}
+                    {% for i in admin_user_data %}
+                        <tr>
+                            <td>{{ i.username }}</td>
+                            <td>{{ i.first_name }} {{ i.user.last_name }}</td>
+                            <td>{{ i.email }}</td>
+                            <td>{% if i.is_active %}<i class="fa fa-check text-success"></i>{% else %}In
+                                active{% endif %}</td>
+                            <td>Not Needed</td>
+                            <td>Not Needed</td>
+                            <td>
+                                 <a href="{% url 'users-edit' i.id %}" class="text_white"><i class="fa fa-edit"></i></a>
+                                <span class="p_lr_10">|</span>
+                                {% if i.is_active %}
+                                    <a href="{% url 'user-deactivate' i.id %}" class="text_white"><i
+                                            class="fa fa-close"></i></a>
+                                {% else %}
+                                    <a href="{% url 'user-activate' i.id %}" class="text_white"><i
+                                            class="fa fa-check-square-o"></i></a>
+                                {% endif %}
+
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+
+                </tbody>
+
+            </table>
+            {% if caller_user_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                    {%  if not caller_user_data.paginator.num_pages < 2 %}
+                        {% if caller_user_data.has_previous %}
+                            <li class="prev"><a href="?page={{ caller_user_data.previous_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ caller_user_data.number }} of {{ caller_user_data.paginator.num_pages }}</a></li>
+                        {% if caller_user_data.has_next %}
+                            <li class="next"><a href="?page={{ caller_user_data.next_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    {% else %}
+                     <div class="text-right">
+                         <ul class="pagination">
+                            <li><a>Page 1 of 1</a></li>
+
+                    {% endif %}
+                    </ul>
+                </div>
+
+            {% endif %}
+            {% if reviewer_user_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                    {%  if not news_user_data.paginator.num_pages < 2 %}
+                        {% if reviewer_user_data.has_previous %}
+                            <li class="prev"><a href="?page={{ reviewer_user_data.previous_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ reviewer_user_data.number }} of {{ reviewer_user_data.paginator.num_pages }}</a></li>
+                        {% if reviewer_user_data.has_next %}
+                            <li class="next"><a href="?page={{ reviewer_user_data.next_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    {% else %}
+                     <div class="text-right">
+                         <ul class="pagination">
+                            <li><a>Page 1 of 1</a></li>
+
+                    {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% if publisher_user_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                    {%  if not npublisher_user_data.paginator.num_pages < 2 %}
+                        {% if publisher_user_data.has_previous %}
+                            <li class="prev"><a href="?page={{ publisher_user_data.previous_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ publisher_user_data.number }} of {{ publisher_user_data.paginator.num_pages }}</a></li>
+                        {% if publisher_user_data.has_next %}
+                            <li class="next"><a href="?page={{ publisher_user_data.next_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    {% else %}
+                     <div class="text-right">
+                         <ul class="pagination">
+                            <li><a>Page 1 of 1</a></li>
+
+                    {% endif %}    
+                    </ul>
+                </div>
+            {% endif %}
+            {% if news_user_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                    {%  if not news_user_data.paginator.num_pages < 2 %}
+                        {% if news_user_data.has_previous %}
+                            <li class="prev"><a href="?page={{ news_user_data.previous_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Prev</a></li>
+                        {% endif %}
+
+                        <li><a>Page {{ news_user_data.number }} of {{ news_user_data.paginator.num_pages }}</a></li>
+
+                            {% if news_user_data.has_next %}
+                            <li class="next"><a href="?page={{ news_user_data.next_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-right">
+                         <ul class="pagination">
+                            <li><a>Page 1 of 1 </a></li>
+
+                    {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% if service_user_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                    {%  if not service_user_data.paginator.num_pages < 2 %}
+                        {% if service_user_data.has_previous %}
+                            <li class="prev"><a href="?page={{ service_user_data.previous_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ service_user_data.number }} of {{ service_user_data.paginator.num_pages }}</a></li>
+                        {% if service_user_data.has_next %}
+                            <li class="next"><a href="?page={{ service_user_data.next_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Next</a></li>
+                        {% endif %}
+                     {% else %}
+                     <div class="text-right">
+                         <ul class="pagination">
+                            <li><a>Page 1 of 1</a></li>
+
+                    {% endif %}   
+                        
+                    </ul>
+                </div>
+            {% endif %}
+            {% if admin_user_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                    {%  if not admin_user_data.paginator.num_pages < 2 %}
+                        {% if news_user_data.has_previous %}
+                            <li class="prev"><a href="?page={{ admin_user_data.previous_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Prev</a></li>
+                        {% endif %}
+
+                        <li><a>Page {{ admin_user_data.number }} of {{ admin_user_data.paginator.num_pages }}</a></li>
+
+                            {% if admin_user_data.has_next %}
+                            <li class="next"><a href="?page={{ admin_user_data.next_page_number }}{% if search_string and search_type %}&search_string={{search_string}}&search_type={{search_type}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-right">
+                         <ul class="pagination">
+                            <li><a>Page 1 of 1 </a></li>
+
+                    {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+
+
+
+
+        </div>
+
+    </div>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+
+   document.getElementById("search")
+    .addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode == 13) {
+        document.getElementById("sbutton").click();
+    }
+});
+
+    </script>
+
+{% endblock %}

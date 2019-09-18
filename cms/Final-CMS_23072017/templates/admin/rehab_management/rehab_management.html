@@ -1,0 +1,33 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+<div>
+<div class="row">
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'rehab-by-users' %}">
+
+<figure><img src="{% static 'images/rehab-microscope.png' %}"></figure>
+<h3>Rehab by Users</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'rehab-by-stages' %}">
+<figure><img src="{% static 'images/rehab-microscope.png' %}"></figure>
+<h3>Rehab by Stages</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'rehab-assignment' %}">
+<figure><img src="{% static 'images/rehab-microscope.png' %}"></figure>
+<h3>Rehab Assignment </h3>
+</a>
+</div>
+
+
+</div>
+
+</div>
+{% endblock %}

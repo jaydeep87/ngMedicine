@@ -1,0 +1,124 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    <div>
+<div class="row m_0">
+<div class="col-sm-12 m_b_10 p_l_0"><button type="button" class="btn btn-info" data-toggle="collapse" data-target="#filters"><i class="fa fa-filter fa-fw"></i> Apply Filters</button></div>
+
+<div class="collapse col-md-12" id="filters">
+<div class="thumbnail p_t_15 row">
+       <div class="col-sm-4">
+                    <div class="form-group"><select class="form-control" id="stage_data">
+                        <option value="" disabled>----Select Stage---</option>
+                        {% for c in stage_data %}
+                            <option value="{{ c.id }}">{{ c.stage_name | capfirst}}</option>
+
+                        {% endfor %}
+                    </select></div>
+
+                </div>
+<div class="col-md-8"><button type="button" class="btn btn-info" onclick="SearchLIveDoctorAdminStage() " >Search</button> </div>
+{#<form role="form">#}
+{#<label class="radio-inline">#}
+{#    #}
+{#    #}
+{#    #}
+{#    <input type="checkbox" name="caller_user">Caller User Type</label>#}
+{#<label class="radio-inline"><input type="checkbox" name="reviewer_user"> Reviewer User Type</label>#}
+{#<p class="m_t_15">#}
+{#<button type="reset" class="btn btn-danger btn-sm">Reset</button>#}
+{#<button type="button" class="btn btn-info btn-sm">Apply</button>#}
+{#</p>#}
+{#</form>#}
+
+</div>
+
+</div>
+    {% if request.user|can_view_admin %}
+    <div class="row m_b_10">
+        <div class="col-sm-4">
+    <div class="input-group">
+    <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">
+<span class="input-group-btn"> <button class="btn btn-default"  onclick="SearchLIveDoctorAdminOnStageUser()()"> Search</button></span>
+</div></div></div>
+    {% endif %}
+</div>
+
+<div class="table-responsive table_modify_for_all">
+<table class="table table-bordered">
+<thead>
+<tr>
+<th>Sr No</th>
+<th>First Name</th>
+<th>Last Name</th>
+<th>Category</th>
+<th>Stage</th>
+<th>Talk to Doc</th>
+<th>Activated</th>
+<th>Current User</th>
+<th>Duplicates</th>
+<th>Created At</th>
+<th>Updated At</th>
+<th class="col-md-2" >Action</th>
+
+</tr>
+</thead>
+<tbody>
+{% for i in doctor_all_data %}
+<tr>
+<tr>
+<td>{{ forloop.counter }}</td>
+<td>{{ i.firstName | capfirst }}</td>
+<td>{{ i.lastName | capfirst }}</td>
+<td>
+    {% for c in all_categories %}
+        {% if c.id|slugify == i.category|slugify %}
+            {{ c.name|capfirst }}
+        {% endif %}
+    {% endfor %}
+</td>
+
+<td>{{ i.stage.stage_name | capfirst }}</td>
+<td>{% if i|check_if_talktodoc_is_true %}Yes{% else %}No{% endif %}</td>
+<td>{% if i.activationStatus %}YES{% else %}No{% endif %}</td>
+<td>{{ i.current_user.username | capfirst }}</td>
+<td><a href="{% url 'view_duplicates' i.id %}" ><img src="/static/images/images/notes_warning.png" alt="Smiley face" height="20" width="20"></a></td>
+<td>{{ i.createdAt }}</td>
+<td>{{ i.updatedAt }}</td>
+<td>
+     <a href="{% url 'live_doctor_listing_edit' i.id %}?tab=1" class="btn btn-default btn-sm" style="padding:0 3px;"> <i class="fa fa-edit"></i></a>
+                           {% if i.is_disable == False %}<a href="{% url 'deactivate_single_live_doctor' i.id %}" class="btn btn-danger btn-sm" style="padding:0 3px;">Disable </a>{% endif %}
+                           {% if i.is_disable == True %}<a href="{% url 'activate_single_live_doctor' i.id %}" class="btn btn-success btn-sm" style="padding:0 3px;">Enable </a>{% endif %}
+</td>
+{% endfor %}
+</tbody>
+
+</table>
+{% if doctor_all_data %}
+      <div class="text-right">
+         <ul class="pagination">
+            {% if doctor_all_data.has_previous %}
+            <li class="prev"><a href="?page={{ doctor_all_data.previous_page_number }}{% if stage_no %}&stage_id={{stage_no}}{% endif %}">Prev</a> </li>
+            {% endif %}
+            <li><a>Page {{ doctor_all_data.number }} of {{ doctor_all_data.paginator.num_pages }}</a> </li>
+            {% if doctor_all_data.has_next %}
+            <li class="next"><a href="?page={{ doctor_all_data.next_page_number }}{% if stage_no %}&stage_id={{stage_no}}{% endif %}">Next</a> </li>
+            {% endif %}
+         </ul>
+      </div>
+      {% endif %}
+
+</div>
+ <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function(e){
+        if(e.keyCode == 13){
+           SearchLIveDoctorAdminOnStageUser()()
+        }
+        }
+    </script>
+</div>
+{% endblock %}

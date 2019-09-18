@@ -1,0 +1,436 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block js %}
+ <script type="text/javascript" src="{% static 'js/chosen.jquery.min.js' %}"></script>
+{#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
+<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+<script>
+tinymce.init({
+  selector: "textarea",  // change this value according to your html
+  plugins: "textcolor advlist autolink lists link image charmap print image imagetools preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template paste textcolor colorpicker textpattern",
+  automatic_uploads: true,
+  images_upload_url:"/tinymice/image-upload/",
+  toolbar: "forecolor backcolor textcolor advlist autolink lists link image imagetools charmap print preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template paste textcolor textpattern bullist numlist outdent indent | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+  height : 750,
+});
+</script>
+
+{% endblock %}
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <div style="padding-bottom:50px;"><button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button></div>
+
+
+    <!--COLLAPSE START-->
+           {% if disease.stage_id != 5 %}
+            <div id="markAsComplate" class="collapse in" >
+                <div class="thumbnail p_10">
+                    <div class="row">
+                        <div class="col-md-12 m_b_15">
+
+
+                            <form role="form" action="{% if request.user|can_view_caller_disease %}{% url 'mark-caller-complete-disease' %}{% elif request.user|can_view_review_disease %}{% url 'mark-reverse-disease-to-caller'  %}{% elif request.user|can_view_publisher %}{% url 'mark-reverse-disease-to-caller'  %} {% endif %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ disease.id }}" name="disease_id">
+                                {% if request.user|can_view_review_disease %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id}}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {# Form portion to move disease data from publisher user to caller user#}
+                                {% if request.user|can_view_publisher %}
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in caller_user_data %}
+
+                                                <option value="{{ b.user.id}}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if request.user|can_view_caller_disease %}
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            {% for b in reviewer_user_data %}
+                                                <option value="" disabled>Select Reviewer User</option>
+                                                <option value="{{ b.user.id }}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <select class="form-control" name="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Complete</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_review_disease %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+                        {% if request.user|can_view_review_disease %}
+                            <div class="col-md-12">
+                                <form action = "{% url 'mark-reviewer-complete-disease' %}" method = "post">
+                                <input type="hidden" value="{{ disease.id }}" name="disease_id" id="disease_id">
+                                <div class="col-md-4">
+                                    <select class="form-control" name="publisher_name" id="publisher_name">
+                                        <option value="" disabled>Select Publisher User</option>
+                                        {% for b in publisher_user_data %}
+
+                                            <option value="{{ b.user.id}}">{{ b.user.username }}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                              <div class="col-md-4">
+                                        <select class="form-control" name="validator_name" id="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                <div class="col-md-4">
+                                    <button type = "submit"  value = "submit" class="btn btn-info" >Move to Next
+                                        Stage
+                                    </button>
+                                </div>
+                              </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# NEW Form  to move disease data from publisher user to review user#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-reverse-disease-to-reviewer' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ disease.id }}" name="disease_id">
+
+
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in reviewer_user_data %}
+
+                                                <option value="{{ b.user.id}}">{{ b.user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>
+                                    </div>
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+
+
+                {# NEW Form  to PUBLISH  disease data from and move disease to stage 4 (PUBLISHED)#}
+                {% if request.user|can_view_publisher %}
+                <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action=" {% url 'mark-complete-publisher-disease-stage-four' %}"
+                                  method="post"  >
+                                <input type="hidden" value="{{ disease.id }}" name="disease_id">
+
+
+                                <button type = "submit"  value = "submit" class="btn btn-info" >Publish To Live
+                                    </button>
+
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        <!--COLLAPSE END-->
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="p_10 tb_five" style="background:rgba(0,0,0,0.3);">
+        <div class="well well-sm text_logo font_weight_600"><i class="fa fa-flask fa-fw"></i> Edit Disease Info
+
+{#            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info btn-sm pull-right"#}
+{#                       style="margin-top: -5px;">Go Back</a></div>#}
+
+            <a href="{% if user_is_publisher %}{% url  'publisher-disease-listing'  %}{% elif request.user.is_superuser%} {% url 'disease-assignment' %} {% else %}{% url  'disease-listing' %}{% endif %}" class="btn btn-info btn-sm pull-right">Go Back</a>
+
+        <div class="row" >
+
+            <!--LEFT PANEL START-->
+            <form method="post" action="{% url 'disease-listing-edit' disease.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="col-md-12">
+
+                    <div class="form-group">
+                        <label style="color:black;">Topic Title</label>
+                        <input type="text"  class="form-control" name="topic_title" value= "{{ disease.topic_title }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;" >Small Description</label>
+                        <input type="text"  class="form-control" name="small_description" value = "{{ disease.small_description }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;" >Publish Date (dd-mm-yyyy)</label>
+                        <input type="text"  class="form-control MyDatePicker" name="publish_date" value= "{{ pub_date }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Title</label>
+                        <input type="text"  class="form-control"  value= "{{ disease.page_title }}" name="page_title">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Keywords</label>
+                        <input type="text"  class="form-control" value= "{{ disease.page_keywords }}" name="page_keywords">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:black;">Page Description</label>
+                        <input type="text"  class="form-control" value= "{{ disease.page_description }}" name="page_description">
+                    </div>
+
+{#                    <div class="form-group">#}
+{#                        <label  style="color:black;">Doctor's Category</label>#}
+{#                        <input type="text"  class="form-control" name="doctors_category" value= "{{ disease.doctors_category }}">#}
+{#                    </div>#}
+
+                    <div class="form-group">
+                      <label>Category</label>
+                            <select id="doccategory" class="chosen-select" name="category"  multiple>
+                                    <option value="">--Select Doctor's Categories--</option>
+                                    {% if category_obj %}
+                                        {% for u in category_obj %}
+                                            {% if u.id|slugify in current_cats %}
+                                                                <option value="{{ u.id }}" selected >{{ u.name }}</option>
+                                            {% else %}
+                                                <option value="{{ u.id }}">{{ u.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                            </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label  style="color:black;">Tag String</label>
+                        <input type="text"  class="form-control" name="tag_string" value= "{{ disease.tag_string }}">
+                    </div>
+
+
+
+{#                    <div class="form-group">#}
+{#                        <label>Disease Type</label>#}
+{#                        <select id="type" class="chosen-select" name="type" multiple>#}
+{#                            <option value="" disabled>--Select Type--</option>#}
+{#                            {% for type in disease_type %}#}
+{#                                {% if type.id|slugify in current_type_list %}#}
+{#                                <option value="{{ type.id }}" selected>{{ type.name | capfirst}}</option>#}
+{#                                {% else %}#}
+{#                                <option value="{{ type.id }}">{{ type.name | capfirst}}</option>#}
+{#                                {% endif %}#}
+{#                            {% endfor %}#}
+{#                        </select>#}
+{#                    </div>#}
+{##}
+{##}
+                    <div class="form-group">
+                        <label>Related Topics</label>
+                        <select id="related_topics" class="chosen-select" name="related_topics" multiple>
+                            <option value="" style="color: #761c19;" disabled>----------------------------SELECT ARTICLES----------------------</option>
+                            {% for article in disease_articles %}
+                                {% if article.id|slugify in current_article_list %}
+                                 <option style="word-break:break-all!important;" value="{{ article.id }}" selected>{{ article.topic_title| capfirst}}</option>
+                                {% else %}
+                                <option value="{{ article.id }}" >{{ article.topic_title | capfirst}}</option>
+                                {% endif %}
+                                <option value=""  style="color: #761c19;" disabled>--------------------------------------------------------------------</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label  style="color:black;">Converted HTML</label>
+                        <textarea rows="4" cols="50" id="textarea" name = "disease_html_refined">{{disease.disease_html_refined}}</textarea>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="clearfix col-md-12 text-right">
+                        <button type="submit" class="btn btn-info">Submit</button>
+                    </div>
+
+                  </div>
+
+            </form>
+        </div>
+
+</div>
+        <style>
+            .chosen-choices span {word-break: break-all;}
+
+        </style>
+    <script type="application/javascript">
+
+
+        function ValidateMobileCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{10},)*\d{10}$/.test(value));
+            if (!check) {
+                alert("Please put correct 10 digit Mobile No");
+
+            }
+            return check
+
+        }
+        function ValidatePhoneCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8},)*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct 8 digitPhone No");
+
+            }
+            return check
+
+        }
+        function ValidateFax(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8})*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct Fax No");
+
+            }
+            return check
+
+        }
+
+        function ValidatePincode(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{6})*\d{6}$/.test(value));
+            if (!check) {
+                alert("Please put correct Pin Code No");
+
+            }
+            return check
+
+        }
+
+        function validateMyForm() {
+            var mobile = ValidateMobileCSV(document.getElementById('mobile').value);
+            var phone = ValidatePhoneCSV(document.getElementById('phone').value);
+            var fax = ValidateFax(document.getElementById('fax').value);
+            var pincode = ValidatePincode(document.getElementById('pincode').value);
+            var website = isValidURL(document.getElementById('website').value)
+            if (mobile && phone && pincode && fax && website) {
+                return true
+            }
+            return false
+        }
+
+        function isValidURL(url) {
+            if (!url) {
+                return true;
+            }
+            var RegExp = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+            if (RegExp.test(url)) {
+                return true;
+            } else {
+                alert("Please put valid website url");
+                return false;
+            }
+        }
+
+
+
+
+    </script>
+
+{% endblock %}

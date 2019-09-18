@@ -1,0 +1,67 @@
+{% extends 'global_search/doctor/doctor_global_search.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+{% block doctor_data %}
+    <fieldset {% if request.user|can_view_review %}{% endif %}>
+        <!--ONE START-->
+        <div class="border_5_light_white p_10">
+            <h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Education</h4>
+            <!--COLLAPSE START-->
+            <!--COLLAPSE END-->
+            <div class="table-responsive table_modify_for_all p_tb_10">
+                <table class="table table-bordered">
+                    <thead class="bg_ededed">
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Education Detail</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for j in i.doctor_education_set.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ j.education_data }}</td>
+                            <td>{{ j.createdAt }}</td>
+                            <td>{{ j.updatedAt }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--ONE END-->
+        <!--ONE START-->
+        <div class="border_5_light_white p_10">
+            <h4 class="font_weight_600 text_white m_t_0"><i class="fa fa-hand-o-right fa-fw"></i> Experience</h4>
+            <!--COLLAPSE START-->
+            <!--COLLAPSE END-->
+            <div class="table-responsive table_modify_for_all p_tb_10">
+                <table class="table table-bordered">
+                    <thead class="bg_ededed">
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Experience Detail</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for k in i.doctor_experience_set.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ k.experience_data }}</td>
+                        </tr>
+                    {% endfor %}
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </fieldset>
+    <!--ONE END-->
+
+
+
+{% endblock %}

@@ -1,0 +1,253 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <div>
+
+        <form role="form" class="p_30" style="background:rgba(0,0,0,0.3);" action="
+
+                {% if user_type == 'is_caller' %}{% url 'get-caller-users' %}{% elif user_type == 'is_reviewer' %}{% url 'get-reviewer-users' %}{% elif user_type == 'is_admin' %}{% url 'get-admin-users' %}{% elif user_type == 'is_publisher' %}{% url 'get-publisher-users' %}{% elif user_type == 'is_news' %}{% url 'get-publisher-users' %}{% elif user_type == 'is_service' %}{% url 'get-service-users' %}{% endif %}"
+              method="post">
+            <div class="row">
+                {% csrf_token %}
+                <div class="form-group col-md-6">
+                    <label class="text_white">First Name:</label>
+                    <input type="text" name=firstname class="form-control" placeholder="First Name">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="text_white">Last Name:</label>
+                    <input type="text" name=lastname class="form-control" placeholder="Last Name">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label class="text_white">User Name*:</label>
+                    <input type="text" class="form-control" name='user_name' id="user_name" placeholder="User Name"
+                           onchange="checkUserName()" required>
+
+                    <span class="text-danger" id="not_valid"></span>
+
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="text_white">Email ID*:</label>
+                    <input type="email" name='email' class="form-control" placeholder="demo@demo.com" required>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <span class="text-danger" id="not_valid">{{ message }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label class="text_white">Password*:</label>
+                    <input type="password" name='password' class="form-control" placeholder="********" required>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="text_white">User Type:</label>
+                    <input type="text" class="form-control" placeholder="User Type" name=type
+                           value="{% if user_type == 'is_caller' %}Caller{% elif user_type == 'is_reviewer' %}Reviewer{% elif user_type == 'is_admin' %}Admin{% elif user_type == 'is_publisher' %}Publisher{% elif user_type == 'is_news' %}News{% elif user_type == 'is_service' %}Service{% endif %}"
+                           readonly>
+                </div>
+            </div>
+            {% if user_type == 'is_reviewer' %}
+                {# Added By Vishnu #}
+                <div class="row">
+
+                    <h3 class="font_size_18 text_white"> Access Right</h3>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="news_id"
+                                                                                name=is_news_reviewer> Is News Reviewer
+                    </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="service_id"
+                                                                                name=is_service_reviewer> Is Service
+                        Reviewer </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="dcotor_rew_id"
+                                                                                name=is_doctor_reviewer> Is
+                        Doctor/Organisation Reviewer </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="path_rew_id"
+                                                                                name=is_path_reviewer> Is Pathology
+                        Reviewer </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="blood_rew_id"
+                                                                                name=is_blood_reviewer> Is Blood Bank
+                        Reviewer </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="disease_rew_id"
+                                                                                name=is_disease_reviewer> Is Disease
+                        Reviewer </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="phar_rew_id"
+                                                                                name=is_phar_reviewer> Is Pharmacy
+                        Reviewer </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="ambu_rew_id"
+                                                                                name=is_ambu_reviewer> Is Ambulance
+                        Reviewer </label></div>
+
+                </div>
+            {% endif %}
+
+
+            {% if user_type == 'is_caller' %}
+                {# Added By Nishank 26-9-16 #}
+                <div class="row">
+
+                    <h3 class="font_size_18 text_white"> Access Right</h3>
+
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="dcotor_caller_id"
+                                                                                name=is_doctor_caller> Is
+                        Doctor/Organisation Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="path_caller_id"
+                                                                                name=is_path_caller> Is Pathology
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="blood_caller_id"
+                                                                                name=is_blood_caller> Is Blood Bank
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="disease_caller_id"
+                                                                                name=is_disease_caller> Is Disease
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="phar_caller_id"
+                                                                                name=is_phar_caller> Is Pharmacy
+                        Caller </label></div>
+                    <div class="col-md-3"><label class="checkbox-inline"><input type="checkbox" id="ambu_caller_id"
+                                                                                name=is_ambu_caller> Is Ambulance
+                        Caller </label></div>
+
+                </div>
+            {% endif %}
+
+
+
+
+            <p class="text-right">
+                <button type="submit" class="btn btn-info">{% if add == 'add' %}Save{% else %}Update{% endif %}</button>
+            </p>
+        </form>
+    </div>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        $(document).ready(function () {
+            var news_rev = $('#news_id');
+            var service_rev = $('#service_id');
+            var doctor_rev = $('#dcotor_rew_id');
+            var news_caller = $('#news_caller');
+            var patho_rev = $('#path_rew_id');
+            var blood_rev = $('#blood_rew_id');
+            var disease_rev = $('#disease_rew_id');
+            var phar_rev = $('#phar_rew_id');
+            var ambu_rev = $('#ambu_rew_id');
+
+            patho_rev.click(function () {
+
+                if (!patho_rev.prop('checked')) {
+                    patho_rev.attr('checked', false);
+
+                }
+                else {
+                    patho_rev.attr('checked', true);
+                }
+
+            });
+            blood_rev.click(function () {
+
+                if (!blood_rev.prop('checked')) {
+                    blood_rev.attr('checked', false);
+
+                }
+                else {
+                    blood_rev.attr('checked', true);
+                }
+
+            });
+            disease_rev.click(function () {
+
+                if (!disease_rev.prop('checked')) {
+                    disease_rev.attr('checked', false);
+
+                }
+                else {
+                    disease_rev.attr('checked', true);
+                }
+
+            });
+
+            phar_rev.click(function () {
+
+                if (!phar_rev.prop('checked')) {
+                    phar_rev.attr('checked', false);
+
+                }
+                else {
+                    phar_rev.attr('checked', true);
+                }
+
+            });
+            ambu_rev.click(function () {
+
+                if (!ambu_rev.prop('checked')) {
+                    ambu_rev.attr('checked', false);
+
+                }
+                else {
+                    ambu_rev.attr('checked', true);
+                }
+
+            });
+
+            news_rev.click(function () {
+
+                if (!news_rev.prop('checked')) {
+                    news_rev.attr('checked', false);
+
+                }
+                else {
+                    news_rev.attr('checked', true);
+                }
+
+            });
+            service_rev.click(function () {
+
+                if (!service_rev.prop('checked')) {
+                    service_rev.attr('checked', false);
+
+                }
+                else {
+                    service_rev.attr('checked', true);
+                }
+
+            });
+            doctor_rev.click(function () {
+
+                if (!doctor_rev.prop('checked')) {
+                    doctor_rev.attr('checked', false);
+
+                }
+                else {
+                    doctor_rev.attr('checked', true);
+                }
+
+            });
+
+            news_caller.click(function () {
+
+                if (!news_caller.prop('checked')) {
+                    news_caller.attr('checked', false);
+
+                }
+                else {
+                    news_caller.attr('checked', true);
+                }
+
+            });
+
+        });
+    </script>
+
+
+
+{% endblock %}

@@ -1,0 +1,94 @@
+{% load template_tag %}
+<div class="table-responsive table_modify_for_all p_tb_10">
+    <table class="table table-bordered m_b_0">
+        <thead class="bg_ededed">
+        <tr>
+            <th><input id="checkAll" type="checkbox"/></th>
+            <th>Sr. No.</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Zone</th>
+            <th>Zone Location</th>
+            <th>Category</th>
+            <th>Current User</th>
+            <th>Talk to Doc</th>
+            <th>Activated</th>
+            <th>Stage</th>
+            <th>Duplicates</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th class="col-md-2" >Action</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% if doctor_data_obj %}
+
+
+            {% for d in doctor_data_obj %}
+                <tr>
+                    <td><input type="checkbox" value="{{ d.id }}"></td>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ d.firstName | capfirst }}</td>
+                    <td>{{ d.lastName | capfirst }}</td>
+                    <td>{{ d.zone.name | capfirst }}</td>
+                    <td>{{ d.zone_location.name | capfirst }}</td>
+                    <td>
+                        {% for c in all_category %}
+                            {% if c.id|slugify == d.category|slugify  %}
+                                {{ c.name|capfirst }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ d.current_user.username | capfirst }}</td>
+                    <td>{% if d|check_if_talktodoc_is_true %}Yes{% else %}No{% endif %}</td>
+                    <td>{% if d.activationStatus %}YES{% else %}No{% endif %}</td>
+                    <td>{{ d.stage.stage_name | capfirst }}</td>
+                    <td><a href="{% url 'view_duplicates' d.id %}" ><img src="/static/images/images/notes_warning.png" alt="Smiley face" height="20" width="20"></a></td>
+                    <td>{{ d.createdAt }}</td>
+                    <td>{{ d.updatedAt }}</td>
+                    <td>
+                        <a href="{% url 'live_doctor_listing_edit' d.id %}?tab=1" class="btn btn-default btn-sm" style="padding:0 3px;"> <i class="fa fa-edit"></i></a>
+                           {% if d.is_disable == False %}<a href="{% url 'deactivate_single_live_doctor' d.id %}" class="btn btn-danger btn-sm" style="padding:0 3px;">Disable </a>{% endif %}
+                           {% if d.is_disable == True %}<a href="{% url 'activate_single_live_doctor' d.id %}" class="btn btn-success btn-sm" style="padding:0 3px;">Enable </a>{% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="9"><b>Doctor's Name could not be found in system...<span
+                        class='fa fa-frown-o fa-lg'></span></b></td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+    {% if doctor_data_obj %}
+        <div class="text-right">
+            <ul class="pagination">
+                {% if doctor_data_obj.has_previous %}
+                    <li class="prev"><a href="?page={{ doctor_data_obj.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Prev</a></li>
+                {% endif %}
+                <li><a>Page {{ doctor_data_obj.number }} of {{ doctor_data_obj.paginator.num_pages }}</a></li>
+                {% if doctor_data_obj.has_next %}
+                    <li class="next"><a href="?page={{ doctor_data_obj.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Next</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+<script>
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+        var $rows = $('#table tr');
+        $('#search').keyup(function () {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function () {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+
+
+    </script>
+</div>

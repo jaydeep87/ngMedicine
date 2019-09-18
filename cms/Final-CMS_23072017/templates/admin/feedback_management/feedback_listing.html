@@ -1,0 +1,208 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+{#    <div class="p_10" style="background: rgba(0,0,0,0.3);">#}
+{#        <div class="row m_0">#}
+{#            #}
+{#            <div class="collapse" id="select_filterss">#}
+{#                <form role="form" method="get" action="{% url 'pharmacy-listing' %}">#}
+{#                    <button type="submit" class="btn btn-info btn-sm">Apply</button>#}
+{#                    <a href="{% url 'pharmacy-listing' %}" class="btn btn-warning btn-sm">Reset</a>#}
+{#                    <div class="row m_t_10">#}
+{#                        <div class="col-sm-4">#}
+{#                            <div class="form-group">#}
+{#                                <input type="hidden" value="pharmacy_filter" name="x">#}
+{#                                <select class="chosen-select" name="state_id">#}
+{##}
+{#                                    <option value="">--Select State--</option>#}
+{#                                    {% for stateone in state_data_obj %}#}
+{#                                        {% if state_filter == stateone.id %}#}
+{#                                            <option value="{{ stateone.id }}" selected>{{ stateone.name | capfirst }}</option>#}
+{#                                        {% else %}#}
+{#                                            <option value="{{ stateone.id }}">{{ stateone.name | capfirst}}</option>#}
+{#                                        {% endif %}#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                            </div>#}
+{#    </div>#}
+{#                        <div class="col-sm-4">#}
+{#                            <div class="form-group">#}
+{#                                <select class="chosen-select" name="city_id">#}
+{##}
+{#                                    <option value="">---Select City ---</option>#}
+{#                                    {% for cityone in city_obj %}#}
+{#                                        {% if city_filter == cityone.id %}#}
+{#                                            <option value="{{ cityone.id }}" selected>{{ cityone.name | capfirst}}</option>#}
+{#                                        {% else %}#}
+{#                                            <option value="{{ cityone.id }}">{{ cityone.name | capfirst}}</option>#}
+{#                                        {% endif %}#}
+{#                                    {% endfor %}#}
+{##}
+{#                                </select>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-sm-4">#}
+{#                            <div class="form-group">#}
+{#                                <select class="chosen-select" name="locality_id">#}
+{##}
+{#                                    <option value="">--Select Location---</option>#}
+{#                                    {% for localityone in locality_obj %}#}
+{#                                        {% if locality_filter == localityone.id %}#}
+{#                                            <option value="{{ localityone.id }}"#}
+{#                                                    selected>{{ localityone.name | capfirst}}</option>#}
+{#                                        {% else %}#}
+{#                                            <option value="{{ localityone.id }}">{{ localityone.name | capfirst}}</option>#}
+{#                                        {% endif %}#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </form>#}
+{#            </div>#}
+{#            <div class="col-sm-4 p_l_0">#}
+{#                <div class="input-group m_b_10">#}
+{#                    <input type="text" placeholder="Search |" class="form-control" id="search" autofocus="autofocus">#}
+{#                    <span class="input-group-btn"> <button class="btn btn-default"#}
+{#                                                           onclick="SearchPharmacy({{ request.user.id }})"> Search</button></span>#}
+{#                </div>#}
+{#            </div>#}
+{#           {% if request.user|can_view_caller %}#}
+{#            <div class="col-sm-8"><p class="pull-right"><a class="btn btn-info" href="{% url 'add_pharmacy' %}"><i#}
+{#                    class="fa fa-flask fa-fw"></i> Add New Pharmacy</a></p></div>#}
+{#           {% endif  %}#}
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+   <div style="padding-bottom:0;" class="border_5_light_white m_0 row p_t_10">
+
+    <div class="col-md-6">
+    <div class="row">
+       <div class="col-md-10">
+          <div class="form-group">
+             <select class="form-control" id="status_data">
+                <option value="">----Select By Status---</option>
+                <option value="1">Approved</option>
+                <option value="2">Un-Approved</option>
+             </select>
+          </div>
+       </div>
+       <div class="col-md-2"><button type="button" class="btn btn-info" onclick="SearchFeedbackByStatus($('#status_data').val())">GO</button></div>
+    </div>
+    </div>
+<div class="col-md-12">
+     {% block table %}
+
+            <div class="table-responsive m_tb_5">
+                <table class="table table-bordered">
+
+                    <tbody>
+                    {% if feedback_obj %}
+                        {% for i in feedback_obj %}
+                            <tr>
+                                <td style="background: #fff;">
+
+                                    <div class="row m_0">
+                                        <div class="row m_tb_30">
+                                              <div class="col-xs-12 border_bottom_1_ccc"> <a class="pull-left media_circle" style="padding-left:0;">Q</a>
+                                                    <div class="media-body p_b_5">
+
+
+                                                      <p class="text-muted"><label>Feedback Date & Time :</label><i class="fa fa-clock-o fa-fw"></i> {{ i.createdAt }}</p>
+
+
+                                                      <p class="text-muted" style="color:goldenrod"><b><label  >Rating : {{  i.rating }}</label></b></p>
+                                                      <p class="text-muted"><label>Title :</label>{{ i.title }}</p>
+                                                      <p class="text-muted"><label>Comment :</label>{{ i.comment }}</p>
+                                                      <p class="text-muted"><label>Verificatin Status :</label> {% if i.verified %}<span style="color: #2b542c"><b>Verified</b></span>{% else %}<span style="color: firebrick"><b>Not Verified</b></span>{% endif %}</p>
+
+                                                      <p><b>FEEDBACK FOR</b> : <b><a href ="{% url 'live_doctor_listing_edit' i.doctor_id %}?tab=1" target="_blank">{{ i.doctor_id|get_doctor_name }}</a></b>
+                                                      <p><b>Patient Name</b> : {{ i.name }}</p>
+                                                      <p><b>Patient Contact No</b> : {{ i.mobileNo }}</p>
+                                                      <p><b>Patient Email</b> : {{ i.email }}</p>
+
+
+                                                      {% if not i.verified %}
+                                                        <form method="post" action="{% url 'approve_feedback' i.id %}">
+                                                        {% csrf_token %}
+
+                                                            <div class="form-group row m_0">
+                                                                <div class="col-xs-12 text-right"><button type="submit" class="btn btn-info">Approve</button></div>
+                                                            </div>
+                                                        </form>
+                                                      {% else %}
+                                                         <form method="post" action="{% url 'disapprove_feedback' i.id %}">
+                                                        {% csrf_token %}
+
+                                                            <div class="form-group row m_0">
+                                                                <div class="col-xs-12 text-right"><button type="submit" class="btn btn-info">Dis-Approve</button></div>
+                                                            </div>
+                                                        </form>
+                                                      {% endif %}
+                                                        </div>
+
+                                              </div>
+                                              </div>
+
+                                              </div>
+
+                                        </div>
+
+
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+
+
+
+
+
+                </table>
+                {% if feedback_obj %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if feedback_obj.has_previous %}
+                                <li class="prev"><a href="?page={{ feedback_obj.previous_page_number }}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ pharmacy.number }} of {{ feedback_obj.paginator.num_pages }}</a></li>
+                            {% if feedback_obj.has_next %}
+                                <li class="next"><a href="?page={{ feedback_obj.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        {% endblock %}
+</div>
+    </div>
+    </div>
+
+
+    </div>
+
+
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchPharmacy({{ request.user.id }})
+            }
+        }
+    </script>
+{% endblock %}
+<style>
+    .table_modify_for_all .table > tbody > tr > td{background: inherit; text-align: left; color: #666;}
+</style>

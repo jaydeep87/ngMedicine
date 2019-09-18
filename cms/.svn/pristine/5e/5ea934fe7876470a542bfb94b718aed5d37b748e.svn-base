@@ -1,0 +1,55 @@
+<div class="table-responsive table_modify_for_all">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Sr No</th>
+                        <th>Service Name</th>
+                        <th>Category</th>
+                        <th>Approve</th><th>CreatedAt</th>
+                        <th>UpdatedAt</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in service_offered_obj %}
+
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.name | capfirst }}</td>
+                            <td>{{ i.category.name }}</td>
+                            <td>{{ i.approve }}</td>
+                            <td>{{ i.createdAt }}</td>
+                            <td>{{ i.updatedAt }}</td>
+
+                            <td><a class="text_white" href="{% url 'service_offered_edit' i.id %}"><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.delete == False %}<a href="{% url 'any-master-object-deactivate' object_id=i.id object_type=7 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'any-master-object-activate' object_id=i.id object_type=7 %}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}</td>
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                {% if service_offered_obj %}
+                    <div class="text-right">
+                        <ul class="pagination">
+                            {% if service_offered_obj.has_previous %}
+                                <li class="prev"><a href="?page={{ service_offered_obj.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Prev</a></li>
+                            {% endif %}
+                            <li><a>Page {{ service_offered_obj.number }} of {{ service_offered_obj.paginator.num_pages }}</a></li>
+                            {% if service_offered_obj.has_next %}
+                                <li class="next"><a href="?page={{ service_offered_obj.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+             <script>
+                 $('#alert').fadeIn().delay(2000).fadeOut('slow');
+                 var elem = document.getElementById("search");
+                 elem.onkeyup = function (e) {
+                    if (e.keyCode == 13) {
+                        Searchservice_offered_obj({{ request.user.id }})
+            }
+        }
+            </script>
+            </div>

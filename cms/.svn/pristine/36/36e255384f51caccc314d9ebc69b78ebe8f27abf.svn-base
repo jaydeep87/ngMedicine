@@ -1,0 +1,277 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% block user_management %}
+
+    {# Template creatwed by Nishank 27-9 #}
+
+     {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="m_tb_10">
+<div class="m_tb_10">
+
+</div>
+  <form role="form" action="{% url 'service-plan-edit' package_obj.id %}" method="post" enctype="multipart/form-data">
+  <div class="row">
+      {% csrf_token %}
+  <div class="col-md-6">
+  <div class="form-group">
+  <label>Package Name</label>
+  <input type="text" name="package-name	" class="form-control" {% if package_obj %} value = {{package_obj.plan_name}} {% else %} placeholder='PackageName'{% endif %}>
+  </div>
+
+  <div class="form-group">
+  <label>Package Title</label>
+  <input type="text" name="package-title" class="form-control" {% if package_obj %} value = {{package_obj.plan_title}} {% else %}placeholder="PackageTitle" {% endif %} >
+  </div>
+
+
+
+
+
+  </div>
+
+   <div class="form-group">
+  <label>Package Price</label>
+  <input type="text" name="package-price" class="form-control"{% if package_obj %} value = {{package_obj.plan_price}} {% else %}placeholder="PackagePrices"{% endif %} >
+  </div>
+
+   <div class="row m_0" style="background: rgba(0,0,0,0.1);">
+
+  <div class="col-md-10" id="eachouter1">
+  {% if investigation_list %}
+  {% for inv in investigation_list %}
+  <div id="app1">
+  <div class="form-group col-md-3">
+  <input type="text" class="form-control" name="package-investigation" {% if inv %} value = {{inv.package_investigation}} {% else %}placeholder="PackagInvestigation"{% endif %} =></textarea>
+  </div>
+  </div>
+  {% endfor  %}
+  {% endif %}
+  </div>
+
+   <div class="col-md-2">
+   <label>&nbsp;</label>
+   <div class="form-group p_t_10">
+   <button type="button" id="btn11"><i class="fa fa-minus-square"></i></button>
+   <button type="button" id="btn12"><i class="fa fa-plus-square"></i></button>
+   </div>
+   </div>
+
+
+   <div class="col-md-10" id="eachouter2">
+  {% if consultation_list %}
+  {% for conn in consultation_list %}
+  <div id="app2">
+  <div class="form-group col-md-3">
+  <input type="text" class="form-control" name="package-consultation" {% if conn %} value = {{con.package_consultation}} {% else %}placeholder="PackageConsultation"{% endif %} ></textarea>
+  </div>
+  </div>
+  {% endfor  %}
+  {% endif %}
+  </div>
+
+   <div class="col-md-2">
+   <label>&nbsp;</label>
+   <div class="form-group p_t_10">
+   <button type="button" id="btn21"><i class="fa fa-minus-square"></i></button>
+   <button type="button" id="btn22"><i class="fa fa-plus-square"></i></button>
+   </div>
+   </div>
+
+
+  <div class="col-md-10" id="eachouter3">
+  {% if imaging_list %}
+  {% for imgi in imaging_list %}
+  <div id="app3">
+  <div class="form-group col-md-3">
+  <input type="text" class="form-control" name="package-imaging"{% if imgi %} value = {{imgi.package_imaging}} {% else %} placeholder="PackageImaging"{% endif %}></textarea>
+  </div>
+  </div>
+  {% endfor  %}
+  {% endif %}
+  </div>
+
+  <div class="col-md-2">
+   <label>&nbsp;</label>
+   <div class="form-group p_t_10">
+   <button type="button" id="btn31"><i class="fa fa-minus-square"></i></button>
+   <button type="button" id="btn32"><i class="fa fa-plus-square"></i></button>
+   </div>
+   </div>
+
+
+
+ <div class="col-md-10" id="eachouter4">
+  {% if others_list %}
+  {% for ot in others_list %}
+  <div id="app4">
+  <div class="form-group col-md-3">
+   <input type="text" class="form-control" name="package-others" {% if ot %} value = {{imgi.package_imaging}} {% else %}placeholder="PackageOthers"{% endif %}></textarea>
+  </div>
+  </div>
+  {% endfor  %}
+  {% endif %}
+  </div>
+
+  <div class="col-md-2">
+   <label>&nbsp;</label>
+   <div class="form-group p_t_10">
+   <button type="button" id="btn41"><i class="fa fa-minus-square"></i></button>
+   <button type="button" id="btn42"><i class="fa fa-plus-square"></i></button>
+   </div>
+   </div>
+
+
+ </div>
+
+
+
+  </div>
+
+
+  <div class="form-group">
+  <select id="package-types" name="package-category">
+  {% for i in category_list %}
+  <option value="{{i.id}}">{{ i.name }}</option>
+  {% endfor %}
+  </select>
+  </div>
+
+  <div class="form-group">
+  <select id="provider" name="provider">
+  {% for i in provider_list %}
+  <option value="{{i.id}}">{{ i.name }}</option>
+  {% endfor %}
+  </select>
+  </div>
+
+  <div class="form-group">
+  <label>Package Instructions</label>
+  <textarea class="form-control" name="package-instructions" placeholder="Package Instruction"></textarea>
+  </div>
+  </div>
+
+  <div class="form-group">
+  <label>Package Validity</label>
+  <textarea class="form-control" name="package-validity" placeholder="Package Validity"></textarea>
+  </div>
+  </div>
+
+  <div class="form-group">
+  <label>Timings</label>
+  <input type="text" name="package-timings" class="form-control"placeholder="Package Timings" >
+  </div>
+
+
+  <div class="col-md-12">
+  <p class="text-right"><button class="btn btn-info btn-sm" type="submit">Submit</button></p>
+  </div>
+
+  <div class="form-group col-md-3">
+  <input type="text" class="form-control" name="no-of-employees" placeholder="No Of Employees" =></textarea>
+  </div>
+
+ <div class="form-group">
+  <label>Age Group</label>
+  <input type="text" name="age-group" class="form-control" placeholder="Age Group" >
+  </div>
+
+  <div class="form-group">
+  <label>User Category</label>
+  <input type="text" name="user-category" class="form-control" placeholder="User Category" >
+  </div>
+
+ <div class="form-group">
+  <label>Image URL</label>
+  <input type="text" name="image-url" class="form-control" placeholder="Image URL" >
+  </div>
+
+    <div class="form-group">
+  <label>Service Offered in Plan</label>
+  <input type="text" name="service-offered" class="form-control" placeholder="Service Offered In Plan" >
+  </div>
+
+  </div>
+  </form>
+</div>
+    <script>
+     $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    function readURL(input) {
+
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      $('#blah').attr('src', e.target.result);
+
+      $('#blah').hide();
+      $('#blah').fadeIn(650);
+
+    };
+
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#imgInp").change(function() {
+  readURL(this);
+});
+var clone_index1 = $("#app1").length;
+var clone_index2 = $("#app1").length;
+var clone_index3 = $("#app1").length;
+var clone_index4 = $("#app1").length;
+
+$("#btn11").click(function(){
+        $("#eachouter1").append('<div id="app1"><div class="form-group col-md-3"><input type="text" class="form-control" name="package-investigation" placeholder="Package Investigation" =></textarea></div>');
+    clone_index1 ++;
+    });
+     $("#btn21").click(function(){
+         if(clone_index1 >1){
+        $("#app1").remove();
+             clone_index1 --;
+             }
+    });
+
+
+$("#btn21").click(function(){
+        $("#eachouter2").append('<div id="app2"><div class="form-group col-md-3"><input type="text" class="form-control" name="package-consultation" placeholder="Package Consultation"></textarea></div></div>');
+    clone_index2 ++;
+    });
+     $("#btn22").click(function(){
+         if(clone_index2 >1){
+        $("#app2").remove();
+             clone_index2 --;
+             }
+    });
+
+$("#btn31").click(function(){
+        $("#eachouter3").append('<div id="app3">  <div class="form-group col-md-3"><input type="text" class="form-control" name="package-imaging" placeholder="Package Imaging"></textarea></div></div>');
+    clone_index3 ++;
+    });
+     $("#btn32").click(function(){
+         if(clone_index3 >1){
+        $("#app3").remove();
+             clone_index3 --;
+             }
+    });
+
+
+
+$("#btn41").click(function(){
+        $("#eachouter4").append('<div id="app4"><div class="form-group col-md-3"><input type="text" class="form-control" name="package-others" placeholder="Package Others"></textarea></div></div>');
+    clone_index3 ++;
+    });
+     $("#btn42").click(function(){
+         if(clone_index4 >1){
+        $("#app4").remove();
+             clone_index4 --;
+             }
+    });
+
+    </script>
+{% endblock %}

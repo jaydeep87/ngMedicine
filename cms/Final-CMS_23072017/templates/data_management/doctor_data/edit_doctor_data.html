@@ -1,0 +1,733 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% for i in doctor_data %}
+        <div class="m_b_10 m_s_t_10">
+            {#      {% if doctor_add != 'add' %}#}
+            <button class="btn btn-info" type="button"><i class="fa fa-file-pdf-o fa-fw"></i> Print PDF</button>
+            <span class="btn btn-info" type="button"><i class="fa-fw"></i> {{ i.name | capfirst }}</span>
+            {% if i.free_text %}
+                <span style="padding: 4px; color:white; background-color: #9c9c9c; border-radius: 3px">Reviewer Remark : {{ i.free_text | capfirst }}</span>
+            {% endif %}
+        <span style="padding: 4px; color:white; background-color: #9c9c9c; border-radius: 3px"> Validation Mode: {{ i.resource_validate.name }}</span>
+
+            {#          {% endif %}#}
+            {% if tab == 'attach' %}
+                <button class="btn btn-warning pull-right" data-target="#markAsComplate" data-toggle="collapse"
+                        type="button"><i
+                        class="fa fa-check-square-o fa-fw"></i> Mark as Complete <i class="caret"></i></button>
+                {#                {% if i.free_text %}#}
+                {#                    <p>{{ i.free_text }}</p>#}
+                {#                {% endif %}#}
+            {% endif %}
+
+        </div>
+        <!--COLLAPSE START-->
+        {% if tab == 'attach' %}
+            <div id="markAsComplate" class="collapse">
+                <div class="thumbnail p_10">
+                    <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action="
+
+                                    {% if request.user|can_view_caller_doc_org %}{% url 'mark-caller' %}{% elif request.user|can_view_review_doc_org %}{% url 'mark-reviewer' %}{% elif request.user|can_view_publisher %}{% url 'mark-reviewer' %}{% endif %}"
+                                  method="post">
+                                <input type="hidden" value="{{ i.id }}" name="doctor_id">
+                                {% if request.user|can_view_review_doc_org %}
+                                    <div class="col-md-4">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in reviewer_user_data %}
+
+                                                <option value="{{ b.id }}">{{ b.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
+
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="caller_name">
+                                            <option value="" disabled>Select Caller User</option>
+                                            {% for b in user_data_complete %}
+                                                {% if b.is_doctor_caller and b.user.is_active %}
+
+                                                    <option value="{{ b.user_id }}">{{ b.user.username }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
+
+                                {% if request.user|can_view_caller_doc_org %}
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            {% for b in reviewer_user_data %}
+                                                <option value="" disabled>Select Reviewer User</option>
+                                                <option value="{{ b.id }}">{{ b.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <select class="form-control" name="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Complete</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_review_doc_org %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                                {% if request.user|can_view_publisher %}
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Caller</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+                        {% if request.user|can_view_review_doc_org %}
+                            <div class="col-md-12">
+
+                                <input type="hidden" value="{{ i.id }}" name="doctor_id" id="doctor_id">
+                                <div class="col-md-4">
+                                    <select class="form-control" name="publisher_name" id="publisher_name">
+                                        <option value="" disabled>Select Publisher User</option>
+                                        {% for b in publisher_user_data %}
+
+                                            <option value="{{ b.id }}">{{ b.username }}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                              <div class="col-md-4">
+                                        <select class="form-control" name="validator_name" id="validator_name">
+                                        <option value="" disabled>Select Validation Choice</option>
+                                            {% for e in valid_choice %}
+
+                                                <option value="{{ e.id }}">{{ e.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                <div class="col-md-4">
+                                    <button class="btn btn-info" onclick="doctor_move_to_next_stage()">Move to Next
+                                        Stage
+                                    </button>
+                                </div>
+
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+                 {# NEW Form  to move organisation data from publisher user to review user#}
+                 {% if request.user|can_view_publisher %}
+                  <div class="thumbnail p_10">
+                                <div class="row">
+                                        <div class="col-md-12 m_b_15 ">
+                                    <form role="form" action=" {% url 'mark-reverse-doctor-to-reviewer' %}"
+                                    method="post"  >
+                                     <input type="hidden" value="{{ i.id }}" name="doctor_id">
+
+
+
+                                    <div class="col-md-4 ">
+                                        <input class="form-control" type="text" value="" name="free_text"
+                                               placeholder="Comment" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-control" name="reviewer_name">
+                                            <option value="" disabled>Select Reviewer User</option>
+                                            {% for b in user_data_complete %}
+                                                {% if b.is_doctor_reviewer and b.user.is_active %}
+
+                                                    <option value="{{ b.user_id }}">{{ b.user.username }}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-info" type="submit">Reverse to Reviewer</button>
+                                    </div>
+
+
+
+                                     </form>
+                                </div>
+                                </div>
+                  </div>
+
+                  <div class="thumbnail p_10">
+                <div class="row">
+                        <div class="col-md-12 m_b_15">
+                            <form role="form" action="  " method="post">
+                                <input type="hidden" value=" {#  #}" name="doctor_id">
+
+
+                                <button type="submit" value="submit" class="btn btn-info">Publish To Live
+                                    </button>
+
+
+
+
+                            </form>
+                        </div>
+                </div>
+                </div>
+                  {% endif %}
+
+
+
+            </div>
+        {% endif %}
+        <!--COLLAPSE END-->
+
+        <div class="tab-content tb_five p_10" style="background:rgba(0,0,0,0.3);">
+            <div class="tab-pane fade in active" id="">
+                {#          <form role="form" class="p_10">#}
+                <ul class="nav nav-tabs">
+                    <li {% if tab == 'basic' %}class="active"{% endif %}><a href="{% url 'doctor-listing-edit' i.id %}"><i
+                            class="fa fa-files-o fa-fw"></i> Basic Info</a></li>
+                    <li {% if tab == 'reward' %}class="active"{% endif %}><a href="{% url 'doctor-reward' i.id %}"><i
+                            class="fa fa-crosshairs fa-fw"></i> Reward &
+                        Recognization</a></li>
+                    <li {% if tab == 'education' %}class="active"{% endif %}><a
+                            href="{% url 'doctor-education' i.id %}"><i
+                            class="fa fa-graduation-cap fa-fw"></i> Education &
+                        Experience</a></li>
+                    <li {% if tab == 'attach' %}class="active"{% endif %}><a href="{% url 'doctor-attach' i.id %}"><i
+                            class="fa fa-h-square fa-fw"></i> Attach Organisation</a></li>
+                    <li {% if tab == 'verifiedfields' %}class="active"{% endif %}><a href="{% url 'doctor_verified_fields' i.id %}"><i
+                            class="fa fa-h-square fa-fw"></i>Verified Fields</a></li>
+                    <li {% if tab == 'galleryimages' %}class="active"{% endif %}><a href="{% url 'gallery_images_doctor' i.id %}"><i
+                            class="fa fa-h-square fa-fw"></i>Gallery Images</a></li>
+                </ul>
+
+
+                {#          </form>#}
+            </div>
+            {% block doctor_data %}
+                <div class="row">
+                    <form action="{% url 'upload_profile_pic_doc' i.id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                    <div class="col-md-6 col-sm-6">
+                    <h5 class="font_weight_600">Upload Profile image</h5>
+                    <div class="m_tb_10"><img class="img-thumbnail" style="width: 200px; height: 180px;" src="{{ hostport }}{{ i.profile_photo }}"></img>   </div>
+                    <input id="ProfileImage" type="file" class="" name="ProfileImage">
+                    <button  style="margin-top: 15px;!important;" type="submit" class="btn btn-success ">Upload</button>
+                    {% if i.profile_photo %}
+                        <a href="{% url 'delete_profile_pic_doc' i.id %}"><input type="button" style="margin-top: 15px;!important;" class="btn btn-danger" value="Delete"></a>
+                    {% endif %}
+                        <p>&nbsp;</p>
+                    </div>
+                    </form>
+                </div>
+                <div class="row">
+                    <!--LEFT PANEL START
+                    onsubmit="return validateMyForm();"  check validation
+                    -->
+                    <form role="form" class="m_t_20" method="POST" action=".">
+                        {% csrf_token %}
+                        <fieldset {% if request.user|can_view_review_doc_org %}{% endif %}>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Name*</label>
+                                    <input type="text" name="name" class="form-control" value="{{ i.name }}">
+                                </div>
+                                <div class="form-group">
+                                    <label>Category*</label>
+                                    <select class="form-control" id="category" name="category">
+                                        <option value="">--Select Category--</option>
+                                        {% if category %}
+                                            {% for r in category %}
+                                                {% if r.id == i.category.id %}
+                                                    <option value="{{ r.id }}" selected=""
+                                                    >{{ r.name | capfirst }}</option>
+                                                {% else %}
+                                                    <option value="{{ r.id }}"
+                                                    >{{ r.name | capfirst }}</option>
+                                                {% endif %}
+
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Speciality</label>
+                                    <select id="specialty" name="specialty" class="form-control chosen-select" multiple>
+                                        {% if specialty %}
+                                            {% for sprecialtyOne in specialty %}
+                                                {% if sprecialtyOne.id in selectedspeciality %}
+                                                    <option value="{{ sprecialtyOne.id }}"
+                                                            selected>{{ sprecialtyOne.name }}</option>
+{#                                                {% else %}#}
+{#                                                    <option value="{{ sprecialtyOne.id }}">{{ sprecialtyOne.name }}</option>#}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+
+                                <!-- NEW SPECIALITY DD OPEN+--->
+                                <!-- <div class="form-group">
+                                <label>New Speciality</label>
+                                <select id="specialty2" name="specialty2" class="form-control chosen-select" multiple>
+                                {% if specialty2 %}
+                                   {% for sprecialtyOne2 in specialty2 %}
+                                       {% if sprecialtyOne2.id in selectedspeciality2 %}
+                                           <option value="{{ sprecialtyOne2.id }}"
+                                                   selected>{{ sprecialtyOne2.name }}</option>
+                                       {% else %}
+                                           <option value="{{ sprecialtyOne2.id }}">{{ sprecialtyOne2.name }}</option>
+                                       {% endif %}
+                                   {% endfor %}
+                                {% endif %}
+                                </select>
+                                 </div> -->
+                                 <!-- NEW SPECIALITY DD CLOSE+--->
+
+
+                                <!-- NEW SPECIALITY FINAL DD OPEN+--->
+                                <div class="form-group">
+                                <label>New Speciality Final</label>
+                                <select id="specialty3" name="specialty3" class="form-control chosen-select" multiple>
+                                {% if specialty3 %}
+                                   {% for sprecialtyOne3 in specialty3 %}
+                                       {% if sprecialtyOne3.id in selectedspeciality3 %}
+                                           <option value="{{ sprecialtyOne3.id }}"
+                                                   selected>{{ sprecialtyOne3.name }}</option>
+                                       {% else %}
+                                           <option value="{{ sprecialtyOne3.id }}">{{ sprecialtyOne3.name }}</option>
+                                       {% endif %}
+                                   {% endfor %}
+                                {% endif %}
+                                </select>
+                                 </div>
+                                 <!-- NEW SPECIALITY FINAL DD CLOSE+--->
+
+
+                                <div class="form-group multi_selections">
+                                    <label>Service Offered</label>
+                                    <select id="serviceoffer" name="serviceoffer" class="form-control chosen-select"
+                                            multiple>
+                                        {% if service %}
+                                            {% for serviceOne in service %}
+                                                {% if serviceOne.id in selectedoffers %}
+                                                    <option value="{{ serviceOne.id }}"
+                                                            selected>{{ serviceOne.name }}</option>
+{#                                                {% else %}#}
+{#                                                    <option value="{{ serviceOne.id }}">{{ serviceOne.name }}</option>#}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+
+
+                                <!-- NEW SERVICE OFFERED DD OPEN+--->
+                                <!--<div class="form-group multi_selections">
+                                     <label>New Service Offered</label>
+                                     <select id="serviceoffer2" name="serviceoffer2" class="form-control chosen-select"
+                                             multiple>
+                                         {% if service2 %}
+                                             {% for serviceOnee in service2 %}
+                                                 {% if serviceOnee.id in selectedoffers2 %}
+                                                     <option value="{{ serviceOnee.id }}"
+                                                             selected>{{ serviceOnee.name }}</option>
+                                                 {% else %}
+                                                     <option value="{{ serviceOnee.id }}">{{ serviceOnee.name }}</option>
+                                                 {% endif %}
+                                             {% endfor %}
+                                         {% endif %}
+                                     </select>
+                                </div> -->
+                                <!-- NEW SERVICE OFFERED DD CLOSE -->
+
+
+
+                                <!-- NEW SERVICE OFFERED FINAL DD OPEN+--->
+                                <div class="form-group multi_selections">
+                                     <label>New Service Offered Final</label>
+                                     <select id="serviceoffer3" name="serviceoffer3" class="form-control chosen-select"
+                                             multiple>
+                                         {% if service3 %}
+                                             {% for serviceOnee1 in service3 %}
+                                                 {% if serviceOnee1.id in selectedoffers3 %}
+                                                     <option value="{{ serviceOnee1.id }}"
+                                                             selected>{{ serviceOnee1.name }}</option>
+                                                 {% else %}
+                                                     <option value="{{ serviceOnee1.id }}">{{ serviceOnee1.name }}</option>
+                                                 {% endif %}
+                                             {% endfor %}
+                                         {% endif %}
+                                     </select>
+                                </div>
+                                <!-- NEW SERVICE OFFERED FINAL DD CLOSE -->
+
+
+
+                                <div class="form-group">
+                                    <label>Registration Detail </label>
+                                    <input type="text" name="registration_no"
+                                           value="{{ i.registration_data|default_if_none:"" }}" class="form-control"
+                                           placeholder="Registration Detail.">
+                                </div>
+                                <div class="form-group">
+
+                                    <label>Qualification</label>
+                                    <input type="text" name="qualification"
+                                           value="{{ i.qualification_data|default_if_none:"" }}"
+                                           class="form-control"
+                                           placeholder="Graduation, Post Graduation, Qualification ">
+
+                                </div>
+                                <div class="form-group">
+
+                                    <label>Experience</label>
+                                    <input type="text" name="doctor_experience_year"
+                                           value="{{ i.doctor_experience_year|default_if_none:"" }}"
+                                           class="form-control"
+                                           placeholder="Experience Year">
+
+                                </div>
+
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                <label class="checkbox-inline">
+                                    <input class="checkk" style="width: 20px; height:20px;" type="checkbox" name="all_check" id="check_All" ><span class="p_l_15">All</span>
+                                    <p></p>
+                                    <input class="checkk" style="width: 20px; height:20px;" type="checkbox" name="audio" id="audio" {% if i.audio%}checked{% endif %} ><span class="p_l_15"  >Audio Services Available</span>
+                                    <p></p>
+                                    <input class="checkk" style="width: 20px; height:20px;" type="checkbox" name="video" id="video" {% if i.video%}checked{% endif %} ><span class="p_l_15" >Video Services Available</span>
+                                    <p></p>
+                                    <input class="checkk" style="width: 20px; height:20px;" type="checkbox" name="chat" id="chat" {% if i.chat%}checked{% endif %}><span class="p_l_15" >Chat Services Available</span>
+                                    <p></p>
+                                    <input class="checkk" style="width: 20px; height:20px;" type="checkbox" name="talk_to_doc" id="talk_to_doc" {% if i.talk_to_doc%}checked{% endif %}><span class="p_l_15" >Talk to Doc Services Available</span>
+                                    </label>
+                                </div>
+
+                                <div id="talk_to_doc_details">
+                                <label style="color:red;">**The Information filled below DOES NOT GET SAVED if the box above is UN-CHECKED  </label>
+                                        <div class="form-group">
+                                              <label>Talk To Doc Fee</label>
+                                              <input type="text" class="form-control" value = "{{ i.talk_fee}}" name="talk_fee">
+                                        </div>
+                                </div>
+
+                            </div>
+                            <!--LEFT PANEL END-->
+
+                            <!--RIGHT PANEL START-->
+                            <div class="col-md-6 p_t_30">
+                                <div class="form-group">
+                                    <label>Gender: &nbsp; &nbsp; &nbsp; </label>
+                                    <label class="radio-inline" style="padding-top: 0;">
+                                        <input type="radio" id="male" value="{{ i.male_doctor }}" name="male"> Male
+                                    </label>
+                                    <label class="radio-inline" style="padding-top: 0;">
+                                        <input type="radio" id="female" value="{{ i.female_doctor }}" name="female">
+                                        Female
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label>DOB</label>
+                                    <div class="input-group input-append date form-control" id="datePicker">
+                                        <input type="text" class="form-control" placeholder="DOB" name="dob"
+                                               value="{{ i.dob| default_if_none:""|date:"d/m/Y" }}"/>
+                                        <span class="input-group-addon add-on"><span
+                                                class="glyphicon glyphicon-calendar"></span></span>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label>Mobile</label>
+                                    <input type="text" placeholder="Mobile" onchange="ValidateMobileCSV(this.value)"
+                                           class="form-control" value="{{ i.mobile_no|default_if_none:"" }}"
+                                           name="mobile" id="mobile">
+                                </div>
+
+                            <div class="row">
+                                  <div class="form-group col-md-6">
+                                      <label>DID</label>
+                                      <input type="text" maxlength="11" class="form-control" value="{{ i.did }}" placeholder="DID no" name="did">
+                                  </div>
+
+                                  <div class="form-group col-md-6">
+                                      <label>Extension</label>
+                                      <input type="text" maxlength="4" class="form-control" value="{{ i.extension }}" placeholder="Extension" name="extension">
+                                  </div>
+                            </div>
+
+
+                                <div class="form-group">
+                                    <label>Telephone</label>
+                                    <input type="text" placeholder="Telephone No." class="form-control"
+                                           value="{{ i.phone|default_if_none:"" }}" name="fax"
+                                           id="phone">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" placeholder="Email" class="form-control"
+                                           value="{{ i.email|default_if_none:"" }}"
+                                           name="email">
+                                </div>
+                                <div class="form-group">
+                                    <label>Secondary Email</label>
+                                    <input type="email" placeholder="Secondary Email" class="form-control"
+                                           value="{{ i.secondary_email |default_if_none:"" }}"
+                                           name="secondary_email">
+                                </div>
+                                <div class="form-group">
+                                    <label>Skype ID</label>
+                                    <input type="email" placeholder="Skype ID" class="form-control"
+                                           value="{{ i.skype_id |default_if_none:"" }}" name="sky_id">
+                                </div>
+
+
+
+                                     <div class="form-group multi_selections">
+                                        <label>Associated Diseases</label>
+                                        <select disabled id="associated_diseases" name="associated_diseases" class="form-control chosen-select" multiple>
+                                            {% if associated_disease_list %}
+                                                {% for d in associated_disease_list %}
+                                                        <option value="{{ d }}" selected>{{ d }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="form-group multi_selections">
+                                        <label>Associated Symptoms</label>
+                                        <select disabled id="associated_symptoms" name="associated_symptoms" class="form-control chosen-select" multiple>
+                                            {% if associated_symptoms_list %}
+                                                {% for d in associated_symptoms_list %}
+                                                        <option value="{{ d }}" selected>{{ d }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+
+
+
+                                <div class="clearfix"></div>
+                                    <div class="form-group">
+                                    <label class="checkbox-inline">
+
+                                                            <input style="width: 20px; height:20px;" type="checkbox" name="is_emergency" id="is_emergency"
+                                                                       {% if i.is_emergency %}value="1" checked {% else %}value="0"
+                                                                {% endif %}
+                                                                onclick="$(this).attr('value', this.checked ? 1 : 0)">
+                                        <span class="p_l_15"> Emergency Services Available</span>
+                                        </label>
+                                    </div>
+
+
+                            <div id="is_emergency_details" {% if not  i.is_emergency %}class="collapse"{% endif %}>
+                            <label style="color:red;">**The Information filled below DOES NOT GET SAVED if the box above is UN-CHECKED  </label>
+                                          <div class="form-group">
+                                              <label>Emergency Fee</label>
+                                              <input type="text" class="form-control" value = "{{ i.emergency_fee }}"  name="emergency_fee">
+                                            </div>
+
+                                          <div class="form-group">
+                                            <label>Country</label>
+                                            <select id="zone" class="chosen-select" name="country_id">
+                                                <option value="">--Select Country--</option>
+                                                {% for country in country_obj %}
+                                                    {% if i.country_id == country.id %}
+                                                        <option value="{{ country.id }}" selected>{{ country.name | capfirst }}</option>
+                                                    {% else %}
+                                                        <option value="{{ country.id }}">{{ country.name | capfirst}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>State</label>
+                                            <select id="state" class="chosen-select" name="state_id">
+                                                <option value="">--Select State--</option>
+                                                {% for state in state_obj %}
+                                                    {% if i.state_id == state.id %}
+                                                        <option value="{{ state.id }}" selected>{{ state.name | capfirst}}</option>
+                                                    {% else %}
+                                                        <option value="{{ state.id }}">{{ state.name | capfirst}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>City</label>
+                                            <select id="city" class="chosen-select" name="city_id">
+                                                <option value="">--Select City--</option>
+                                                {% for cityc in city %}
+                                                    {% if i.city_id == cityc.id %}
+                                                <option value="{{ cityc.id }}" selected>{{ cityc.name | capfirst}}</option>
+                                                {% else %}
+                                                <option value="{{ cityc.id }}" >{{ cityc.name | capfirst}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Emergency Locality (Multiselect)</label>
+                                            <select id="location" class="chosen-select" name="locality_id" multiple>
+                                                <option value="">--Select Locations--</option>
+                                                  {% for loc in locality %}
+                                                {% if loc.id|slugify  in emer_localities_list %}
+                                                 <option value="{{ loc.id }}" selected>{{loc.name | capfirst}}</option>
+                                                {% else %}
+                                                <option value="{{ loc.id }}" >{{ loc.name | capfirst}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                            </div>
+
+
+
+
+
+
+                            </div>
+                            <!--RIGHT PANEL END-->
+                            <div class="clearfix col-md-12 text-right">
+                                <button type="submit" class="btn btn-info"> Save</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+<script type="text/javascript">
+$('#is_emergency').change(function() {
+    $('#is_emergency_details').toggle();
+});
+$("#check_All").change(function () {
+$(".checkk").prop('checked', $(this).prop("checked"));
+});
+</script>
+                <script>
+                    $(document).ready(function () {
+                        if ($('#male').val() == 'True') {
+                            $('#male').prop('checked', true);
+                        }
+                        if ($('#female').val() == 'True') {
+                            $('#female').prop('checked', true);
+                        }
+
+
+                        $('#male').click(function () {
+                            $('#male').prop('checked', true);
+                            $('#female').prop('checked', false);
+                            document.getElementById('female').value = false
+                        });
+                        $('#female').click(function () {
+                            $('#female').prop('checked', true);
+                            $('#male').prop('checked', false);
+                            document.getElementById('male').value = false
+                        });
+                    });
+                </script>
+            {% endblock %}
+        </div>
+    {% endfor %}
+    <script type="text/javascript">
+        function ValidateMobileCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{10},)*\d{10}$/.test(value));
+            if (!check) {
+                alert("Please put correct Mobile No");
+
+            }
+            return check
+
+        }
+        function ValidatePhoneCSV(value) {
+            if (!value) {
+                return true;
+            }
+            var check = (/^(\d{8},)*\d{8}$/.test(value));
+            if (!check) {
+                alert("Please put correct Phone No");
+
+            }
+            return check
+
+        }
+        function eitherMobileAndTelephone(mobile, telephone) {
+            if (mobile != '' || telephone != '') {
+                return true;
+            }
+            alert("Please either mobile no or telephone no");
+            return false
+
+        }
+
+        function checkcategory(category) {
+            if (category != '') {
+                return true;
+            }
+
+            alert("Please put category value");
+            return false;
+
+        }
+
+        function validateMyForm() {
+            var mobile_val = document.getElementById('mobile').value;
+            var phone_val = document.getElementById('phone').value;
+            var category_val = document.getElementById("category").value;
+            var mobile = ValidateMobileCSV(document.getElementById('mobile').value);
+            var phone = ValidatePhoneCSV(document.getElementById('phone').value);
+            var eitherMobile = eitherMobileAndTelephone(mobile_val, phone_val)
+            var category = checkcategory(category_val);
+            if (mobile && phone && eitherMobile && category) {
+                return true
+            }
+            return false
+        }
+        $(document).ready(function () {
+            $('#datePicker')
+                    .datepicker({
+                        format: 'dd/mm/yyyy'
+                    })
+                    .on('changeDate', function (e) {
+                        // Revalidate the date field
+                        $('#eventForm').formValidation('revalidateField', 'date');
+                    });
+        });
+    </script>
+    <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    </script>
+{% endblock %}

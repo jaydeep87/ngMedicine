@@ -1,0 +1,65 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+
+{% block user_management %}
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+<div>
+
+<div class="col-md-4 four_member">
+<a href="{% url 'user-caller' %}" class="thumbnail" >
+<figure><img src="{% static 'images/caller_user.png' %}"></figure>
+<h3>Caller User</h3>
+
+<h3 class="m_t_0">{{ user_no }}</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'user-reviewer' %}">
+<figure><img src="{% static 'images/rethink.png' %}"></figure>
+<h3>Reviewer User</h3>
+<h3 class="m_t_0">{{ reviewer_no }}</h3>
+</a>
+</div>
+    <div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'user-publisher' %}">
+<figure><img src="{% static 'images/rethink.png' %}"></figure>
+<h3>Publisher User</h3>
+<h3 class="m_t_0">{{ publisher_no }}</h3>
+</a>
+</div>
+    <div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'user-news' %}">
+<figure><img src="{% static 'images/rethink.png' %}"></figure>
+<h3>News Feed User</h3>
+<h3 class="m_t_0">{{ news_no }}</h3>
+</a>
+</div>
+
+     <div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'user-service' %}">
+<figure><img src="{% static 'images/caller_user.png' %}"></figure>
+<h3>Service Caller User</h3>
+<h3 class="m_t_0">{{ service_no }}</h3>
+</a>
+</div>
+
+<div class="col-md-4 four_member">
+<a class="thumbnail" href="{% url 'user-admin' %}">
+<figure><img src="{% static 'images/pc-administrator.png' %}"></figure>
+<h3>Admin User</h3>
+<h3 class="m_t_0">{{ admin_no }}</h3>
+</a>
+
+</div>
+
+</div>
+      <script>
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+    </script>
+{% endblock %}

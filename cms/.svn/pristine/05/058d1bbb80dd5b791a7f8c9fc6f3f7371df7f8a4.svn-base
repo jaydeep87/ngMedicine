@@ -1,0 +1,177 @@
+{% extends 'admin/dashboard.html' %}
+{% load staticfiles %}
+{% load template_tag %}
+
+{% block user_management %}
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} m_tb_10"
+                 id="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="p_10" style="background: rgba(0,0,0,0.3);">
+        <div class="row">
+            <div class="col-sm-12 m_b_10">
+                <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#filters"><i
+                        class="fa fa-filter fa-fw"></i> Apply Filters
+                </button>
+            </div>
+
+            <div class="collapse col-md-12" id="filters">
+                <div class="p_30 thumbnail">
+                    <div role="row">
+                        <div class="col-md-4">
+                            <div class="form-group thumbnail">
+                                <label>Caller User</label>
+                                <select class="form-control" id="user_data_id">
+                                    <option value="" disabled>Select Caller User</option>
+                                    {% for f in user_data_obj %}
+                                        {% if f.is_caller and f.is_disease_caller and f.user.is_active  %}
+                                            <option value="{{ f.user_id }}">{{ f.user.username | capfirst }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <p class="m_t_5">
+                                    <button type="button" class="btn btn-info"
+                                            onclick="SearchSymptomsAdminByUsers($('#user_data_id').val())">Go
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group thumbnail">
+                                <label>Reviewer User</label>
+                                <select class="form-control" id="reviewer_data_id">
+                                    <option value="" disabled>Select Reviewer User</option>
+                                    {% for g in user_data_obj %}
+                                        {% if g.is_reviewer and g.is_disease_reviewer and g.user.is_active  %}
+                                            <option value="{{ g.user_id }}">{{ g.user.username | capfirst }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <p class="m_t_5">
+                                    <button type="button" class="btn btn-info"
+                                            onclick="SearchSymptomsAdminByUsers($('#reviewer_data_id').val())">Go
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group thumbnail">
+                                <label>Publisher User</label>
+                                <select class="form-control" id="publisher_data_id">
+                                    <option value="" disabled>Select Publisher User</option>
+                                    {% for h in user_data_obj %}
+                                        {% if h.is_publisher and h.user.is_active %}
+
+                                            <option value="{{ h.user_id }}">{{ h.user.username | capfirst }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <p class="m_t_5">
+                                    <button type="button" class="btn btn-info"
+                                            onclick="SearchSymptomsAdminByUsers($('#publisher_data_id').val())">Go
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+
+            </div>
+            {% if request.user|can_view_admin %}
+                <div class="row m_0 m_b_10">
+                    <div class="col-sm-4">
+                        <div class="input-group">
+                            <input type="text" placeholder="Search |" class="form-control" id="search"
+                                   autofocus="autofocus">
+                            <span class="input-group-btn"> <button class="btn btn-default"
+                                                                   onclick="SearchSymptomsOnByStageByUser()"> Search</button></span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="table-responsive table_modify_for_all">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Topic title</th>
+                    <th>Tag String</th>
+                    <th>free_text</th>
+                    <th>Current User</th>
+                    <th>Stage</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th >Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if symptoms_all_data %}
+                    {% for i in symptoms_all_data %}
+                        <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ i.topic_title | capfirst }}</td>
+                        <td>{{ i.tag_string | capfirst }}</td>
+                        <td>{{ i.free_text | capfirst }}</td>
+                        <td>{{ i.current_user.username | capfirst }}</td>
+                        <td>{{ i.stage.stage_name | capfirst }}</td>
+                        <td>{{ i.createdAt }}</td>
+                        <td>{{ i.updatedAt }}</td>
+
+                            <td><a class="text_white" href="{% url 'symptoms-listing-edit' i.id %}"><i
+                                    class="fa fa-edit"></i></a><span class="p_lr_10">|</span>{% if i.is_disable == False %}<a href="{% url 'any-master-object-deactivate' object_id=i.id object_type=23 %}" class="text_white"><i class="fa fa-close"></i></a>
+                            {% else %}<a href="{% url 'any-master-object-activate' object_id=i.id object_type=23 %}" class="text_white"><i class="fa fa-check-square-o"></i></a>{% endif %}
+
+                            <span class="p_lr_10"></span>
+                             <a class="btn btn-danger btn-sm p_0"
+                               href="{% url 'delete_symptoms' i.id %}"><i
+                                    class="fa fa-trash-o text-danger fa-fw text_white"></i></a>
+
+                            </td>
+
+
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5"><b>Symptoms's Name could not be found in system...<span
+                                class='fa fa-frown-o fa-lg'></span></b></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+            {% if symptoms_all_data %}
+                <div class="text-right">
+                    <ul class="pagination">
+                        {% if symptoms_all_data.has_previous %}
+                            <li class="prev"><a href="?page={{ symptoms_all_data.previous_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if search_data_two %}&search_data_two={{search_data_two}}{% endif %}">Prev</a></li>
+                        {% endif %}
+                        <li><a>Page {{ symptoms_all_data.number }} of {{ symptoms_all_data.paginator.num_pages }}</a></li>
+                        {% if symptoms_all_data.has_next %}
+                            <li class="next"><a href="?page={{ symptoms_all_data.next_page_number }}{% if search_data %}&search_data={{search_data}}{% endif %}{% if search_data_two %}&search_data_two={{search_data_two}}{% endif %}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+
+        $('#alert').fadeIn().delay(2000).fadeOut('slow');
+        var elem = document.getElementById("search");
+        elem.onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                SearchSymptomsOnByStageByUser()
+            }
+        }
+    </script>
+{% endblock %}
