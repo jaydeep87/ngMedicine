@@ -5,7 +5,7 @@ Mako==1.0.2
 MarkupSafe==0.23
 Pillow==2.9.0
 PyPDF2==1.25.1
-PyYAML==3.11
+PyYAML==5.4
 Underscore==0.0.30000001
 Werkzeug==0.10.4
 also==0.0.2
