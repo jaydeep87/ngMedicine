@@ -4,7 +4,7 @@ Jinja2==2.8
 Mako==1.0.2
 MarkupSafe==0.23
 Pillow==2.9.0
-PyPDF2==1.25.1
+PyPDF2==1.27.5
 PyYAML==3.11
 Underscore==0.0.30000001
 Werkzeug==0.10.4
